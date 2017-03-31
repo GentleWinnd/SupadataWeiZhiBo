@@ -32,7 +32,7 @@
 - (void)customPlayBtn {
 
     UIButton *playBtn = [UIButton buttonWithType:UIButtonTypeCustom];
-    playBtn.frame = CGRectMake(SCREEN_WIDTH - 30 - 45, 45, 45, 45);
+    playBtn.frame = CGRectMake(SCREEN_WIDTH - 18 - 45, 25, 45, 45);
     [playBtn setImage:[UIImage imageNamed:@"zhibo"] forState:UIControlStateNormal];
     [playBtn addTarget:self action:@selector(playAction:) forControlEvents:UIControlEventTouchUpInside];
     playBtn.hidden = YES;
@@ -53,8 +53,8 @@
 
 - (void)initWebView {
     CGRect frame = self.view.bounds;
-    frame.origin.y = 20;
-    frame.size.height = SCREEN_HEIGHT-20;
+//    frame.origin.y = 20;
+//    frame.size.height = SCREEN_HEIGHT-20;
     webView = [[UIWebView alloc] initWithFrame:frame];
     webView.delegate = self;
     [webView loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:@"http://live.sch.supadata.cn/ssm//resource/html/teacher/?user=630584331#/tab/camera"]]];

@@ -51,6 +51,7 @@
     
     self.session = [[VCSimpleSession alloc] initWithConfiguration:configuration];
     self.session.aspectMode = VCAspectModeFill;
+    self.session.beautyLevel = VCBeautyLevelWhiten;
     self.session.delegate = delegate;
 }
 
