@@ -68,9 +68,11 @@
     [self loginByHeBaby];
 }
 
+
+
 - (void)loginByHeBaby {
-    NSDictionary *parameter = @{@"userId":@"630584331"};
-    
+    NSDictionary *parameter = @{@"access_token":@"0fc010d482d83c68ae2bfdf498ff108f",
+                                @"open_id":@"38fbb5cf11a22e96747eb07421056cce"};
     
     MBProgressManager *progressM = [[MBProgressManager alloc] init];
     [progressM loadingWithTitleProgress:nil];
@@ -80,7 +82,7 @@
         if ([responseObject[@"status"] intValue] == 1) {//登陆成功
             HeEducationH5ViewController *heView = [[HeEducationH5ViewController alloc] init];
             heView.userClassInfo = [NSArray safeArray:responseObject[@"data"][@"school"]];
-            heView.phoneNUM = @"630584331";
+            heView.phoneNUM = responseObject[@"data"][@"user"][@"uId"];
             [self restoreRootViewController:heView];
             
         } else {

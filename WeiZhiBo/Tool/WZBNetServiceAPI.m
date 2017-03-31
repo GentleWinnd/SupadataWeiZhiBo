@@ -32,8 +32,8 @@
 
 + (void)postLoginByHeBabyWithParameters:(id)parameters
                                 success:(void(^)(id responseObject))success
-                                failure:(void(^)(NSError *error))failure {//userId
-    NSString *urlStr = [NSString stringWithFormat:@"pc/pLogin?userId=%@",[parameters allValues].lastObject];
+                                failure:(void(^)(NSError *error))failure {//setAccess_token("0fc010d482d83c68ae2bfdf498ff108f
+    NSString *urlStr = [NSString stringWithFormat:@"pc/pLogin?flag=%@&access_token=%@&open_id=%@",@"2",parameters[@"access_token"],parameters[@"open_id"]];
     NSString *URLString = [NSString stringWithFormat:@"%@%@", HOST_URL, urlStr];
     [KTMWebService CMGetWithURL:URLString parameters:nil sucess:^(id responseObject) {
         if (success) {
