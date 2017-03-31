@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="11762" systemVersion="16D32" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
+    <device id="retina4_7" orientation="portrait">
+        <adaptation id="fullscreen"/>
+    </device>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="11757"/>
+        <capability name="Aspect ratio constraints" minToolsVersion="5.1"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <view contentMode="scaleToFill" id="iN0-l3-epB" customClass="ReloadView">
+            <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+            <subviews>
+                <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="reload.png" translatesAutoresizingMaskIntoConstraints="NO" id="MS4-Uu-ymp">
+                    <rect key="frame" x="0.0" y="235.5" width="375" height="156"/>
+                    <constraints>
+                        <constraint firstAttribute="width" secondItem="MS4-Uu-ymp" secondAttribute="height" multiplier="125:52" id="rbb-Db-cCN"/>
+                    </constraints>
+                </imageView>
+                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="FXK-Q7-hdH">
+                    <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                    <state key="normal">
+                        <color key="titleColor" red="0.50196081400000003" green="0.50196081400000003" blue="0.50196081400000003" alpha="0.0" colorSpace="calibratedRGB"/>
+                    </state>
+                    <connections>
+                        <action selector="reloadbtn:" destination="iN0-l3-epB" eventType="touchUpInside" id="17G-2H-h13"/>
+                    </connections>
+                </button>
+                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="加载失败了！点击重新加载！！！" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="6E7-st-ak8">
+                    <rect key="frame" x="80.5" y="397.5" width="214.5" height="17"/>
+                    <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                    <color key="textColor" red="0.50196081400000003" green="0.50196081400000003" blue="0.50196081400000003" alpha="1" colorSpace="calibratedRGB"/>
+                    <nil key="highlightedColor"/>
+                </label>
+            </subviews>
+            <constraints>
+                <constraint firstAttribute="trailing" secondItem="FXK-Q7-hdH" secondAttribute="trailing" id="2YU-RQ-IMl"/>
+                <constraint firstItem="MS4-Uu-ymp" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" id="2pu-a5-5vG"/>
+                <constraint firstItem="FXK-Q7-hdH" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" id="GQa-Zu-em9"/>
+                <constraint firstItem="MS4-Uu-ymp" firstAttribute="centerY" secondItem="iN0-l3-epB" secondAttribute="centerY" constant="-20" id="Mve-dq-1ku"/>
+                <constraint firstItem="6E7-st-ak8" firstAttribute="centerX" secondItem="iN0-l3-epB" secondAttribute="centerX" id="Nf2-0D-ok4"/>
+                <constraint firstItem="6E7-st-ak8" firstAttribute="top" secondItem="MS4-Uu-ymp" secondAttribute="bottom" constant="6" id="euI-82-12S"/>
+                <constraint firstItem="MS4-Uu-ymp" firstAttribute="centerX" secondItem="iN0-l3-epB" secondAttribute="centerX" id="g0h-1X-bte"/>
+                <constraint firstAttribute="bottom" secondItem="FXK-Q7-hdH" secondAttribute="bottom" id="lPh-WE-Nuh"/>
+                <constraint firstAttribute="trailing" secondItem="MS4-Uu-ymp" secondAttribute="trailing" id="m9K-jC-6iv"/>
+                <constraint firstItem="FXK-Q7-hdH" firstAttribute="top" secondItem="iN0-l3-epB" secondAttribute="top" id="pdW-en-ClO"/>
+            </constraints>
+            <point key="canvasLocation" x="68.5" y="99.5"/>
+        </view>
+    </objects>
+    <resources>
+        <image name="reload.png" width="244" height="156"/>
+    </resources>
+</document>

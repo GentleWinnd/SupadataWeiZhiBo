@@ -33,7 +33,7 @@
 }
 
 - (CGSize)size {
-    return [ResolutionHelper size:Resolution_720P direction:DirectionPortrait];
+    return [ResolutionHelper size:Resolution_720P direction:DirectionLandscape];
 }
 
 - (NSUInteger)bitrate {
@@ -47,7 +47,7 @@
     configuration.bitrate = [self bitrate];
     configuration.cameraDevice = VCCameraStateBack;
     configuration.continuousAutofocus = NO;
-    configuration.continuousExposure = NO;
+    configuration.continuousExposure = YES;
     
     self.session = [[VCSimpleSession alloc] initWithConfiguration:configuration];
     self.session.aspectMode = VCAspectModeFill;

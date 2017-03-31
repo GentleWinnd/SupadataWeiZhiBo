@@ -34,12 +34,17 @@
 @property (strong, nonatomic) IBOutlet UIView *backView;
 @property (strong, nonatomic) IBOutlet UISlider *beautySlider;
 
+@property (strong, nonatomic) IBOutlet UILabel *logPlayId;
 
 @property (strong, nonatomic) IBOutlet UIButton *beautyBtn;
 
 @property (strong, nonatomic) IBOutlet UIView *cameraView;
 @property (strong, nonatomic) IBOutlet UIImageView *backImageView;
 @property (strong, nonatomic) IBOutlet UIButton *torchButton;//闪光灯
+@property (strong, nonatomic) IBOutlet NSLayoutConstraint *backViewHeight;
+@property (strong, nonatomic) IBOutlet NSLayoutConstraint *backViewWidth;
+@property (strong, nonatomic) IBOutlet UILabel *rateLabel;
+
 
 @property (strong, nonatomic) IBOutlet UITableView *classNameTable;
 @property (strong, nonatomic) IBOutlet UIButton *classBtn;
@@ -87,6 +92,9 @@ static NSString *cellID = @"cellId";
 - (void)initNeedData {
     unfoldInfo = [NSMutableDictionary dictionaryWithCapacity:self.userClassInfo.count];
     
+    self.backView.transform = CGAffineTransformMakeRotation(- M_PI_2);
+    self.backViewWidth.constant = SCREEN_WIDTH;
+    self.backViewHeight.constant = SCREEN_HEIGHT;
     self.tapGesture.numberOfTapsRequired = 1;
     self.doubleTapGesture.numberOfTapsRequired = 2;
     [self.tapGesture requireGestureRecognizerToFail:self.doubleTapGesture];
@@ -118,10 +126,13 @@ static NSString *cellID = @"cellId";
             [self.torchButton setBackgroundImage:[UIImage imageNamed:@"flash_off"] forState:UIControlStateNormal];
         }
 
-    } else {//美颜
+    } else if (sender.tag == 12){//美颜
         sender.selected = !sender.selected;
-        _beautySlider.hidden = sender.selected;
+        _beautySlider.hidden = !sender.selected;
         
+    } else {//返回
+        [self.navigationController popViewControllerAnimated:YES];
+        [self clearLog];
     }
 }
 
@@ -197,10 +208,9 @@ static NSString *cellID = @"cellId";
 
 #pragma mark - start push
 -(BOOL)startRtmp {
-    [self clearLog];
     [self createTimer];
 //    NSString* rtmpUrl = @"rtmp://push.bcelive.com/live/ftqhgk3ch6wtwcvexu";//测试地址
-    
+    _rateLabel.hidden = NO;
     NSString *rtmpUrl = _pushUrl;
     if (!([rtmpUrl hasPrefix:@"rtmp://"] )) {
         [self toastTip:@"推流地址不合法，目前支持rtmp推流!"];
@@ -243,36 +253,33 @@ static NSString *cellID = @"cellId";
 //    });
     [self stopTimer];
     [[UIApplication sharedApplication] setIdleTimerDisabled:NO];
-    
 }
-
 
 - (void)clearLog {
-    
-//    [_model.session.previewView removeFromSuperview];
-//    self.model = nil;
+    [self stopRtmp];
+    self.model = nil;
 }
 
-- (void)rotateVC:(CGFloat)angle {
-    CGSize screenSize = [UIScreen mainScreen].bounds.size;
-    CGPoint center = CGPointMake(screenSize.width / 2, screenSize.height / 2);
-    self.navigationController.view.center = center;
-    CGAffineTransform transform = CGAffineTransformMakeRotation(angle);
-    if (angle < 0) {
-        transform = CGAffineTransformIdentity;
-    }
-    self.navigationController.view.transform = transform;
-    
-    CGRect bounds = CGRectMake(0, 0, screenSize.height , screenSize.width);
-    if (angle < 0) {
-        bounds = CGRectMake(0, 0, screenSize.width , screenSize.height);
-    }
-    
-    self.navigationController.view.bounds = bounds;
-}
+//- (void)rotateVC:(CGFloat)angle {
+//    CGSize screenSize = [UIScreen mainScreen].bounds.size;
+//    CGPoint center = CGPointMake(screenSize.width / 2, screenSize.height / 2);
+//    self.navigationController.view.center = center;
+//    CGAffineTransform transform = CGAffineTransformMakeRotation(angle);
+//    if (angle < 0) {
+//        transform = CGAffineTransformIdentity;
+//    }
+//    self.navigationController.view.transform = transform;
+//    
+//    CGRect bounds = CGRectMake(0, 0, screenSize.height , screenSize.width);
+//    if (angle < 0) {
+//        bounds = CGRectMake(0, 0, screenSize.width , screenSize.height);
+//    }
+//    
+//    self.navigationController.view.bounds = bounds;
+//}
 
 - (AVCaptureVideoOrientation)cameraOrientation {
-    return AVCaptureVideoOrientationPortrait;
+    return AVCaptureVideoOrientationLandscapeRight;
 }
 
 - (BOOL)prefersStatusBarHidden {
@@ -329,7 +336,8 @@ static NSString *cellID = @"cellId";
     int second = seconds%60;
     
     _shotingTimeLable.text = [NSString stringWithFormat:@"%02d:%02d:%02d",hourse,minutes,second];
-    
+    double rate = [self.model.session getCurrentUploadBandwidthKbps];
+    _rateLabel.text = [NSString stringWithFormat:@"%.lf %@",rate,@"kb"];
     
 }
 
@@ -432,55 +440,55 @@ static NSString *cellID = @"cellId";
 }
 
 
-- (void)statusBarOrientationChanged:(NSNotification *)note  {
-    
-    switch ([[UIDevice currentDevice] orientation]) {
-        case UIDeviceOrientationPortrait:        //activity竖屏模式，竖屏推流
-        {
-            if (_deviceOrientation != UIDeviceOrientationPortrait) {
-               
-                _deviceOrientation = UIDeviceOrientationPortrait;
-                self.model.session.cameraOrientation = AVCaptureVideoOrientationPortrait;
-                UIView *gpuView = [self.model.session.previewView.subviews lastObject];
-                CGRect frame = gpuView.frame;
-                frame.size = self.view.frame.size;
-                gpuView.frame = frame;
-
-            }
-        }
-            break;
-        case UIDeviceOrientationLandscapeLeft:   //activity横屏模式，home在右横屏推流 注意：渲染view（demo里面是：preViewContainer）要跟着activity旋转
-        {
-            if (_deviceOrientation != UIDeviceOrientationLandscapeLeft) {
-              
-                _deviceOrientation = UIDeviceOrientationLandscapeLeft;
-                self.model.session.cameraOrientation = AVCaptureVideoOrientationLandscapeLeft;
-                UIView *gpuView = [self.model.session.previewView.subviews lastObject];
-                CGRect frame = gpuView.frame;
-                frame.size = CGSizeMake(CGRectGetHeight(self.view.frame), CGRectGetWidth(self.view.frame));
-                gpuView.frame = frame;
-
-            }
-            
-        }
-            break;
-        case UIDeviceOrientationLandscapeRight:   //activity横屏模式，home在左横屏推流 注意：渲染view（demo里面是：preViewContainer）要跟着activity旋转
-        {
-            if (_deviceOrientation != UIDeviceOrientationLandscapeRight) {
-                
-                _deviceOrientation = UIDeviceOrientationLandscapeRight;
-                self.model.session.cameraOrientation = AVCaptureVideoOrientationLandscapeRight;
-                UIView *gpuView = [self.model.session.previewView.subviews lastObject];
-                CGRect frame = gpuView.frame;
-                frame.size = CGSizeMake(CGRectGetHeight(self.view.frame), CGRectGetWidth(self.view.frame));
-                gpuView.frame = frame;
-            }
-        }
-            break;
-        default:
-            break;
-    }
-}
+//- (void)statusBarOrientationChanged:(NSNotification *)note  {
+//    
+//    switch ([[UIDevice currentDevice] orientation]) {
+//        case UIDeviceOrientationPortrait:        //activity竖屏模式，竖屏推流
+//        {
+//            if (_deviceOrientation != UIDeviceOrientationPortrait) {
+//               
+//                _deviceOrientation = UIDeviceOrientationPortrait;
+//                self.model.session.cameraOrientation = AVCaptureVideoOrientationPortrait;
+//                UIView *gpuView = [self.model.session.previewView.subviews lastObject];
+//                CGRect frame = gpuView.frame;
+//                frame.size = self.view.frame.size;
+//                gpuView.frame = frame;
+//
+//            }
+//        }
+//            break;
+//        case UIDeviceOrientationLandscapeLeft:   //activity横屏模式，home在右横屏推流 注意：渲染view（demo里面是：preViewContainer）要跟着activity旋转
+//        {
+//            if (_deviceOrientation != UIDeviceOrientationLandscapeLeft) {
+//              
+//                _deviceOrientation = UIDeviceOrientationLandscapeLeft;
+//                self.model.session.cameraOrientation = AVCaptureVideoOrientationLandscapeLeft;
+//                UIView *gpuView = [self.model.session.previewView.subviews lastObject];
+//                CGRect frame = gpuView.frame;
+//                frame.size = CGSizeMake(CGRectGetHeight(self.view.frame), CGRectGetWidth(self.view.frame));
+//                gpuView.frame = frame;
+//
+//            }
+//            
+//        }
+//            break;
+//        case UIDeviceOrientationLandscapeRight:   //activity横屏模式，home在左横屏推流 注意：渲染view（demo里面是：preViewContainer）要跟着activity旋转
+//        {
+//            if (_deviceOrientation != UIDeviceOrientationLandscapeRight) {
+//                
+//                _deviceOrientation = UIDeviceOrientationLandscapeRight;
+//                self.model.session.cameraOrientation = AVCaptureVideoOrientationLandscapeRight;
+//                UIView *gpuView = [self.model.session.previewView.subviews lastObject];
+//                CGRect frame = gpuView.frame;
+//                frame.size = CGSizeMake(CGRectGetHeight(self.view.frame), CGRectGetWidth(self.view.frame));
+//                gpuView.frame = frame;
+//            }
+//        }
+//            break;
+//        default:
+//            break;
+//    }
+//}
 
 #pragma mark - change beauty value
 - (IBAction)changeSlider:(UISlider *)sender {
@@ -526,7 +534,7 @@ static NSString *cellID = @"cellId";
         schoolName = @"";
     }
     
-    NSDictionary *parameter = @{@"phone":_phoneNUM,@"device":@"2",
+    NSDictionary *parameter = @{@"userId":_phoneNUM,@"device":@"2",
                                 @"school_id":schoolId,@"class_id":classId,
                                 @"push_type":@"2",@"liveName":@"IOS",
                                 @"className":className,@"schoolName":schoolName,
@@ -540,7 +548,8 @@ static NSString *cellID = @"cellId";
         [progressM hiddenProgress];
         if ([reponseObject[@"status"] intValue] == 1) {
             _pushUrl = [NSString safeString:reponseObject[@"data"][@"cameraPushUrl"]];
-            [self startRtmp];
+            _logPlayId.text = [NSString safeString:reponseObject[@"data"][@"cameraPlayUrl"]];
+//            [self startRtmp];
         } else {
             
             
@@ -640,9 +649,9 @@ static NSString *cellID = @"cellId";
     CGRect frame = _classNameTable.frame;
     if (show) {
         if (_deviceOrientation == UIDeviceOrientationPortrait ||_deviceOrientation == UIDeviceOrientationUnknown) {
-            frame = CGRectMake(8, HEIGHT - 55 -208, 120, 200);
+            frame = CGRectMake(8, WIDTH - 55 -208, 120, 200);
         } else {
-            frame = CGRectMake(8, HEIGHT - 55 -128, 200, 120);
+            frame = CGRectMake(8, WIDTH - 55 -128, 200, 120);
 
         }
      
@@ -671,11 +680,12 @@ static NSString *cellID = @"cellId";
         self.classBtn.transform = CGAffineTransformMakeRotation(-n*M_PI/180.0);
         self.traformCameraBtn.transform = CGAffineTransformMakeRotation(-n*M_PI/180.0);
         self.beautyBtn.transform = CGAffineTransformMakeRotation(-n*M_PI/180.0);
+        self.rateLabel.transform = CGAffineTransformMakeRotation(-n*M_PI/180.0);
         CGRect frame = _classNameTable.frame;
         if (_deviceOrientation == UIDeviceOrientationPortrait) {
-            frame = CGRectMake(8, HEIGHT - 55 -208, 120, 200);
+            frame = CGRectMake(8, WIDTH - 55 -208, 120, 200);
         } else {
-            frame = CGRectMake(8, HEIGHT - 55 -128, 200, 120);
+            frame = CGRectMake(8, WIDTH - 55 -128, 200, 120);
 
         }
         _classNameTable.frame = frame;

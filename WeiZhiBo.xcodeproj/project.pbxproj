@@ -88,8 +88,13 @@
 		589585131E84F05200E4FAB7 /* SchoolNameView.m in Sources */ = {isa = PBXBuildFile; fileRef = 589585121E84F05200E4FAB7 /* SchoolNameView.m */; };
 		589585191E85077F00E4FAB7 /* NSString+Extension.m in Sources */ = {isa = PBXBuildFile; fileRef = 589585181E85077F00E4FAB7 /* NSString+Extension.m */; };
 		5895851E1E85210900E4FAB7 /* V8HorizontalPickerView.m in Sources */ = {isa = PBXBuildFile; fileRef = 5895851C1E85210900E4FAB7 /* V8HorizontalPickerView.m */; };
-		5898E3811E863EB100FC7CCB /* ImoveViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5898E37F1E863EB100FC7CCB /* ImoveViewController.xib */; };
 		5898E3841E8644D600FC7CCB /* AppLogMgr.m in Sources */ = {isa = PBXBuildFile; fileRef = 5898E3831E8644D600FC7CCB /* AppLogMgr.m */; };
+		58C87BFB1E8B9BE000A917FD /* HeEducationH5ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 58C87BF91E8B9BE000A917FD /* HeEducationH5ViewController.m */; };
+		58C87C001E8BB7EB00A917FD /* zhibo@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 58C87BFE1E8BB7EB00A917FD /* zhibo@2x.png */; };
+		58C87C011E8BB7EB00A917FD /* zhibo@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 58C87BFF1E8BB7EB00A917FD /* zhibo@3x.png */; };
+		58C87C031E8CAC7C00A917FD /* reload.png in Resources */ = {isa = PBXBuildFile; fileRef = 58C87C021E8CAC7C00A917FD /* reload.png */; };
+		58C87C061E8CAD8500A917FD /* ReloadView.m in Sources */ = {isa = PBXBuildFile; fileRef = 58C87C051E8CAD8500A917FD /* ReloadView.m */; };
+		58C87C081E8CADAF00A917FD /* ReloadView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 58C87C071E8CADAF00A917FD /* ReloadView.xib */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -255,9 +260,16 @@
 		5895851B1E85210900E4FAB7 /* V8HorizontalPickerView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = V8HorizontalPickerView.h; sourceTree = "<group>"; };
 		5895851C1E85210900E4FAB7 /* V8HorizontalPickerView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = V8HorizontalPickerView.m; sourceTree = "<group>"; };
 		5895851D1E85210900E4FAB7 /* V8HorizontalPickerViewProtocol.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = V8HorizontalPickerViewProtocol.h; sourceTree = "<group>"; };
-		5898E37F1E863EB100FC7CCB /* ImoveViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ImoveViewController.xib; sourceTree = "<group>"; };
 		5898E3821E8644D600FC7CCB /* AppLogMgr.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AppLogMgr.h; sourceTree = "<group>"; };
 		5898E3831E8644D600FC7CCB /* AppLogMgr.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AppLogMgr.m; sourceTree = "<group>"; };
+		58C87BF81E8B9BE000A917FD /* HeEducationH5ViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HeEducationH5ViewController.h; sourceTree = "<group>"; };
+		58C87BF91E8B9BE000A917FD /* HeEducationH5ViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HeEducationH5ViewController.m; sourceTree = "<group>"; };
+		58C87BFE1E8BB7EB00A917FD /* zhibo@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "zhibo@2x.png"; sourceTree = "<group>"; };
+		58C87BFF1E8BB7EB00A917FD /* zhibo@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "zhibo@3x.png"; sourceTree = "<group>"; };
+		58C87C021E8CAC7C00A917FD /* reload.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = reload.png; sourceTree = "<group>"; };
+		58C87C041E8CAD8500A917FD /* ReloadView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ReloadView.h; sourceTree = "<group>"; };
+		58C87C051E8CAD8500A917FD /* ReloadView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ReloadView.m; sourceTree = "<group>"; };
+		58C87C071E8CADAF00A917FD /* ReloadView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ReloadView.xib; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -454,9 +466,13 @@
 				585EF45F1E816EF600EC879F /* AppDelegate.m */,
 				585EF4611E816EF600EC879F /* ViewController.h */,
 				585EF4621E816EF600EC879F /* ViewController.m */,
-				5898E37F1E863EB100FC7CCB /* ImoveViewController.xib */,
+				58C87BF81E8B9BE000A917FD /* HeEducationH5ViewController.h */,
+				58C87BF91E8B9BE000A917FD /* HeEducationH5ViewController.m */,
 				585EF4FA1E817E1300EC879F /* LogInViewController.h */,
 				585EF4FB1E817E1300EC879F /* LogInViewController.m */,
+				58C87C041E8CAD8500A917FD /* ReloadView.h */,
+				58C87C051E8CAD8500A917FD /* ReloadView.m */,
+				58C87C071E8CADAF00A917FD /* ReloadView.xib */,
 				5895850A1E84EF7100E4FAB7 /* SelectedClass */,
 				585EF4FC1E817E1300EC879F /* LogInViewController.xib */,
 				585EF4641E816EF600EC879F /* Main.storyboard */,
@@ -465,7 +481,6 @@
 				586851661E83905100115227 /* Tool */,
 				5868511C1E83901B00115227 /* ThirdFrame */,
 				5868511B1E838FBC00115227 /* Source */,
-				585EF4931E8173CF00EC879F /* WeizhiboIcon */,
 				585EF45B1E816EF600EC879F /* Supporting Files */,
 			);
 			path = WeiZhiBo;
@@ -505,6 +520,7 @@
 		585EF4931E8173CF00EC879F /* WeizhiboIcon */ = {
 			isa = PBXGroup;
 			children = (
+				58C87C021E8CAC7C00A917FD /* reload.png */,
 				5824AFF31E860FC30083FA0F /* pause_publish.jpg */,
 				585EF4911E81721700EC879F /* BeautifulDaughter.png */,
 				585EF49E1E8173CF00EC879F /* elive.png */,
@@ -522,12 +538,14 @@
 				581682F21E839FD1003F669F /* set_s.png */,
 				581682FD1E839FDD003F669F /* NewIcon */,
 			);
-			path = WeizhiboIcon;
+			name = WeizhiboIcon;
+			path = ../../WeizhiboIcon;
 			sourceTree = "<group>";
 		};
 		5868511B1E838FBC00115227 /* Source */ = {
 			isa = PBXGroup;
 			children = (
+				58C87BFD1E8BB7D600A917FD /* ImageFile */,
 				589584EA1E84CC6600E4FAB7 /* SourseDataCache.h */,
 				589584EB1E84CC6600E4FAB7 /* SourseDataCache.m */,
 			);
@@ -662,6 +680,16 @@
 			path = V8HorizontalPickerView;
 			sourceTree = "<group>";
 		};
+		58C87BFD1E8BB7D600A917FD /* ImageFile */ = {
+			isa = PBXGroup;
+			children = (
+				585EF4931E8173CF00EC879F /* WeizhiboIcon */,
+				58C87BFE1E8BB7EB00A917FD /* zhibo@2x.png */,
+				58C87BFF1E8BB7EB00A917FD /* zhibo@3x.png */,
+			);
+			path = ImageFile;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -772,6 +800,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				58C87C081E8CADAF00A917FD /* ReloadView.xib in Resources */,
 				585EF46E1E816EF600EC879F /* LaunchScreen.storyboard in Resources */,
 				581683041E839FDD003F669F /* doing.png in Resources */,
 				581682FB1E839FD1003F669F /* set_n.png in Resources */,
@@ -782,14 +811,17 @@
 				585EF4FE1E817E1300EC879F /* LogInViewController.xib in Resources */,
 				585EF4921E81721700EC879F /* BeautifulDaughter.png in Resources */,
 				581682F91E839FD1003F669F /* sec_n.png in Resources */,
+				58C87C011E8BB7EB00A917FD /* zhibo@3x.png in Resources */,
 				585EF46B1E816EF600EC879F /* Assets.xcassets in Resources */,
 				581682F61E839FD1003F669F /* open.png in Resources */,
 				581682F41E839FD1003F669F /* camero.png in Resources */,
+				58C87C001E8BB7EB00A917FD /* zhibo@2x.png in Resources */,
 				5824AFF41E860FC30083FA0F /* pause_publish.jpg in Resources */,
 				589585101E84EFC500E4FAB7 /* ClassNameTableViewCell.xib in Resources */,
 				581683031E839FDD003F669F /* class.png in Resources */,
 				581683071E839FDD003F669F /* STOP.png in Resources */,
 				581682FC1E839FD1003F669F /* set_s.png in Resources */,
+				58C87C031E8CAC7C00A917FD /* reload.png in Resources */,
 				581682F31E839FD1003F669F /* backcamero.png in Resources */,
 				585EF4D41E8173CF00EC879F /* logo.png in Resources */,
 				585EF4661E816EF600EC879F /* Main.storyboard in Resources */,
@@ -797,7 +829,6 @@
 				581682F81E839FD1003F669F /* putoff.png in Resources */,
 				585EF4D31E8173CF00EC879F /* elive.png in Resources */,
 				581682E01E839EF7003F669F /* telput@2x.png in Resources */,
-				5898E3811E863EB100FC7CCB /* ImoveViewController.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -823,6 +854,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				581683391E83A079003F669F /* UIRefreshControl+AFNetworking.m in Sources */,
+				58C87BFB1E8B9BE000A917FD /* HeEducationH5ViewController.m in Sources */,
 				581683311E83A079003F669F /* AFURLSessionManager.m in Sources */,
 				581682DC1E8392AD003F669F /* WZBNetServiceAPI.m in Sources */,
 				581683381E83A079003F669F /* UIProgressView+AFNetworking.m in Sources */,
@@ -849,6 +881,7 @@
 				5898E3841E8644D600FC7CCB /* AppLogMgr.m in Sources */,
 				589584FC1E84CE1F00E4FAB7 /* UIColor+HexString.m in Sources */,
 				589584FB1E84CE1F00E4FAB7 /* NSString+Color.m in Sources */,
+				58C87C061E8CAD8500A917FD /* ReloadView.m in Sources */,
 				586851641E83903400115227 /* KTMErrorHint.m in Sources */,
 				581683421E83A144003F669F /* MBProgressHUD.m in Sources */,
 				589584F31E84CD2100E4FAB7 /* User.m in Sources */,

@@ -28,6 +28,24 @@
     }];
 }
 
+//通过和宝贝进去
+
++ (void)postLoginByHeBabyWithParameters:(id)parameters
+                                success:(void(^)(id responseObject))success
+                                failure:(void(^)(NSError *error))failure {//userId
+    NSString *urlStr = [NSString stringWithFormat:@"pc/pLogin?userId=%@",[parameters allValues].lastObject];
+    NSString *URLString = [NSString stringWithFormat:@"%@%@", HOST_URL, urlStr];
+    [KTMWebService CMGetWithURL:URLString parameters:nil sucess:^(id responseObject) {
+        if (success) {
+            success(responseObject);
+        }
+    } failure:^(NSError *error) {
+        if (failure) {
+            failure(error);
+        }
+    }];
+}
+
 //注册直播手机
 + (void)postRegisterPhoneMicroLiveWithParameters:(id)parameters
                                          success:(void(^)(id reponseObject))success

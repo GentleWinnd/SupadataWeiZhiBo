@@ -8,6 +8,7 @@
 
 #import "LogInViewController.h"
 #import "ViewController.h"
+#import "HeEducationH5ViewController.h"
 
 
 @interface LogInViewController ()<UITextFieldDelegate>
@@ -45,44 +46,67 @@
                                 @"password":pw};
     
     
+//    MBProgressManager *progressM = [[MBProgressManager alloc] init];
+//    [progressM loadingWithTitleProgress:nil];
+//    
+//   [WZBNetServiceAPI postLoginWithParameters:parameter success:^(id responseObject) {
+//       [progressM hiddenProgress];
+//       if ([responseObject[@"status"] intValue] == 1) {//登陆成功
+//           HeEducationH5ViewController *heView = [[HeEducationH5ViewController alloc] init];
+//           heView.userClassInfo = [NSArray safeArray:responseObject[@"data"][@"school"]];
+//           heView.phoneNUM = account;
+//           [self restoreRootViewController:heView];
+//           
+//       } else {
+//           [Progress progressShowcontent:@"账户或密码错误，请检查"];
+//       }
+//   } failure:^(NSError *error) {
+//       [progressM hiddenProgress];
+//       [KTMErrorHint showNetError:error inView:self.view];
+//       
+//   }];
+    [self loginByHeBaby];
+}
+
+- (void)loginByHeBaby {
+    NSDictionary *parameter = @{@"userId":@"630584331"};
+    
+    
     MBProgressManager *progressM = [[MBProgressManager alloc] init];
     [progressM loadingWithTitleProgress:nil];
     
-   [WZBNetServiceAPI postLoginWithParameters:parameter success:^(id responseObject) {
-       [progressM hiddenProgress];
-       if ([responseObject[@"status"] intValue] == 1) {//登陆成功
-           UIStoryboard *board = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
-           
-           ViewController *VC = [board instantiateViewControllerWithIdentifier:@"ViewController"];
-           VC.userClassInfo = [NSArray safeArray:responseObject[@"data"][@"school"]];
-           VC.phoneNUM = account;
-           [self restoreRootViewController:VC];
-           
-       } else {
-           [Progress progressShowcontent:@"账户或密码错误，请检查"];
-       }
-   } failure:^(NSError *error) {
-       [progressM hiddenProgress];
-       [KTMErrorHint showNetError:error inView:self.view];
-       
-   }];
-    
-    
+    [WZBNetServiceAPI postLoginByHeBabyWithParameters:parameter success:^(id responseObject) {
+        [progressM hiddenProgress];
+        if ([responseObject[@"status"] intValue] == 1) {//登陆成功
+            HeEducationH5ViewController *heView = [[HeEducationH5ViewController alloc] init];
+            heView.userClassInfo = [NSArray safeArray:responseObject[@"data"][@"school"]];
+            heView.phoneNUM = @"630584331";
+            [self restoreRootViewController:heView];
+            
+        } else {
+            [Progress progressShowcontent:@"账户或密码错误，请检查"];
+        }
+    } failure:^(NSError *error) {
+        [progressM hiddenProgress];
+        [KTMErrorHint showNetError:error inView:self.view];
+        
+    }];
+
 }
 
 // 登陆后淡入淡出更换rootViewController
 - (void)restoreRootViewController:(UIViewController *)rootViewController {
     typedef void (^Animation)(void);
 //    
-//    UINavigationController *navVC = [[UINavigationController alloc] initWithRootViewController:rootViewController];
+    UINavigationController *navVC = [[UINavigationController alloc] initWithRootViewController:rootViewController];
     
     UIWindow* window = [UIApplication sharedApplication].keyWindow;
-    
-    rootViewController.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;
+    navVC.navigationBarHidden = YES;
+    navVC.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;
     Animation animation = ^{
         BOOL oldState = [UIView areAnimationsEnabled];
         [UIView setAnimationsEnabled:NO];
-        [UIApplication sharedApplication].keyWindow.rootViewController = rootViewController;
+        [UIApplication sharedApplication].keyWindow.rootViewController = navVC;
         [UIView setAnimationsEnabled:oldState];
     };
     

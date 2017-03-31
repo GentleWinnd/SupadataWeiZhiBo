@@ -21,6 +21,11 @@
 + (void)postLoginWithParameters:(id)parameters
                         success:(void(^)(id responseObject))success
                         failure:(void(^)(NSError *error))failure;
+//通过和宝贝进去
+
++ (void)postLoginByHeBabyWithParameters:(id)parameters
+                                success:(void(^)(id responseObject))success
+                                failure:(void(^)(NSError *error))failure;
 
 //注册直播手机
 + (void)postRegisterPhoneMicroLiveWithParameters:(id)parameters
