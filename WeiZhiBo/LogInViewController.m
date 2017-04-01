@@ -22,11 +22,9 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view from its nib.
-    _accountField.text = @"13901589251";
-    _passwordField.text = @"dingjl";
+    _accountField.text = @"0fc010d482d83c68ae2bfdf498ff108f";
+    _passwordField.text = @"38fbb5cf11a22e96747eb07421056cce";
 }
-
-
 
 
 - (IBAction)loginClickAction:(UIButton *)sender {
@@ -35,16 +33,17 @@
     NSString *pw = _passwordField.text;
     
     if (account.length == 0) {
-        [Progress progressShowcontent:@"请输入电话号码"];
+        [Progress progressShowcontent:@"请输入access_token"];
         return;
     } else if (pw.length == 0) {
-        [Progress progressShowcontent:@"请输入密码"];
+        [Progress progressShowcontent:@"请输入open_id"];
         return;
     }
-    
-    NSDictionary *parameter = @{@"phone":account,
-                                @"password":pw};
-    
+    NSDictionary *parameter = @{@"access_token":account,
+                                                   @"open_id":pw};
+
+//    NSDictionary *parameter = @{@"phone":account,
+//                                @"password":pw};
     
 //    MBProgressManager *progressM = [[MBProgressManager alloc] init];
 //    [progressM loadingWithTitleProgress:nil];
@@ -65,14 +64,12 @@
 //       [KTMErrorHint showNetError:error inView:self.view];
 //       
 //   }];
-    [self loginByHeBaby];
+    [self loginByHeBaby:parameter];
 }
 
 
 
-- (void)loginByHeBaby {
-    NSDictionary *parameter = @{@"access_token":@"0fc010d482d83c68ae2bfdf498ff108f",
-                                @"open_id":@"38fbb5cf11a22e96747eb07421056cce"};
+- (void)loginByHeBaby:(NSDictionary *) parameter {
     
     MBProgressManager *progressM = [[MBProgressManager alloc] init];
     [progressM loadingWithTitleProgress:nil];

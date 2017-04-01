@@ -19,18 +19,17 @@
 #import <sys/sysctl.h>
 #import <UIKit/UIKit.h>
 #import <mach/mach.h>
-//#import "AppLogMgr.h"
 #import "StreamingViewModel.h"
 #import <VideoCore/VideoCore.h>
 #import <CoreMotion/CoreMotion.h>
 
 @interface ViewController ()<UITableViewDelegate, UITableViewDataSource,VCSessionDelegate>
 //手势
-@property (strong, nonatomic) IBOutlet UIPinchGestureRecognizer *pinchGesture;
-@property (strong, nonatomic) IBOutlet UITapGestureRecognizer *tapGesture;
-@property (strong, nonatomic) IBOutlet UITapGestureRecognizer *doubleTapGesture;
-@property (assign, nonatomic) BOOL isBacking;
+@property (strong, nonatomic) IBOutlet UIPinchGestureRecognizer *pinchGesture;//缩放手势
+@property (strong, nonatomic) IBOutlet UITapGestureRecognizer *tapGesture;//点击手势
+@property (strong, nonatomic) IBOutlet UITapGestureRecognizer *doubleTapGesture;//双击手势
 
+@property (assign, nonatomic) BOOL isBacking;
 @property (strong, nonatomic) IBOutlet UIView *backView;
 @property (strong, nonatomic) IBOutlet UISlider *beautySlider;
 
@@ -45,6 +44,10 @@
 @property (strong, nonatomic) IBOutlet NSLayoutConstraint *backViewWidth;
 @property (strong, nonatomic) IBOutlet UILabel *rateLabel;
 
+
+
+@property (strong, nonatomic) IBOutlet UIView *classInfoView;
+@property (weak, nonatomic) IBOutlet UIPickerView *classPickerView;
 
 @property (strong, nonatomic) IBOutlet UITableView *classNameTable;
 @property (strong, nonatomic) IBOutlet UIButton *classBtn;
@@ -92,6 +95,7 @@ static NSString *cellID = @"cellId";
 - (void)initNeedData {
     unfoldInfo = [NSMutableDictionary dictionaryWithCapacity:self.userClassInfo.count];
     
+    self.logPlayId.transform = CGAffineTransformMakeRotation(M_PI_2);
     self.backView.transform = CGAffineTransformMakeRotation(- M_PI_2);
     self.backViewWidth.constant = SCREEN_WIDTH;
     self.backViewHeight.constant = SCREEN_HEIGHT;
@@ -113,6 +117,12 @@ static NSString *cellID = @"cellId";
     [vmodel updateFrame:_cameraView];
     self.model = vmodel;
 
+}
+
+#pragma mark - selectedCLass
+- (IBAction)selectedClassBtn:(UIButton *)sender {
+    
+    
 }
 
 #pragma mark - action
@@ -701,6 +711,8 @@ static NSString *cellID = @"cellId";
         _classNameTable.frame = frame;
     }];
 }
+
+#pragma mark - 
 
 /**********************rotation btn********************/
 
