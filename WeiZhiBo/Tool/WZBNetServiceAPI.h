@@ -9,7 +9,7 @@
 //接口地址：http://live.sch.supadata.cn/ssm/pc/phoneLogin
 #define HOST_URL @"http://live.sch.supadata.cn/ssm/"
 //#define HOST_URL @"http://live.sch.supadata.cn:9080/"
-//#define HOST_URL @"http://baihongyu1234567.xicp.io/ssm/pc/"
+#define HOST_URL_TEST @"http://baihongyu1234567.xicp.io/ssm/"
 
 #import <Foundation/Foundation.h>
 
@@ -31,4 +31,14 @@
 + (void)postRegisterPhoneMicroLiveWithParameters:(id)parameters
                                          success:(void(^)(id reponseObject))success
                                          failure:(void(^)(NSError *error))failure;
+
+//群发短信
++ (void)getGroupSendMassageWithParameters:(id)parameters
+                                  success:(void(^)(id reponseObject))success
+                                  failure:(void(^)(NSError *error))failure;
+
+//获取观看人数接口
++ (void)getWatchingNumberWithParameters:(id)parameters
+                                success:(void(^)(id reponseObject))success
+                                failure:(void(^)(NSError *error))failure;
 @end

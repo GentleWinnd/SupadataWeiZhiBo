@@ -188,7 +188,7 @@ static NSString *cellID = @"cellId";
             [self stopRtmp];
 
         } else {//开始直播
-            [self startRtmp];
+            [self alertViewSendMassageToPatriarch];
 
         }
         _playingDotImgView.hidden = sender.selected;
@@ -560,6 +560,44 @@ static NSString *cellID = @"cellId";
     }];
     
 }
+
+- (void)groupSendMassage {
+   
+    NSDictionary *parameter = @{@"access_token":@"0fc010d482d83c68ae2bfdf498ff108f",
+                                @"open_id":@"38fbb5cf11a22e96747eb07421056cce",
+                                @"flag":@"1",
+                                @"classId":@"10606073",
+                                @"className":@"11111"};
+    [WZBNetServiceAPI getGroupSendMassageWithParameters:parameter success:^(id reponseObject) {
+        if ([reponseObject[@"status"] intValue] == 1) {
+            [Progress progressShowcontent:@"已经通知家长了！！！"];
+        } else {
+            [Progress progressShowcontent:@"通知家长失败了！！！"];
+        }
+    } failure:^(NSError *error) {
+         [Progress progressShowcontent:@"通知家长失败了！！！"];
+    }];
+    
+}
+
+- (void)alertViewSendMassageToPatriarch {
+    
+    UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"提示" message:@"是否通知学生家长观看直播？" preferredStyle:UIAlertControllerStyleAlert];
+    
+    // 添加按钮
+    [alert addAction:[UIAlertAction actionWithTitle:@"是" style:UIAlertActionStyleDestructive handler:^(UIAlertAction *action) {
+        [self startRtmp];
+        [self groupSendMassage];
+    }]];
+    
+    [alert addAction:[UIAlertAction actionWithTitle:@"否" style:UIAlertActionStyleCancel handler:^(UIAlertAction *action) {
+        [self startRtmp];
+    }]];
+    
+    [self presentViewController:alert animated:YES completion:nil];
+    
+}
+
 
 /*******************tableview*****************/
 
