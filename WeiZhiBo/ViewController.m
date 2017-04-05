@@ -78,6 +78,7 @@ static NSString *cellID = @"cellId";
     NSString *className;
     NSString *schoolId;
     NSString *schoolName;
+    NSString *cameraDataId;
     NSMutableDictionary *unfoldInfo;
     UIDeviceOrientation _deviceOrientation;
     CMMotionManager *motionManager;
@@ -124,8 +125,7 @@ static NSString *cellID = @"cellId";
 
 }
 - (IBAction)unfoldBtnClick:(UIButton *)sender {//显示或收起底部按钮栏
-    
-    
+    [self showBottomView];
 }
 
 #pragma mark - action
@@ -213,6 +213,7 @@ static NSString *cellID = @"cellId";
         sender.selected = !sender.selected;
 
     } else {//选择班级
+        self.classBackView.backgroundColor = _classView.hidden?MainColor_White:MainBtnSelectedColor_lightBlue;
         [self showClassInfoTable:_classView.hidden];
     }
 
@@ -351,10 +352,13 @@ static NSString *cellID = @"cellId";
     _shotingTimeLable.text = [NSString stringWithFormat:@"%02d:%02d:%02d",hourse,minutes,second];
     double rate = [self.model.session getCurrentUploadBandwidthKbps];
     _rateLabel.text = [NSString stringWithFormat:@"%.lf %@",rate,@"kb"];
-    
+    if (seconds == 38) {
+        [self uploadZhiBoState:NO];
+    }
 }
 
 - (void)stopTimer {
+    [self uploadZhiBoState:YES];
     [timer invalidate];
     timer = nil;
 }
@@ -399,7 +403,7 @@ static NSString *cellID = @"cellId";
      }
 
      */
-    }else{
+    } else {
         AVAudioSessionInterruptionOptions options = [info[AVAudioSessionInterruptionOptionKey] unsignedIntegerValue];
         if (options == AVAudioSessionInterruptionOptionShouldResume) {
         /*
@@ -453,56 +457,6 @@ static NSString *cellID = @"cellId";
 }
 
 
-//- (void)statusBarOrientationChanged:(NSNotification *)note  {
-//    
-//    switch ([[UIDevice currentDevice] orientation]) {
-//        case UIDeviceOrientationPortrait:        //activity竖屏模式，竖屏推流
-//        {
-//            if (_deviceOrientation != UIDeviceOrientationPortrait) {
-//               
-//                _deviceOrientation = UIDeviceOrientationPortrait;
-//                self.model.session.cameraOrientation = AVCaptureVideoOrientationPortrait;
-//                UIView *gpuView = [self.model.session.previewView.subviews lastObject];
-//                CGRect frame = gpuView.frame;
-//                frame.size = self.view.frame.size;
-//                gpuView.frame = frame;
-//
-//            }
-//        }
-//            break;
-//        case UIDeviceOrientationLandscapeLeft:   //activity横屏模式，home在右横屏推流 注意：渲染view（demo里面是：preViewContainer）要跟着activity旋转
-//        {
-//            if (_deviceOrientation != UIDeviceOrientationLandscapeLeft) {
-//              
-//                _deviceOrientation = UIDeviceOrientationLandscapeLeft;
-//                self.model.session.cameraOrientation = AVCaptureVideoOrientationLandscapeLeft;
-//                UIView *gpuView = [self.model.session.previewView.subviews lastObject];
-//                CGRect frame = gpuView.frame;
-//                frame.size = CGSizeMake(CGRectGetHeight(self.view.frame), CGRectGetWidth(self.view.frame));
-//                gpuView.frame = frame;
-//
-//            }
-//            
-//        }
-//            break;
-//        case UIDeviceOrientationLandscapeRight:   //activity横屏模式，home在左横屏推流 注意：渲染view（demo里面是：preViewContainer）要跟着activity旋转
-//        {
-//            if (_deviceOrientation != UIDeviceOrientationLandscapeRight) {
-//                
-//                _deviceOrientation = UIDeviceOrientationLandscapeRight;
-//                self.model.session.cameraOrientation = AVCaptureVideoOrientationLandscapeRight;
-//                UIView *gpuView = [self.model.session.previewView.subviews lastObject];
-//                CGRect frame = gpuView.frame;
-//                frame.size = CGSizeMake(CGRectGetHeight(self.view.frame), CGRectGetWidth(self.view.frame));
-//                gpuView.frame = frame;
-//            }
-//        }
-//            break;
-//        default:
-//            break;
-//    }
-//}
-
 #pragma mark - change beauty value
 - (IBAction)changeSlider:(UISlider *)sender {
     
@@ -510,27 +464,10 @@ static NSString *cellID = @"cellId";
     
 }
 
-
 /****************selected school and class******************/
+
 - (void)getPushInfo {
-    /*
-     phone
-     device
-     school_id
-     class_id
-     push_type
-     liveName
-     className
-     schoolName
-     选填
-     schoolIp
-     cameraId
-     schoolAdminName
-     schoolAdminPhone
-     adminClassName
-     cameraClassLocation
-     
-     */
+   
     if (schoolId == nil) {
         [Progress progressShowcontent:@"请选择学校"];
         return;
@@ -562,6 +499,7 @@ static NSString *cellID = @"cellId";
         if ([reponseObject[@"status"] intValue] == 1) {
             _pushUrl = [NSString safeString:reponseObject[@"data"][@"cameraPushUrl"]];
             _logPlayId.text = [NSString safeString:reponseObject[@"data"][@"cameraPlayUrl"]];
+            cameraDataId = [NSString safeNumber:reponseObject[@"id"]];
 //            [self startRtmp];
         } else {
             
@@ -574,7 +512,7 @@ static NSString *cellID = @"cellId";
     
 }
 
-- (void)groupSendMassage {
+- (void)groupSendMassage {//发送消息通知家长
    
     NSDictionary *parameter = @{@"access_token":@"0fc010d482d83c68ae2bfdf498ff108f",
                                 @"open_id":@"38fbb5cf11a22e96747eb07421056cce",
@@ -591,6 +529,26 @@ static NSString *cellID = @"cellId";
          [Progress progressShowcontent:@"通知家长失败了！！！"];
     }];
     
+}
+
+#pragma mark- 上传直播状态
+
+- (void)uploadZhiBoState:(BOOL) stop {//flag:1开始直播2关闭直播
+
+    NSDictionary *parameter = @{@"id":cameraDataId,
+                                @"flag":stop?@"2":@"1",
+                                @"classId":classId};
+    [WZBNetServiceAPI postZhiBoStateMessageWithParameters:parameter success:^(id reponseObject) {
+        if ([reponseObject[@"state"] intValue] == 1) {
+            NSLog(@"send zhibo state success!!!!!");
+        } else {
+            NSLog(@"send zhibo state failed!!!!!");
+        }
+    } failure:^(NSError *error) {
+        NSLog(@"send zhibo state failed!!!!!");
+
+    }];
+
 }
 
 - (void)alertViewSendMassageToPatriarch {
@@ -612,11 +570,28 @@ static NSString *cellID = @"cellId";
 }
 
 
-/*******************tableview*****************/
+/*******************create class name pickerview*****************/
 
 - (void)createCLassNamePickerView {
     _classView = [[NSBundle mainBundle] loadNibNamed:@"ClassNameView" owner:self options:nil].lastObject;
     _classView.hidden = YES;
+    _classView.userClassInfo = self.userClassInfo;
+    @WeakObj(_classNameLabel);
+    @WeakObj(self)
+    _classView.getClassInfo = ^(BOOL success, NSDictionary *userInfo, NSString *schoolI, NSString *schoolN){
+        if (success) {
+            classId = userInfo[@"classId"];
+            className = userInfo[@"className"];
+            schoolId = schoolI;
+            schoolName = schoolN;
+            _classNameLabelWeak.text = userInfo[@"className"];
+            [selfWeak showClassInfoTable:NO];
+            [selfWeak getPushInfo];//get push info
+
+        } else {
+            [selfWeak showClassInfoTable:NO];
+        }
+    };
     [self.view addSubview:_classView];
 }
 
@@ -632,16 +607,18 @@ static NSString *cellID = @"cellId";
 //            frame = CGRectMake(8, WIDTH - 55 -128, 200, 120);
 //
 //        }
-        
-        frame = CGRectMake(0, 0, 260, 160);
+        frame = CGRectMake(0, 0, 260, 130);
         [_classView.classPickerView reloadAllComponents];
+
+    } else {
+        frame = CGRectMake(0, 0, 260, 0);
 
     }
     _classView.hidden = !show;
     
     [UIView animateWithDuration:0.01 animations:^{
         _classView.frame = frame;
-        _classView.center = CGPointMake(SCREEN_WIDTH/2, SCREEN_HEIGHT/2);
+        _classView.center = CGPointMake(SCREEN_HEIGHT/2, SCREEN_WIDTH/2);
         
     }];
 }
@@ -649,24 +626,27 @@ static NSString *cellID = @"cellId";
 #pragma mark - show classInfo table
 - (void)showBottomView {
     
+    if (self.classView.hidden == NO) {
+        [Progress progressShowcontent:@"请选择班级！！！"];
+        return;
+    }
     CGRect frame = self.bottomView.frame;
     
-    if (self.bottomView.hidden) {
+    if (frame.origin.y > SCREEN_HEIGHT - 98 ) {
 //        if (_deviceOrientation == UIDeviceOrientationPortrait ||_deviceOrientation == UIDeviceOrientationUnknown) {
 //            frame = CGRectMake(8, WIDTH - 55 -208, 120, 200);
 //        } else {
 //            frame = CGRectMake(8, WIDTH - 55 -128, 200, 120);
 //            
 //        }
-        frame = CGRectMake(0, SCREEN_HEIGHT - 58, SCREEN_WIDTH , 58);
+        frame = CGRectMake(0, SCREEN_HEIGHT - 98, SCREEN_WIDTH , 98);
         
     } else {
-       frame = CGRectMake(0, SCREEN_HEIGHT - 8, SCREEN_WIDTH, 8);
+       frame = CGRectMake(0, SCREEN_HEIGHT - 48, SCREEN_WIDTH, 48);
     }
-    _classView.hidden = !_classView.hidden;
     
     [UIView animateWithDuration:0.01 animations:^{
-        _classView.frame = frame;
+        _bottomView.frame = frame;
     }];
     
 }
@@ -683,7 +663,7 @@ static NSString *cellID = @"cellId";
 -(void)rotation_icon:(float)n {
     [UIView animateWithDuration:0.55 animations:^{
 
-        self.classView.transform = CGAffineTransformMakeRotation(-n*M_PI/180.0);
+//        self.classView.transform = CGAffineTransformMakeRotation(-n*M_PI/180.0);
         self.topContentView.transform = CGAffineTransformMakeRotation(-n*M_PI/180.0);
         
         self.torchButton.transform = CGAffineTransformMakeRotation(-n*M_PI/180.0);
@@ -693,14 +673,14 @@ static NSString *cellID = @"cellId";
         self.traformCameraBtn.transform = CGAffineTransformMakeRotation(-n*M_PI/180.0);
         self.beautyBtn.transform = CGAffineTransformMakeRotation(-n*M_PI/180.0);
         self.rateLabel.transform = CGAffineTransformMakeRotation(-n*M_PI/180.0);
-        CGRect frame = _classView.frame;
-        if (_deviceOrientation == UIDeviceOrientationPortrait) {
-            frame = CGRectMake(8, WIDTH - 55 -208, 120, 200);
-        } else {
-            frame = CGRectMake(8, WIDTH - 55 -128, 200, 120);
-
-        }
-        _classView.frame = frame;
+//        CGRect frame = _classView.frame;
+//        if (_deviceOrientation == UIDeviceOrientationPortrait) {
+//            frame = CGRectMake(8, WIDTH - 55 -208, 120, 200);
+//        } else {
+//            frame = CGRectMake(8, WIDTH - 55 -128, 200, 120);
+//
+//        }
+//        _classView.frame = frame;
         
 
     }];
@@ -763,13 +743,11 @@ static NSString *cellID = @"cellId";
     }
 }
 
-
-
-
 /************toastTip*********/
+
 #pragma mark - toastTip
-- (void) toastTip:(NSString*)toastInfo
-{
+- (void) toastTip:(NSString*)toastInfo {
+    
     CGRect frameRC = [[UIScreen mainScreen] bounds];
     frameRC.origin.y = frameRC.size.height - 110;
     frameRC.size.height -= 110;
@@ -802,7 +780,7 @@ static NSString *cellID = @"cellId";
  @param Width 限制字符串显示区域的宽度
  @result float 返回的高度
  */
-- (float) heightForString:(UITextView *)textView andWidth:(float)width{
+- (float) heightForString:(UITextView *)textView andWidth:(float)width {
     CGSize sizeToFit = [textView sizeThatFits:CGSizeMake(width, MAXFLOAT)];
     return sizeToFit.height;
 }
@@ -842,8 +820,7 @@ static NSString *cellID = @"cellId";
     _classPickerView.showsSelectionIndicator=YES;
     _classPickerView.dataSource = self;
     _classPickerView.delegate = self;
-    
-    
+    [_classPickerView reloadAllComponents];
     
 }
 
@@ -855,7 +832,7 @@ static NSString *cellID = @"cellId";
 
 // pickerView 每列个数
 - (NSInteger)pickerView:(UIPickerView *)pickerView numberOfRowsInComponent:(NSInteger)component {
-    NSDictionary *schoolInfo = [NSDictionary safeDictionary:self.userClassInfo[component]];
+    NSDictionary *schoolInfo = [NSDictionary safeDictionary:self.userClassInfo.firstObject];
     return [NSArray safeArray:schoolInfo[@"classes"]].count;
 }
 #pragma Mark -- UIPickerViewDelegate
@@ -865,23 +842,31 @@ static NSString *cellID = @"cellId";
 }
 // 返回选中的行
 - (void)pickerView:(UIPickerView *)pickerView didSelectRow:(NSInteger)row inComponent:(NSInteger)component {
-    NSDictionary *schoolInfo = [NSDictionary safeDictionary:self.userClassInfo[component]];
+    NSDictionary *schoolInfo = [NSDictionary safeDictionary:self.userClassInfo.firstObject];
     NSDictionary *classInfo = [NSDictionary safeDictionary:[NSArray safeArray:schoolInfo[@"classes"]][row]];
     self.schoolName = [NSString safeString:schoolInfo[@"schoolName"]];
     self.schoolId = [NSString safeNumber:schoolInfo[@"schoolId"]];
     self.className = [NSString safeString:classInfo[@"className"]];
     self.classId = [NSString safeNumber:classInfo[@"classId"]];
-//    _classNameLabel.text = className;
-//    [self showClassInfoTable:NO];
-//    [self getPushInfo];//get push info
-
+    self.classInfo = [NSDictionary safeDictionary:classInfo];
 }
 
 //返回当前行的内容,此处是将数组中数值添加到滚动的那个显示栏上
--(NSString*)pickerView:(UIPickerView *)pickerView titleForRow:(NSInteger)row forComponent:(NSInteger)component {
-    NSDictionary *classInfo = [NSDictionary safeDictionary:[NSArray safeArray:[NSDictionary safeDictionary:self.userClassInfo[component]][@"classes"]][row]];
+//-(NSString *)pickerView:(UIPickerView *)pickerView titleForRow:(NSInteger)row forComponent:(NSInteger)component {
+//    NSDictionary *classInfo = [NSDictionary safeDictionary:[NSArray safeArray:[NSDictionary safeDictionary:self.userClassInfo.firstObject][@"classes"]][row]];
+//    
+//    return [NSString safeString:classInfo[@"className"]];
+//}
+
+- (UIView *)pickerView:(UIPickerView *)pickerView viewForRow:(NSInteger)row forComponent:(NSInteger)component reusingView:(UIView *)view {
+    UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, 260, 30)];
+    label.textAlignment = NSTextAlignmentCenter;
+    label.font = [UIFont systemFontOfSize:11];
+    NSDictionary *classInfo = [NSDictionary safeDictionary:[NSArray safeArray:[NSDictionary safeDictionary:self.userClassInfo.firstObject][@"classes"]][row]];
     
-    return [NSString safeString:classInfo[@"className"]];
+    label.text = [NSString safeString:classInfo[@"className"]];
+    return label;
+    
 }
 
 //- (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
@@ -903,14 +888,13 @@ static NSString *cellID = @"cellId";
 - (IBAction)selectedClassBtn:(UIButton *)sender {
     if (sender.tag == 1122) {//取消
         if (self.getClassInfo) {
-            self.getClassInfo(NO);
+            self.getClassInfo(NO,self.classInfo,_schoolId,_schoolName );
         }
 
     } else {//确定
         if (self.getClassInfo) {
-            self.getClassInfo(YES);
+            self.getClassInfo(YES,self.classInfo,_schoolId,_schoolName);
         }
-
     }
 }
 

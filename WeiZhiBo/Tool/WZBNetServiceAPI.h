@@ -41,4 +41,9 @@
 + (void)getWatchingNumberWithParameters:(id)parameters
                                 success:(void(^)(id reponseObject))success
                                 failure:(void(^)(NSError *error))failure;
+
+//上传直播状态
++ (void)postZhiBoStateMessageWithParameters:(id)parameters
+                                    success:(void(^)(id reponseObject))success
+                                    failure:(void(^)(NSError *error))failure;
 @end

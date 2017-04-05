@@ -37,9 +37,10 @@
 
 @property (strong, nonatomic) NSArray *userClassInfo;
 @property (strong, nonatomic) IBOutlet UIPickerView *classPickerView;
-@property (copy, nonatomic) void(^ getClassInfo)(BOOL success);
+@property (copy, nonatomic) void(^ getClassInfo)(BOOL success, NSDictionary *classInfo, NSString *schoolId, NSString *schoolName);
 @property (strong, nonatomic) NSString *className;
 @property (strong, nonatomic) NSString *classId;
 @property (strong, nonatomic) NSString *schoolName;
 @property (strong, nonatomic) NSString *schoolId;
+@property (strong, nonatomic) NSDictionary *classInfo;
 @end
