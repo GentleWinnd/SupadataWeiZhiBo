@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="11762" systemVersion="15G31" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
+    <device id="retina4_7" orientation="portrait">
+        <adaptation id="fullscreen"/>
+    </device>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="11757"/>
+        <capability name="Aspect ratio constraints" minToolsVersion="5.1"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <view contentMode="scaleToFill" id="iN0-l3-epB" customClass="ClassNameView">
+            <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+            <subviews>
+                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="eHo-VB-bPQ">
+                    <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                    <subviews>
+                        <pickerView contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="oB5-1x-Weo">
+                            <rect key="frame" x="0.0" y="0.0" width="375" height="631"/>
+                        </pickerView>
+                        <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="jX0-cg-adn">
+                            <rect key="frame" x="0.0" y="632" width="375" height="1"/>
+                            <color key="backgroundColor" red="0.96862745100000003" green="0.96862745100000003" blue="0.96862745100000003" alpha="1" colorSpace="calibratedRGB"/>
+                            <constraints>
+                                <constraint firstAttribute="height" constant="1" id="oqD-s0-BWW"/>
+                            </constraints>
+                        </view>
+                        <button opaque="NO" tag="1122" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="v9W-18-Vl8">
+                            <rect key="frame" x="22" y="634" width="46" height="30"/>
+                            <constraints>
+                                <constraint firstAttribute="width" constant="46" id="JfN-lo-koF"/>
+                                <constraint firstAttribute="width" secondItem="v9W-18-Vl8" secondAttribute="height" multiplier="23:15" id="OXj-id-Gvu"/>
+                                <constraint firstAttribute="height" constant="30" id="tGX-m5-8Ir"/>
+                            </constraints>
+                            <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                            <state key="normal" title="取消"/>
+                            <connections>
+                                <action selector="selectedClassBtn:" destination="iN0-l3-epB" eventType="touchUpInside" id="5Bz-KZ-Dxr"/>
+                            </connections>
+                        </button>
+                        <button opaque="NO" tag="2211" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Bok-VC-kJk">
+                            <rect key="frame" x="295" y="634" width="46" height="30"/>
+                            <constraints>
+                                <constraint firstAttribute="width" secondItem="Bok-VC-kJk" secondAttribute="height" multiplier="23:15" id="GXe-of-Skb"/>
+                            </constraints>
+                            <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                            <state key="normal" title="完成"/>
+                            <connections>
+                                <action selector="selectedClassBtn:" destination="iN0-l3-epB" eventType="touchUpInside" id="0Qr-vn-XSZ"/>
+                            </connections>
+                        </button>
+                    </subviews>
+                    <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                    <constraints>
+                        <constraint firstItem="Bok-VC-kJk" firstAttribute="height" secondItem="v9W-18-Vl8" secondAttribute="height" id="5pL-mw-e9l"/>
+                        <constraint firstItem="v9W-18-Vl8" firstAttribute="top" secondItem="oB5-1x-Weo" secondAttribute="bottom" constant="3" id="BkK-6C-Y1N"/>
+                        <constraint firstItem="oB5-1x-Weo" firstAttribute="top" secondItem="eHo-VB-bPQ" secondAttribute="top" id="BrT-r2-p7Q"/>
+                        <constraint firstItem="jX0-cg-adn" firstAttribute="leading" secondItem="eHo-VB-bPQ" secondAttribute="leading" id="QeY-bI-M8a"/>
+                        <constraint firstAttribute="trailing" secondItem="oB5-1x-Weo" secondAttribute="trailing" id="Ri2-tH-dPZ"/>
+                        <constraint firstItem="oB5-1x-Weo" firstAttribute="leading" secondItem="eHo-VB-bPQ" secondAttribute="leading" id="T44-dp-djP"/>
+                        <constraint firstItem="Bok-VC-kJk" firstAttribute="centerY" secondItem="v9W-18-Vl8" secondAttribute="centerY" id="UNs-eb-ksS"/>
+                        <constraint firstItem="v9W-18-Vl8" firstAttribute="leading" secondItem="eHo-VB-bPQ" secondAttribute="leading" constant="22" id="eLC-7Q-QtC"/>
+                        <constraint firstItem="jX0-cg-adn" firstAttribute="top" secondItem="oB5-1x-Weo" secondAttribute="bottom" constant="1" id="jOf-ZJ-zLS"/>
+                        <constraint firstAttribute="trailing" secondItem="jX0-cg-adn" secondAttribute="trailing" id="leU-0w-chA"/>
+                        <constraint firstItem="Bok-VC-kJk" firstAttribute="width" secondItem="v9W-18-Vl8" secondAttribute="width" id="nXs-ft-DxR"/>
+                        <constraint firstAttribute="trailing" secondItem="Bok-VC-kJk" secondAttribute="trailing" constant="34" id="nmW-aI-Qjq"/>
+                        <constraint firstAttribute="bottom" secondItem="v9W-18-Vl8" secondAttribute="bottom" constant="3" id="nmq-5P-cBe"/>
+                    </constraints>
+                </view>
+            </subviews>
+            <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <constraints>
+                <constraint firstAttribute="trailing" secondItem="eHo-VB-bPQ" secondAttribute="trailing" id="RbG-Yi-Dh2"/>
+                <constraint firstItem="eHo-VB-bPQ" firstAttribute="top" secondItem="iN0-l3-epB" secondAttribute="top" id="SIy-DU-Pu3"/>
+                <constraint firstAttribute="bottom" secondItem="eHo-VB-bPQ" secondAttribute="bottom" id="TpX-nQ-415"/>
+                <constraint firstItem="eHo-VB-bPQ" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" id="ljs-hf-2BG"/>
+            </constraints>
+            <connections>
+                <outlet property="classInfoView" destination="eHo-VB-bPQ" id="YP7-nr-qx9"/>
+                <outlet property="classPickerView" destination="oB5-1x-Weo" id="AQg-yB-Mrz"/>
+            </connections>
+        </view>
+    </objects>
+</document>

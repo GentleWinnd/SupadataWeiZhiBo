@@ -95,6 +95,11 @@
 		58C87C031E8CAC7C00A917FD /* reload.png in Resources */ = {isa = PBXBuildFile; fileRef = 58C87C021E8CAC7C00A917FD /* reload.png */; };
 		58C87C061E8CAD8500A917FD /* ReloadView.m in Sources */ = {isa = PBXBuildFile; fileRef = 58C87C051E8CAD8500A917FD /* ReloadView.m */; };
 		58C87C081E8CADAF00A917FD /* ReloadView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 58C87C071E8CADAF00A917FD /* ReloadView.xib */; };
+		58FA06081E94CB2000EFB656 /* shouqi@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 58FA06061E94CB2000EFB656 /* shouqi@2x.png */; };
+		58FA06091E94CB2000EFB656 /* shouqi@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 58FA06071E94CB2000EFB656 /* shouqi@3x.png */; };
+		58FA060C1E94CB7E00EFB656 /* shouqi@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 58FA060A1E94CB7E00EFB656 /* shouqi@2x.png */; };
+		58FA060D1E94CB7E00EFB656 /* shouqi@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 58FA060B1E94CB7E00EFB656 /* shouqi@3x.png */; };
+		58FA06121E94D78400EFB656 /* ClassNameView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 58FA06111E94D78400EFB656 /* ClassNameView.xib */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -270,6 +275,11 @@
 		58C87C041E8CAD8500A917FD /* ReloadView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ReloadView.h; sourceTree = "<group>"; };
 		58C87C051E8CAD8500A917FD /* ReloadView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ReloadView.m; sourceTree = "<group>"; };
 		58C87C071E8CADAF00A917FD /* ReloadView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ReloadView.xib; sourceTree = "<group>"; };
+		58FA06061E94CB2000EFB656 /* shouqi@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "shouqi@2x.png"; sourceTree = "<group>"; };
+		58FA06071E94CB2000EFB656 /* shouqi@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "shouqi@3x.png"; sourceTree = "<group>"; };
+		58FA060A1E94CB7E00EFB656 /* shouqi@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "shouqi@2x.png"; sourceTree = "<group>"; };
+		58FA060B1E94CB7E00EFB656 /* shouqi@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "shouqi@3x.png"; sourceTree = "<group>"; };
+		58FA06111E94D78400EFB656 /* ClassNameView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ClassNameView.xib; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -472,6 +482,7 @@
 				585EF4FB1E817E1300EC879F /* LogInViewController.m */,
 				58C87C041E8CAD8500A917FD /* ReloadView.h */,
 				58C87C051E8CAD8500A917FD /* ReloadView.m */,
+				58FA06111E94D78400EFB656 /* ClassNameView.xib */,
 				58C87C071E8CADAF00A917FD /* ReloadView.xib */,
 				5895850A1E84EF7100E4FAB7 /* SelectedClass */,
 				585EF4FC1E817E1300EC879F /* LogInViewController.xib */,
@@ -520,6 +531,10 @@
 		585EF4931E8173CF00EC879F /* WeizhiboIcon */ = {
 			isa = PBXGroup;
 			children = (
+				58FA060A1E94CB7E00EFB656 /* shouqi@2x.png */,
+				58FA060B1E94CB7E00EFB656 /* shouqi@3x.png */,
+				58FA06061E94CB2000EFB656 /* shouqi@2x.png */,
+				58FA06071E94CB2000EFB656 /* shouqi@3x.png */,
 				58C87C021E8CAC7C00A917FD /* reload.png */,
 				5824AFF31E860FC30083FA0F /* pause_publish.jpg */,
 				585EF4911E81721700EC879F /* BeautifulDaughter.png */,
@@ -804,25 +819,30 @@
 				58C87C081E8CADAF00A917FD /* ReloadView.xib in Resources */,
 				585EF46E1E816EF600EC879F /* LaunchScreen.storyboard in Resources */,
 				581683041E839FDD003F669F /* doing.png in Resources */,
+				58FA060C1E94CB7E00EFB656 /* shouqi@2x.png in Resources */,
 				581682FB1E839FD1003F669F /* set_n.png in Resources */,
 				581683051E839FDD003F669F /* no.png in Resources */,
 				581683061E839FDD003F669F /* START.png in Resources */,
 				581682FA1E839FD1003F669F /* secput.png in Resources */,
 				581682F51E839FD1003F669F /* hd.png in Resources */,
 				585EF4FE1E817E1300EC879F /* LogInViewController.xib in Resources */,
+				58FA06081E94CB2000EFB656 /* shouqi@2x.png in Resources */,
 				585EF4921E81721700EC879F /* BeautifulDaughter.png in Resources */,
 				581682F91E839FD1003F669F /* sec_n.png in Resources */,
 				58C87C011E8BB7EB00A917FD /* zhibo@3x.png in Resources */,
 				585EF46B1E816EF600EC879F /* Assets.xcassets in Resources */,
+				58FA060D1E94CB7E00EFB656 /* shouqi@3x.png in Resources */,
 				581682F61E839FD1003F669F /* open.png in Resources */,
 				581682F41E839FD1003F669F /* camero.png in Resources */,
 				58C87C001E8BB7EB00A917FD /* zhibo@2x.png in Resources */,
 				5824AFF41E860FC30083FA0F /* pause_publish.jpg in Resources */,
 				589585101E84EFC500E4FAB7 /* ClassNameTableViewCell.xib in Resources */,
 				581683031E839FDD003F669F /* class.png in Resources */,
+				58FA06091E94CB2000EFB656 /* shouqi@3x.png in Resources */,
 				581683071E839FDD003F669F /* STOP.png in Resources */,
 				581682FC1E839FD1003F669F /* set_s.png in Resources */,
 				58C87C031E8CAC7C00A917FD /* reload.png in Resources */,
+				58FA06121E94D78400EFB656 /* ClassNameView.xib in Resources */,
 				581682F31E839FD1003F669F /* backcamero.png in Resources */,
 				585EF4D41E8173CF00EC879F /* logo.png in Resources */,
 				585EF4661E816EF600EC879F /* Main.storyboard in Resources */,

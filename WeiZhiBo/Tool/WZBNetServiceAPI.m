@@ -107,7 +107,7 @@
                                   failure:(void(^)(NSError *error))failure {
     
     NSString *urlStr = [NSString stringWithFormat:@"Linevideo/sendMessage?access_token=%@&open_id=%@&flag=%@&classId=%@&className=%@",parameters[@"access_token"],parameters[@"open_id"],parameters[@"flag"],parameters[@"classId"],parameters[@"className"]];
-    NSString *URLString = [NSString stringWithFormat:@"%@%@", HOST_URL_TEST, urlStr];
+    NSString *URLString = [NSString stringWithFormat:@"%@%@", HOST_URL_LOCAL, urlStr];
     [KTMWebService CMGetWithURL:URLString parameters:nil sucess:^(id responseObject) {
         if (success) {
             success(responseObject);
