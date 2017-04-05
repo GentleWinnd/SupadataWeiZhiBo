@@ -23,7 +23,7 @@
 #import <VideoCore/VideoCore.h>
 #import <CoreMotion/CoreMotion.h>
 
-@interface ViewController ()<UITableViewDelegate, UITableViewDataSource,VCSessionDelegate>
+@interface ViewController ()<VCSessionDelegate>
 //手势
 @property (strong, nonatomic) IBOutlet UIPinchGestureRecognizer *pinchGesture;//缩放手势
 @property (strong, nonatomic) IBOutlet UITapGestureRecognizer *tapGesture;//点击手势
@@ -39,20 +39,26 @@
 
 @property (strong, nonatomic) IBOutlet UIView *cameraView;
 @property (strong, nonatomic) IBOutlet UIImageView *backImageView;
+
 @property (strong, nonatomic) IBOutlet UIButton *torchButton;//闪光灯
 @property (strong, nonatomic) IBOutlet NSLayoutConstraint *backViewHeight;
 @property (strong, nonatomic) IBOutlet NSLayoutConstraint *backViewWidth;
 @property (strong, nonatomic) IBOutlet UILabel *rateLabel;
 
 
+/************bttomView*********/
+@property (strong, nonatomic) IBOutlet NSLayoutConstraint *bottomViewHeight;
+@property (strong, nonatomic) IBOutlet NSLayoutConstraint *bottomViewSpace;
+@property (strong, nonatomic) IBOutlet UIButton *unfoldBtn;
+@property (weak, nonatomic) IBOutlet UIView *bottomView;
 
-@property (strong, nonatomic) IBOutlet UIView *classInfoView;
-@property (weak, nonatomic) IBOutlet UIPickerView *classPickerView;
-
-@property (strong, nonatomic) IBOutlet UITableView *classNameTable;
+@property (strong, nonatomic) IBOutlet UIView *classBackView;
 @property (strong, nonatomic) IBOutlet UIButton *classBtn;
 @property (strong, nonatomic) IBOutlet UIButton *playBtn;
 @property (strong, nonatomic) IBOutlet UIButton *traformCameraBtn;
+
+@property (strong, nonatomic) ClassNameView *classView;
+/********end******/
 
 @property (strong, nonatomic) IBOutlet UIView *topContentView;
 @property (strong, nonatomic) IBOutlet UIImageView *playingDotImgView;
@@ -60,7 +66,6 @@
 @property (strong, nonatomic) IBOutlet UILabel *classNameLabel;
 
 @property (assign, nonatomic) BOOL publish_switch;
-
 
 
 @end
@@ -88,7 +93,7 @@ static NSString *cellID = @"cellId";
     // Do any additional setup after loading the view, typically from a nib.
     [self initNeedData];
     [self setBaiDuSDK];
-    [self customTableView];
+    [self createCLassNamePickerView];
     [self initDeviceOrientation];
 }
 
@@ -118,9 +123,7 @@ static NSString *cellID = @"cellId";
     self.model = vmodel;
 
 }
-
-#pragma mark - selectedCLass
-- (IBAction)selectedClassBtn:(UIButton *)sender {
+- (IBAction)unfoldBtnClick:(UIButton *)sender {//显示或收起底部按钮栏
     
     
 }
@@ -210,7 +213,7 @@ static NSString *cellID = @"cellId";
         sender.selected = !sender.selected;
 
     } else {//选择班级
-        [self showClassInfoTable:_classNameTable.hidden];
+        [self showClassInfoTable:_classView.hidden];
     }
 
 }
@@ -611,106 +614,65 @@ static NSString *cellID = @"cellId";
 
 /*******************tableview*****************/
 
-- (void)customTableView {
-    _classNameTable = [[UITableView alloc] initWithFrame:CGRectMake(8, HEIGHT -  63 - 200, 120, 200) style:UITableViewStylePlain];
-    _classNameTable.delegate = self;
-    _classNameTable.dataSource = self;
-    [_classNameTable registerNib:[UINib nibWithNibName:@"ClassNameTableViewCell" bundle:nil] forCellReuseIdentifier:cellID];
-    _classNameTable.hidden = YES;
-    [self.backView addSubview:_classNameTable];
-    
+- (void)createCLassNamePickerView {
+    _classView = [[NSBundle mainBundle] loadNibNamed:@"ClassNameView" owner:self options:nil].lastObject;
+    _classView.hidden = YES;
+    [self.view addSubview:_classView];
 }
 
-#pragma mark - tableview
-
-- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
-    return self.userClassInfo.count;
-    
-}
-
-- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    NSArray *classArray = [NSArray safeArray:[NSDictionary safeDictionary:self.userClassInfo[section]][@"classes"]];
-    BOOL unfold = [unfoldInfo[[NSString stringWithFormat:@"%tu",section]] boolValue];
-    
-    return unfold == YES?0:classArray.count;
-}
-
-- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
-    return 28;
-}
-
-- (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
-    return 28;
-}
-
-- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-    ClassNameTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:cellID forIndexPath:indexPath];
-    NSDictionary *classInfo = [NSDictionary safeDictionary:[NSArray safeArray:[NSDictionary safeDictionary:self.userClassInfo[indexPath.section]][@"classes"]][indexPath.row]];
-    cell.classNameLabel.text = [NSString safeString:classInfo[@"className"]];
-    
-    return cell;
-    
-}
-
-- (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
-    
-    SchoolNameView *headerView = [[SchoolNameView alloc] initWithFrame:CGRectMake(0, 0, CGRectGetWidth(tableView.frame), 28)];
-    NSDictionary *schoolInfo = [NSDictionary safeDictionary:self.userClassInfo[section]];
-    headerView.schoolView.text = [NSString safeString:schoolInfo[@"schoolName"]];
-    headerView.tag = section;
-    
-    UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(unFoldCell:)];
-    [headerView addGestureRecognizer:tap];
-    
-    return headerView;
-    
-}
-
-- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-    NSDictionary *schoolInfo = [NSDictionary safeDictionary:self.userClassInfo[indexPath.section]];
-    NSDictionary *classInfo = [NSDictionary safeDictionary:[NSArray safeArray:schoolInfo[@"classes"]][indexPath.row]];
-    schoolName = [NSString safeString:schoolInfo[@"schoolName"]];
-    schoolId = [NSString safeNumber:schoolInfo[@"schoolId"]];
-    className = [NSString safeString:classInfo[@"className"]];
-    classId = [NSString safeNumber:classInfo[@"classId"]];
-    _classNameLabel.text = className;
-    [self showClassInfoTable:NO];
-    [self getPushInfo];//get push info
-    
-    
-}
-
-
-#pragma mark - unfold or fold cell
-- (void)unFoldCell:(UIGestureRecognizer *)gesture {
-    NSInteger section = gesture.view.tag;
-    NSString *indexStr = [NSString stringWithFormat:@"%tu",section];
-    BOOL fold = ![unfoldInfo[indexStr] boolValue];
-    [unfoldInfo setValue:[NSNumber numberWithBool:fold] forKey:indexStr];
-    [_classNameTable reloadData];
-    
-}
 
 #pragma mark - show classInfo table
 - (void)showClassInfoTable:(BOOL)show {
     
-    CGRect frame = _classNameTable.frame;
+    CGRect frame = _classView.frame;
     if (show) {
-        if (_deviceOrientation == UIDeviceOrientationPortrait ||_deviceOrientation == UIDeviceOrientationUnknown) {
-            frame = CGRectMake(8, WIDTH - 55 -208, 120, 200);
-        } else {
-            frame = CGRectMake(8, WIDTH - 55 -128, 200, 120);
+//        if (_deviceOrientation == UIDeviceOrientationPortrait ||_deviceOrientation == UIDeviceOrientationUnknown) {
+//            frame = CGRectMake(8, WIDTH - 55 -208, 120, 200);
+//        } else {
+//            frame = CGRectMake(8, WIDTH - 55 -128, 200, 120);
+//
+//        }
+        
+        frame = CGRectMake(0, 0, 260, 160);
+        [_classView.classPickerView reloadAllComponents];
 
-        }
-     
-        [_classNameTable reloadData];
     }
-    _classNameTable.hidden = !show;
+    _classView.hidden = !show;
     
     [UIView animateWithDuration:0.01 animations:^{
-        _classNameTable.frame = frame;
+        _classView.frame = frame;
+        _classView.center = CGPointMake(SCREEN_WIDTH/2, SCREEN_HEIGHT/2);
+        
     }];
 }
+
+#pragma mark - show classInfo table
+- (void)showBottomView {
+    
+    CGRect frame = self.bottomView.frame;
+    
+    if (self.bottomView.hidden) {
+//        if (_deviceOrientation == UIDeviceOrientationPortrait ||_deviceOrientation == UIDeviceOrientationUnknown) {
+//            frame = CGRectMake(8, WIDTH - 55 -208, 120, 200);
+//        } else {
+//            frame = CGRectMake(8, WIDTH - 55 -128, 200, 120);
+//            
+//        }
+        frame = CGRectMake(0, SCREEN_HEIGHT - 58, SCREEN_WIDTH , 58);
+        
+    } else {
+       frame = CGRectMake(0, SCREEN_HEIGHT - 8, SCREEN_WIDTH, 8);
+    }
+    _classView.hidden = !_classView.hidden;
+    
+    [UIView animateWithDuration:0.01 animations:^{
+        _classView.frame = frame;
+    }];
+    
+}
+
+
+
 
 #pragma mark - 
 
@@ -721,7 +683,7 @@ static NSString *cellID = @"cellId";
 -(void)rotation_icon:(float)n {
     [UIView animateWithDuration:0.55 animations:^{
 
-        self.classNameTable.transform = CGAffineTransformMakeRotation(-n*M_PI/180.0);
+        self.classView.transform = CGAffineTransformMakeRotation(-n*M_PI/180.0);
         self.topContentView.transform = CGAffineTransformMakeRotation(-n*M_PI/180.0);
         
         self.torchButton.transform = CGAffineTransformMakeRotation(-n*M_PI/180.0);
@@ -731,14 +693,14 @@ static NSString *cellID = @"cellId";
         self.traformCameraBtn.transform = CGAffineTransformMakeRotation(-n*M_PI/180.0);
         self.beautyBtn.transform = CGAffineTransformMakeRotation(-n*M_PI/180.0);
         self.rateLabel.transform = CGAffineTransformMakeRotation(-n*M_PI/180.0);
-        CGRect frame = _classNameTable.frame;
+        CGRect frame = _classView.frame;
         if (_deviceOrientation == UIDeviceOrientationPortrait) {
             frame = CGRectMake(8, WIDTH - 55 -208, 120, 200);
         } else {
             frame = CGRectMake(8, WIDTH - 55 -128, 200, 120);
 
         }
-        _classNameTable.frame = frame;
+        _classView.frame = frame;
         
 
     }];
@@ -854,6 +816,113 @@ static NSString *cellID = @"cellId";
 - (void)dealloc {
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
+
+
+@end
+
+/*******************classNameView****************/
+#pragma mark - classNameView
+
+@interface ClassNameView()<UIPickerViewDelegate, UIPickerViewDataSource>
+@property (strong, nonatomic) IBOutlet UIView *classInfoView;
+
+@end
+
+
+@implementation ClassNameView
+
+- (void)awakeFromNib {
+    [super awakeFromNib];
+    [self customCLassNamePickerView];
+    
+}
+
+- (void)customCLassNamePickerView {
+    // 显示选中框
+    _classPickerView.showsSelectionIndicator=YES;
+    _classPickerView.dataSource = self;
+    _classPickerView.delegate = self;
+    
+    
+    
+}
+
+#pragma Mark -- UIPickerViewDataSource
+// pickerView 列数
+- (NSInteger)numberOfComponentsInPickerView:(UIPickerView *)pickerView {
+    return 1;
+}
+
+// pickerView 每列个数
+- (NSInteger)pickerView:(UIPickerView *)pickerView numberOfRowsInComponent:(NSInteger)component {
+    NSDictionary *schoolInfo = [NSDictionary safeDictionary:self.userClassInfo[component]];
+    return [NSArray safeArray:schoolInfo[@"classes"]].count;
+}
+#pragma Mark -- UIPickerViewDelegate
+// 每列宽度
+- (CGFloat)pickerView:(UIPickerView *)pickerView widthForComponent:(NSInteger)component {
+    return 30;
+}
+// 返回选中的行
+- (void)pickerView:(UIPickerView *)pickerView didSelectRow:(NSInteger)row inComponent:(NSInteger)component {
+    NSDictionary *schoolInfo = [NSDictionary safeDictionary:self.userClassInfo[component]];
+    NSDictionary *classInfo = [NSDictionary safeDictionary:[NSArray safeArray:schoolInfo[@"classes"]][row]];
+    self.schoolName = [NSString safeString:schoolInfo[@"schoolName"]];
+    self.schoolId = [NSString safeNumber:schoolInfo[@"schoolId"]];
+    self.className = [NSString safeString:classInfo[@"className"]];
+    self.classId = [NSString safeNumber:classInfo[@"classId"]];
+//    _classNameLabel.text = className;
+//    [self showClassInfoTable:NO];
+//    [self getPushInfo];//get push info
+
+}
+
+//返回当前行的内容,此处是将数组中数值添加到滚动的那个显示栏上
+-(NSString*)pickerView:(UIPickerView *)pickerView titleForRow:(NSInteger)row forComponent:(NSInteger)component {
+    NSDictionary *classInfo = [NSDictionary safeDictionary:[NSArray safeArray:[NSDictionary safeDictionary:self.userClassInfo[component]][@"classes"]][row]];
+    
+    return [NSString safeString:classInfo[@"className"]];
+}
+
+//- (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
+//
+//    SchoolNameView *headerView = [[SchoolNameView alloc] initWithFrame:CGRectMake(0, 0, CGRectGetWidth(tableView.frame), 28)];
+//    NSDictionary *schoolInfo = [NSDictionary safeDictionary:self.userClassInfo[section]];
+//    headerView.schoolView.text = [NSString safeString:schoolInfo[@"schoolName"]];
+//    headerView.tag = section;
+//
+//    UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(unFoldCell:)];
+//    [headerView addGestureRecognizer:tap];
+//
+//    return headerView;
+//
+//}
+
+
+#pragma mark - selectedCLass
+- (IBAction)selectedClassBtn:(UIButton *)sender {
+    if (sender.tag == 1122) {//取消
+        if (self.getClassInfo) {
+            self.getClassInfo(NO);
+        }
+
+    } else {//确定
+        if (self.getClassInfo) {
+            self.getClassInfo(YES);
+        }
+
+    }
+}
+
+//#pragma mark - unfold or fold cell
+//- (void)unFoldCell:(UIGestureRecognizer *)gesture {
+//    NSInteger section = gesture.view.tag;
+//    NSString *indexStr = [NSString stringWithFormat:@"%tu",section];
+//    BOOL fold = ![unfoldInfo[indexStr] boolValue];
+//    [unfoldInfo setValue:[NSNumber numberWithBool:fold] forKey:indexStr];
+//    [_classNameTable reloadData];
+//    
+//}
 
 
 @end

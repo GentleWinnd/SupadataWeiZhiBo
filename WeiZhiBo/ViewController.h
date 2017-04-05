@@ -6,6 +6,7 @@
 //  Copyright © 2017年 YH. All rights reserved.
 //
 
+
 #import <UIKit/UIKit.h>
 #import <Foundation/Foundation.h>
 #import <AVFoundation/AVFoundation.h>
@@ -31,3 +32,14 @@
 
 @end
 
+
+@interface ClassNameView : UIView
+
+@property (strong, nonatomic) NSArray *userClassInfo;
+@property (strong, nonatomic) IBOutlet UIPickerView *classPickerView;
+@property (copy, nonatomic) void(^ getClassInfo)(BOOL success);
+@property (strong, nonatomic) NSString *className;
+@property (strong, nonatomic) NSString *classId;
+@property (strong, nonatomic) NSString *schoolName;
+@property (strong, nonatomic) NSString *schoolId;
+@end

@@ -9,7 +9,7 @@
 //接口地址：http://live.sch.supadata.cn/ssm/pc/phoneLogin
 #define HOST_URL @"http://live.sch.supadata.cn/ssm/"
 //#define HOST_URL @"http://live.sch.supadata.cn:9080/"
-#define HOST_URL_TEST @"http://baihongyu1234567.xicp.io/ssm/"
+#define HOST_URL_LOCAL @"http://baihongyu1234567.xicp.io/ssm/"
 
 #import <Foundation/Foundation.h>
 
