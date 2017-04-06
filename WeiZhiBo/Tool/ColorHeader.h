@@ -39,8 +39,8 @@
 
 #define MainEvaluColor_Green [@"#008040" toColor]
 
-
-
+#define MainBtnSelectedColor_lightBlue [@"#eaf7ff" toColor]
+#define MainColor_White [@"#ffffff" toColor]
 
 
 #endif /* ColorHeader_h */

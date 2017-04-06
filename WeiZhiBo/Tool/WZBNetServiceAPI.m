@@ -119,7 +119,23 @@
     }];
 }
 
-
+//上传直播状态
++ (void)postZhiBoStateMessageWithParameters:(id)parameters
+                                    success:(void(^)(id reponseObject))success
+                                    failure:(void(^)(NSError *error))failure {
+    
+    NSString *urlStr = [NSString stringWithFormat:@"rootSchool/liveNotice?id=%@&flag=%@&calssId=%@",parameters[@"id"],parameters[@"flag"],parameters[@"classid"]];
+    NSString *URLString = [NSString stringWithFormat:@"%@%@", HOST_URL_LOCAL, urlStr];
+    [KTMWebService CMGetWithURL:URLString parameters:nil sucess:^(id responseObject) {
+        if (success) {
+            success(responseObject);
+        }
+    } failure:^(NSError *error) {
+        if (failure) {
+            failure(error);
+        }
+    }];
+}
 
 
 

@@ -16,4 +16,15 @@
 #define APP_WIDTH [[UIScreen mainScreen]applicationFrame].size.width
 #define APP_HEIGHT [[UIScreen mainScreen]applicationFrame].size.height
 
+/**
+ Generate weakOject
+ 
+ @param o need weak object
+ @return weakObject
+ */
+#define WeakObj(o) autoreleasepool{} __weak typeof(o) o##Weak = o;
+
+#define StrongObj(o) autoreleasepool{} __strong typeof(o) o = o##Weak;
+
+
 #endif /* Header_h */
