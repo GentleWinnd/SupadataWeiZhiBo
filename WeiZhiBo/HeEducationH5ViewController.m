@@ -32,12 +32,26 @@
 - (void)customPlayBtn {
 
     UIButton *playBtn = [UIButton buttonWithType:UIButtonTypeCustom];
-    playBtn.frame = CGRectMake(SCREEN_WIDTH - 18 - 45, 25, 45, 45);
+    playBtn.frame = CGRectMake(SCREEN_WIDTH - 18 - 70, 25, 45, 45);
     [playBtn setImage:[UIImage imageNamed:@"zhibo"] forState:UIControlStateNormal];
     [playBtn addTarget:self action:@selector(playAction:) forControlEvents:UIControlEventTouchUpInside];
     playBtn.hidden = YES;
     playBtn.tag = 110;
     [self.view addSubview:playBtn];
+    
+    UIPanGestureRecognizer *pan = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(doHandlePanAction:)];
+    [playBtn addGestureRecognizer:pan];
+    
+}
+
+#pragma mark - pangesturehandle
+
+- (void) doHandlePanAction:(UIPanGestureRecognizer *)paramSender{
+    
+    CGPoint point = [paramSender translationInView:self.view];
+    NSLog(@"X:%f;Y:%f",point.x,point.y);
+    paramSender.view.center = CGPointMake(paramSender.view.center.x + point.x, paramSender.view.center.y + point.y);
+    [paramSender setTranslation:CGPointMake(0, 0) inView:self.view];
     
 }
 
@@ -64,7 +78,7 @@
 
 - (void)webViewDidStartLoad:(UIWebView *)webView {
     loadProgress = [[MBProgressManager alloc] init];
-    [loadProgress showProgress];
+    [loadProgress loadingWithTitleProgress:@"加载中！！！"];
     UIView *reloadView = [self.view viewWithTag:112];
     if (reloadView) {
         [reloadView removeFromSuperview];

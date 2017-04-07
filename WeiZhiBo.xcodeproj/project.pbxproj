@@ -774,7 +774,7 @@
 				TargetAttributes = {
 					585EF4571E816EF600EC879F = {
 						CreatedOnToolsVersion = 8.2;
-						DevelopmentTeam = A7TDR78QP9;
+						DevelopmentTeam = 45EEG7H946;
 						ProvisioningStyle = Automatic;
 					};
 					585EF4731E816EF600EC879F = {
@@ -1084,7 +1084,7 @@
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CODE_SIGN_IDENTITY = "iPhone Developer: youde wang (ZF7KM34YTL)";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				DEVELOPMENT_TEAM = A7TDR78QP9;
+				DEVELOPMENT_TEAM = 45EEG7H946;
 				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1093,13 +1093,15 @@
 				);
 				GCC_PREFIX_HEADER = "$(SRCROOT)/WeiZhiBo/PrefixHeader.pch";
 				INFOPLIST_FILE = WeiZhiBo/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.1;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.2;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				ONLY_ACTIVE_ARCH = NO;
 				PRODUCT_BUNDLE_IDENTIFIER = com.supadata.WeiZhiBo;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				TARGETED_DEVICE_FAMILY = 1;
+				VALID_ARCHS = "arm64 armv7";
 			};
 			name = Debug;
 		};
@@ -1110,7 +1112,7 @@
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CODE_SIGN_IDENTITY = "iPhone Distribution: Supadata (Beijing) Technology Co., Ltd. (45EEG7H946)";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				DEVELOPMENT_TEAM = A7TDR78QP9;
+				DEVELOPMENT_TEAM = 45EEG7H946;
 				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1119,13 +1121,15 @@
 				);
 				GCC_PREFIX_HEADER = "$(SRCROOT)/WeiZhiBo/PrefixHeader.pch";
 				INFOPLIST_FILE = WeiZhiBo/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.1;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.2;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				ONLY_ACTIVE_ARCH = NO;
 				PRODUCT_BUNDLE_IDENTIFIER = com.supadata.WeiZhiBo;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				TARGETED_DEVICE_FAMILY = 1;
+				VALID_ARCHS = "arm64 armv7";
 			};
 			name = Release;
 		};

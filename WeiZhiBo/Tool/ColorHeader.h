@@ -21,7 +21,7 @@
 #define ClassNameTextColor_PLightDark [@"#"]
 
 //line color
-#define RulesLineColor_LightGray [@"#e1e1e1" toColor]
+#define RulesLineColor_LightGray [@"#f4f4f4" toColor]
 #define RulesLineColor_DarkGray [@"#b2b2b2" toColor]
 
 
