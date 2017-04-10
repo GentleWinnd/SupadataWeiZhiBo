@@ -9,6 +9,9 @@
 #import <UIKit/UIKit.h>
 
 @interface HeEducationH5ViewController : UIViewController
+
 @property (nonatomic, strong) NSString *phoneNUM;
 @property (nonatomic, strong) NSArray *userClassInfo;
+@property (nonatomic, strong) NSString *userId;
+
 @end

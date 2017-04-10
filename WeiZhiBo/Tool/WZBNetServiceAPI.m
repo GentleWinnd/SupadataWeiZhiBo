@@ -16,7 +16,7 @@
                        success:(void(^)(id responseObject))success
                        failure:(void(^)(NSError *error))failure {
     NSString *urlStr = @"appInfo/login";
-    NSString *URLString = [NSString stringWithFormat:@"%@%@", HOST_URL_IN, urlStr];
+    NSString *URLString = [NSString stringWithFormat:@"%@%@", HOST_URL, urlStr];
     [KTMWebService CMGetWithURL:URLString parameters:parameters sucess:^(id responseObject) {
         if (success) {
             success(responseObject);

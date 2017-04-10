@@ -15,6 +15,7 @@
 @property (strong, nonatomic) IBOutlet UITextField *accountField;
 @property (strong, nonatomic) IBOutlet UITextField *passwordField;
 @property (strong, nonatomic) MBProgressManager *progressM;
+
 @end
 
 @implementation LogInViewController
@@ -45,7 +46,7 @@
                                 @"flag":@"2"};
     
     _progressM = [[MBProgressManager alloc] init];
-    [_progressM loadingWithTitleProgress:nil];
+    [_progressM loadingWithTitleProgress:@""];
     
    [WZBNetServiceAPI postLoginWithParameters:parameter success:^(id responseObject) {
        if ([responseObject[@"status"] intValue] == 1) {//登陆成功
@@ -119,6 +120,11 @@
                     }];
 }
 
+- (IBAction)securatyTextBtn:(UIButton *)sender {
+    _passwordField.secureTextEntry = sender.selected;
+    sender.selected = !sender.selected;
+    
+}
 
 
 - (void)didReceiveMemoryWarning {

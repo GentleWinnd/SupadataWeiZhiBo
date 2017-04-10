@@ -14,7 +14,7 @@
 // text color
 #define MainTextColor_Black [@"#202020" toColor]
 #define MainTextColor_DarkBlack [@"#333333" toColor]
-#define MaintextColor_LightBlack [@"#999999" toColor]
+#define MaintextColor_LightBlack [@"#999999" toColor] 
 
 #define ClassNameTextColor_Dark [@"#4c5d6a" toColor]
 #define ClassNameTextColor_LightDark [@"#6a7680" toColor]

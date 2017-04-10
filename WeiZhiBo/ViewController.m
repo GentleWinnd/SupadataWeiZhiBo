@@ -9,7 +9,6 @@
 #define  WIDTH CGRectGetWidth(self.view.frame)
 
 #import "ViewController.h"
-#import "ClassNameTableViewCell.h"
 #import "SchoolNameView.h"
 #import "NSString+Extension.h"
 #include "AFNetworkReachabilityManager.h"
@@ -43,14 +42,16 @@
 @property (strong, nonatomic) IBOutlet UIButton *torchButton;//闪光灯
 @property (strong, nonatomic) IBOutlet NSLayoutConstraint *backViewHeight;
 @property (strong, nonatomic) IBOutlet NSLayoutConstraint *backViewWidth;
-@property (strong, nonatomic) IBOutlet UILabel *rateLabel;
 
+/*************contentView**********/
+@property (strong, nonatomic) ContentView *CView;
+@property (strong, nonatomic) UILabel *classNameLabel;
 
 /************bttomView*********/
 @property (strong, nonatomic) IBOutlet NSLayoutConstraint *bottomViewHeight;
 @property (strong, nonatomic) IBOutlet NSLayoutConstraint *bottomViewSpace;
 @property (strong, nonatomic) IBOutlet UIButton *unfoldBtn;
-@property (weak, nonatomic) IBOutlet UIView *bottomView;
+@property (strong, nonatomic) IBOutlet UIView *bottomView;
 
 @property (strong, nonatomic) IBOutlet UIView *classBackView;
 @property (strong, nonatomic) IBOutlet UIButton *classBtn;
@@ -60,10 +61,6 @@
 @property (strong, nonatomic) ClassNameView *classView;
 /********end******/
 
-@property (strong, nonatomic) IBOutlet UIView *topContentView;
-@property (strong, nonatomic) IBOutlet UIImageView *playingDotImgView;
-@property (strong, nonatomic) IBOutlet UILabel *shotingTimeLable;
-@property (strong, nonatomic) IBOutlet UILabel *classNameLabel;
 
 @property (assign, nonatomic) BOOL publish_switch;
 
@@ -95,7 +92,11 @@ static NSString *cellID = @"cellId";
     // Do any additional setup after loading the view, typically from a nib.
     [self initNeedData];
     [self setBaiDuSDK];
+    [self createClassLabel];
+    [self createContentView];
     [self createCLassNamePickerView];
+
+    
 //    [self initDeviceOrientation];
 }
 
@@ -103,7 +104,7 @@ static NSString *cellID = @"cellId";
     currentRotation = 0;
     unfoldInfo = [NSMutableDictionary dictionaryWithCapacity:self.userClassInfo.count];
     
-    self.logPlayId.transform = CGAffineTransformMakeRotation(M_PI_2);
+//    self.logPlayId.transform = CGAffineTransformMakeRotation(M_PI_2);
     self.backView.transform = CGAffineTransformMakeRotation(- M_PI_2);
     self.backViewWidth.constant = SCREEN_WIDTH;
     self.backViewHeight.constant = SCREEN_HEIGHT;
@@ -113,6 +114,31 @@ static NSString *cellID = @"cellId";
     _beautySlider.transform = CGAffineTransformMakeRotation(M_PI_2);
     [_beautySlider setThumbImage:[UIImage imageNamed:@"heart"] forState:UIControlStateNormal];
     [self orientationChangedWithDeviceOrientation:UIDeviceOrientationLandscapeLeft];
+}
+
+#pragma mark - 创建班级label
+
+- (void)createClassLabel {
+    self.classNameLabel = [[UILabel alloc] initWithFrame:CGRectMake(20, SCREEN_HEIGHT/2, SCREEN_HEIGHT, 22)];
+    self.classNameLabel.textAlignment = NSTextAlignmentLeft;
+    self.classNameLabel.font = [UIFont systemFontOfSize:10];
+    self.classNameLabel.textColor = [UIColor whiteColor];
+    self.classNameLabel.text = @"请选择班级";
+    [self.backView addSubview:self.classNameLabel];
+    self.classNameLabel.transform = CGAffineTransformMakeRotation(M_PI_2);
+
+}
+
+#pragma mark - 创建contentView
+
+- (void)createContentView {
+    self.CView = [[NSBundle mainBundle] loadNibNamed:@"ContentView" owner:self options:nil].lastObject;
+    self.CView.frame = CGRectMake(SCREEN_WIDTH-60, 50, 120, 30);
+    self.CView.transform = CGAffineTransformMakeRotation(M_PI_2);
+    self.CView.hidden = YES;
+    
+    [self.backView addSubview:self.CView];
+
 }
 
 /*************************set baidu sdk**********************/
@@ -167,6 +193,7 @@ static NSString *cellID = @"cellId";
 
 - (IBAction)onDoubleTap:(id)sender {//双击手势
     [self.model zoomIn];
+    
 }
 
 #pragma mark - VCSessionDelegate
@@ -211,11 +238,10 @@ static NSString *cellID = @"cellId";
             }
 
             [self alertViewSendMassageToPatriarch];
-
         }
-        _playingDotImgView.hidden = sender.selected;
-        _shotingTimeLable.hidden = sender.selected;
         sender.selected = !sender.selected;
+        self.CView.hidden = !sender.selected;
+
 
     } else if (sender.tag == 2){//翻转摄像头
         [self.model switchCamera];
@@ -232,9 +258,9 @@ static NSString *cellID = @"cellId";
 #pragma mark - start push
 -(BOOL)startRtmp {
 //    NSString* rtmpUrl = @"rtmp://push.bcelive.com/live/ftqhgk3ch6wtwcvexu";//测试地址
+    [self.CView setHidden:NO];
     [self createTimer];
 
-    _rateLabel.hidden = NO;
     NSString *rtmpUrl = _pushUrl;
     //是否有摄像头权限
     AVAuthorizationStatus statusVideo = [AVCaptureDevice authorizationStatusForMediaType:AVMediaTypeVideo];
@@ -325,13 +351,16 @@ static NSString *cellID = @"cellId";
     int hourse = seconds/pow(60, 2);
     int second = seconds%60;
     
-    _shotingTimeLable.text = [NSString stringWithFormat:@"%02d:%02d:%02d",hourse,minutes,second];
+    self.CView.shotingTimeLable.text = [NSString stringWithFormat:@"%02d:%02d:%02d",hourse,minutes,second];
     double rate = [self.model.session getCurrentUploadBandwidthKbps];
-    _rateLabel.text = [NSString stringWithFormat:@"%.lf %@",rate,@"kb"];
+    self.CView.rateLabel.text = [NSString stringWithFormat:@"%.lf %@",rate,@"kb"];
     if (seconds == 38) {
         [self uploadZhiBoState:NO];
     }
-    _playingDotImgView.hidden = !_playingDotImgView.hidden;
+    self.CView.redDotImage.hidden = !self.CView.redDotImage.hidden;
+    if (seconds/5==0) {
+        [self getWacthPeopleNumber];
+    }
 }
 
 - (void)stopTimer {
@@ -361,6 +390,7 @@ static NSString *cellID = @"cellId";
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onAppWillEnterForeground:) name:UIApplicationWillEnterForegroundNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onAppDidBecomeActive:) name:UIApplicationDidBecomeActiveNotification object:nil];
 //    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(statusBarOrientationChanged:) name:UIApplicationDidChangeStatusBarOrientationNotification object:nil];
+    [Progress progressShowcontent:@"直播时请将手机横置" currView:self.view];
 }
 
 
@@ -514,6 +544,20 @@ static NSString *cellID = @"cellId";
 
 }
 
+- (void)getWacthPeopleNumber {
+    NSDictionary *parameter = @{@"id":@"d14d2d17e6c24a2086e6aa9d6060ea58"};
+    [WZBNetServiceAPI getWatchingNumberWithParameters:parameter success:^(id reponseObject) {
+        
+        if ([reponseObject[@"status"] integerValue] == 1) {
+            self.CView.watchLabel.text = [NSString safeString:reponseObject[@"data"][@"livePeople"]];
+            self.CView.thumbsUpLabel.text = [NSString safeString:reponseObject[@"data"][@"givePraise"]];
+        }
+    } failure:^(NSError *error) {
+        
+    }];
+
+}
+
 - (void)alertViewSendMassageToPatriarch {
     
     UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"提示" message:@"是否通知学生家长观看直播？" preferredStyle:UIAlertControllerStyleAlert];
@@ -649,15 +693,13 @@ static NSString *cellID = @"cellId";
     [UIView animateWithDuration:0.55 animations:^{
 
 //        self.classView.transform = CGAffineTransformMakeRotation(-n*M_PI/180.0);
-        self.topContentView.transform = CGAffineTransformMakeRotation(-n*M_PI/180.0);
         
         self.torchButton.transform = CGAffineTransformMakeRotation(-n*M_PI/180.0);
-        
         self.playBtn.transform = CGAffineTransformMakeRotation(-n*M_PI/180.0);
         self.classBtn.transform = CGAffineTransformMakeRotation(-n*M_PI/180.0);
         self.traformCameraBtn.transform = CGAffineTransformMakeRotation(-n*M_PI/180.0);
         self.beautyBtn.transform = CGAffineTransformMakeRotation(-n*M_PI/180.0);
-        self.rateLabel.transform = CGAffineTransformMakeRotation(-n*M_PI/180.0);
+        
 //        CGRect frame = _classView.frame;
 //        if (_deviceOrientation == UIDeviceOrientationPortrait) {
 //            frame = CGRectMake(8, WIDTH - 55 -208, 120, 200);
@@ -896,5 +938,14 @@ static NSString *cellID = @"cellId";
 //    
 //}
 
+
+@end
+
+@implementation ContentView
+
+- (void)awakeFromNib {
+
+    [super awakeFromNib];
+}
 
 @end
