@@ -14,6 +14,7 @@
 @interface LogInViewController ()<UITextFieldDelegate>
 @property (strong, nonatomic) IBOutlet UITextField *accountField;
 @property (strong, nonatomic) IBOutlet UITextField *passwordField;
+@property (strong, nonatomic) MBProgressManager *progressM;
 
 @end
 
@@ -22,8 +23,8 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view from its nib.
-    _accountField.text = @"0fc010d482d83c68ae2bfdf498ff108f";
-    _passwordField.text = @"38fbb5cf11a22e96747eb07421056cce";
+    _accountField.text = @"13770623329";
+    _passwordField.text = @"abc123";
 }
 
 
@@ -33,60 +34,61 @@
     NSString *pw = _passwordField.text;
     
     if (account.length == 0) {
-        [Progress progressShowcontent:@"请输入access_token"];
+        [Progress progressShowcontent:@"请输入手机号"];
         return;
     } else if (pw.length == 0) {
-        [Progress progressShowcontent:@"请输入open_id"];
+        [Progress progressShowcontent:@"请输入密码"];
         return;
     }
-    NSDictionary *parameter = @{@"access_token":account,
-                                                   @"open_id":pw};
-
-//    NSDictionary *parameter = @{@"phone":account,
-//                                @"password":pw};
     
-//    MBProgressManager *progressM = [[MBProgressManager alloc] init];
-//    [progressM loadingWithTitleProgress:nil];
-//    
-//   [WZBNetServiceAPI postLoginWithParameters:parameter success:^(id responseObject) {
-//       [progressM hiddenProgress];
-//       if ([responseObject[@"status"] intValue] == 1) {//登陆成功
-//           HeEducationH5ViewController *heView = [[HeEducationH5ViewController alloc] init];
-//           heView.userClassInfo = [NSArray safeArray:responseObject[@"data"][@"school"]];
-//           heView.phoneNUM = account;
-//           [self restoreRootViewController:heView];
-//           
-//       } else {
-//           [Progress progressShowcontent:@"账户或密码错误，请检查"];
-//       }
-//   } failure:^(NSError *error) {
-//       [progressM hiddenProgress];
-//       [KTMErrorHint showNetError:error inView:self.view];
-//       
-//   }];
-    [self loginByHeBaby:parameter];
+    NSDictionary *parameter = @{@"phone":account,
+                                @"password":pw,
+                                @"flag":@"2"};
+    
+    _progressM = [[MBProgressManager alloc] init];
+    [_progressM loadingWithTitleProgress:@""];
+    
+   [WZBNetServiceAPI postLoginWithParameters:parameter success:^(id responseObject) {
+       if ([responseObject[@"status"] intValue] == 1) {//登陆成功
+           NSDictionary *logInfo = [NSDictionary safeDictionary:responseObject[@"data"]];
+           [self loginByHeBaby:@{@"access_token":logInfo[@"uAccessToken"],
+                                 @"open_id":logInfo[@"uOpenId"]}];
+
+       } else {
+           [_progressM hiddenProgress];
+           [Progress progressShowcontent:@"账户或密码错误，请检查"];
+       }
+   } failure:^(NSError *error) {
+       [_progressM hiddenProgress];
+       [KTMErrorHint showNetError:error inView:self.view];
+       
+   }];
 }
 
 
 
 - (void)loginByHeBaby:(NSDictionary *) parameter {
     
-    MBProgressManager *progressM = [[MBProgressManager alloc] init];
-    [progressM loadingWithTitleProgress:nil];
     
     [WZBNetServiceAPI postLoginByHeBabyWithParameters:parameter success:^(id responseObject) {
-        [progressM hiddenProgress];
+        [_progressM hiddenProgress];
         if ([responseObject[@"status"] intValue] == 1) {//登陆成功
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [Progress progressShowcontent:@"登陆成功"];
+                
+            });
+
             HeEducationH5ViewController *heView = [[HeEducationH5ViewController alloc] init];
             heView.userClassInfo = [NSArray safeArray:responseObject[@"data"][@"school"]];
             heView.phoneNUM = responseObject[@"data"][@"user"][@"uId"];
+          
             [self restoreRootViewController:heView];
             
         } else {
             [Progress progressShowcontent:@"账户或密码错误，请检查"];
         }
     } failure:^(NSError *error) {
-        [progressM hiddenProgress];
+        [_progressM hiddenProgress];
         [KTMErrorHint showNetError:error inView:self.view];
         
     }];
@@ -113,9 +115,16 @@
                       duration:0.5f
                        options:UIViewAnimationOptionTransitionCrossDissolve
                     animations:animation
-                    completion:nil];
+                    completion:^(BOOL finished) {
+
+                    }];
 }
 
+- (IBAction)securatyTextBtn:(UIButton *)sender {
+    _passwordField.secureTextEntry = sender.selected;
+    sender.selected = !sender.selected;
+    
+}
 
 
 - (void)didReceiveMemoryWarning {

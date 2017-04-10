@@ -9,7 +9,6 @@
 #define  WIDTH CGRectGetWidth(self.view.frame)
 
 #import "ViewController.h"
-#import "ClassNameTableViewCell.h"
 #import "SchoolNameView.h"
 #import "NSString+Extension.h"
 #include "AFNetworkReachabilityManager.h"
@@ -43,14 +42,16 @@
 @property (strong, nonatomic) IBOutlet UIButton *torchButton;//闪光灯
 @property (strong, nonatomic) IBOutlet NSLayoutConstraint *backViewHeight;
 @property (strong, nonatomic) IBOutlet NSLayoutConstraint *backViewWidth;
-@property (strong, nonatomic) IBOutlet UILabel *rateLabel;
 
+/*************contentView**********/
+@property (strong, nonatomic) ContentView *CView;
+@property (strong, nonatomic) UILabel *classNameLabel;
 
 /************bttomView*********/
 @property (strong, nonatomic) IBOutlet NSLayoutConstraint *bottomViewHeight;
 @property (strong, nonatomic) IBOutlet NSLayoutConstraint *bottomViewSpace;
 @property (strong, nonatomic) IBOutlet UIButton *unfoldBtn;
-@property (weak, nonatomic) IBOutlet UIView *bottomView;
+@property (strong, nonatomic) IBOutlet UIView *bottomView;
 
 @property (strong, nonatomic) IBOutlet UIView *classBackView;
 @property (strong, nonatomic) IBOutlet UIButton *classBtn;
@@ -60,10 +61,6 @@
 @property (strong, nonatomic) ClassNameView *classView;
 /********end******/
 
-@property (strong, nonatomic) IBOutlet UIView *topContentView;
-@property (strong, nonatomic) IBOutlet UIImageView *playingDotImgView;
-@property (strong, nonatomic) IBOutlet UILabel *shotingTimeLable;
-@property (strong, nonatomic) IBOutlet UILabel *classNameLabel;
 
 @property (assign, nonatomic) BOOL publish_switch;
 
@@ -79,6 +76,7 @@ static NSString *cellID = @"cellId";
     NSString *schoolId;
     NSString *schoolName;
     NSString *cameraDataId;
+    CGFloat currentRotation;
     NSMutableDictionary *unfoldInfo;
     UIDeviceOrientation _deviceOrientation;
     CMMotionManager *motionManager;
@@ -94,14 +92,19 @@ static NSString *cellID = @"cellId";
     // Do any additional setup after loading the view, typically from a nib.
     [self initNeedData];
     [self setBaiDuSDK];
+    [self createClassLabel];
+    [self createContentView];
     [self createCLassNamePickerView];
-    [self initDeviceOrientation];
+
+    
+//    [self initDeviceOrientation];
 }
 
 - (void)initNeedData {
+    currentRotation = 0;
     unfoldInfo = [NSMutableDictionary dictionaryWithCapacity:self.userClassInfo.count];
     
-    self.logPlayId.transform = CGAffineTransformMakeRotation(M_PI_2);
+//    self.logPlayId.transform = CGAffineTransformMakeRotation(M_PI_2);
     self.backView.transform = CGAffineTransformMakeRotation(- M_PI_2);
     self.backViewWidth.constant = SCREEN_WIDTH;
     self.backViewHeight.constant = SCREEN_HEIGHT;
@@ -110,6 +113,32 @@ static NSString *cellID = @"cellId";
     [self.tapGesture requireGestureRecognizerToFail:self.doubleTapGesture];
     _beautySlider.transform = CGAffineTransformMakeRotation(M_PI_2);
     [_beautySlider setThumbImage:[UIImage imageNamed:@"heart"] forState:UIControlStateNormal];
+    [self orientationChangedWithDeviceOrientation:UIDeviceOrientationLandscapeLeft];
+}
+
+#pragma mark - 创建班级label
+
+- (void)createClassLabel {
+    self.classNameLabel = [[UILabel alloc] initWithFrame:CGRectMake(20, SCREEN_HEIGHT/2, SCREEN_HEIGHT, 22)];
+    self.classNameLabel.textAlignment = NSTextAlignmentLeft;
+    self.classNameLabel.font = [UIFont systemFontOfSize:10];
+    self.classNameLabel.textColor = [UIColor whiteColor];
+    self.classNameLabel.text = @"请选择班级";
+    [self.backView addSubview:self.classNameLabel];
+    self.classNameLabel.transform = CGAffineTransformMakeRotation(M_PI_2);
+
+}
+
+#pragma mark - 创建contentView
+
+- (void)createContentView {
+    self.CView = [[NSBundle mainBundle] loadNibNamed:@"ContentView" owner:self options:nil].lastObject;
+    self.CView.frame = CGRectMake(SCREEN_WIDTH-60, 50, 120, 30);
+    self.CView.transform = CGAffineTransformMakeRotation(M_PI_2);
+    self.CView.hidden = YES;
+    
+    [self.backView addSubview:self.CView];
+
 }
 
 /*************************set baidu sdk**********************/
@@ -118,7 +147,7 @@ static NSString *cellID = @"cellId";
 //    _pushUrl = @"rtmp://push.bcelive.com/live/ftqhgk3ch6wtwcvexu";
     StreamingViewModel* vmodel = [[StreamingViewModel alloc] initWithPushUrl:_pushUrl];
     
-    [vmodel setupSession:[self cameraOrientation] delegate:self];
+    [vmodel setupSession:AVCaptureVideoOrientationLandscapeRight delegate:self];
     [vmodel preview:_cameraView];
     [vmodel updateFrame:_cameraView];
     self.model = vmodel;
@@ -144,8 +173,9 @@ static NSString *cellID = @"cellId";
         _beautySlider.hidden = !sender.selected;
         
     } else {//返回
-        [self.navigationController popViewControllerAnimated:YES];
         [self clearLog];
+
+        [self.navigationController popViewControllerAnimated:NO];
     }
 }
 
@@ -163,6 +193,7 @@ static NSString *cellID = @"cellId";
 
 - (IBAction)onDoubleTap:(id)sender {//双击手势
     [self.model zoomIn];
+    
 }
 
 #pragma mark - VCSessionDelegate
@@ -171,7 +202,7 @@ static NSString *cellID = @"cellId";
     switch(sessionState) {
         case VCSessionStatePreviewStarted:
             break;
-        case VCSessionStateStarting:
+        case VCSessionStateStarting:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            
             NSLog(@"Current state is VCSessionStateStarting\n");
             break;
         case VCSessionStateStarted:
@@ -185,10 +216,10 @@ static NSString *cellID = @"cellId";
         case VCSessionStateEnded:
             NSLog(@"Current state is VCSessionStateEnded\n");
             [self.playBtn setBackgroundImage:[UIImage imageNamed:@"stream_background"] forState:UIControlStateNormal];
-            if (self.isBacking) {
-                [self.navigationController popViewControllerAnimated:YES];
-                self.isBacking = NO;
-            }
+//            if (self.isBacking) {
+//                [self.navigationController popViewControllerAnimated:YES];
+//                self.isBacking = NO;
+//            }
             break;
         default:
             break;
@@ -201,12 +232,16 @@ static NSString *cellID = @"cellId";
             [self stopRtmp];
 
         } else {//开始直播
-            [self alertViewSendMassageToPatriarch];
+            if (!([_pushUrl hasPrefix:@"rtmp://"] )) {
+                [self toastTip:@"请选择班级"];
+                return;
+            }
 
+            [self alertViewSendMassageToPatriarch];
         }
-        _playingDotImgView.hidden = sender.selected;
-        _shotingTimeLable.hidden = sender.selected;
         sender.selected = !sender.selected;
+        self.CView.hidden = !sender.selected;
+
 
     } else if (sender.tag == 2){//翻转摄像头
         [self.model switchCamera];
@@ -222,15 +257,11 @@ static NSString *cellID = @"cellId";
 
 #pragma mark - start push
 -(BOOL)startRtmp {
-    [self createTimer];
 //    NSString* rtmpUrl = @"rtmp://push.bcelive.com/live/ftqhgk3ch6wtwcvexu";//测试地址
-    _rateLabel.hidden = NO;
+    [self.CView setHidden:NO];
+    [self createTimer];
+
     NSString *rtmpUrl = _pushUrl;
-    if (!([rtmpUrl hasPrefix:@"rtmp://"] )) {
-        [self toastTip:@"推流地址不合法，目前支持rtmp推流!"];
-        return NO;
-    }
-    
     //是否有摄像头权限
     AVAuthorizationStatus statusVideo = [AVCaptureDevice authorizationStatusForMediaType:AVMediaTypeVideo];
     if (statusVideo == AVAuthorizationStatusDenied) {
@@ -257,14 +288,6 @@ static NSString *cellID = @"cellId";
 - (void)stopRtmp {
     self.isBacking = YES;
     BOOL result = [self.model back];
-//    dispatch_sync(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-//        //Update UI in UI thread here
-////            [_model.model.session.previewView removeFromSuperview];
-//        
-////            self.model = nil;
-// 
-//        
-//    });
     [self stopTimer];
     [[UIApplication sharedApplication] setIdleTimerDisabled:NO];
 }
@@ -274,27 +297,6 @@ static NSString *cellID = @"cellId";
     self.model = nil;
 }
 
-//- (void)rotateVC:(CGFloat)angle {
-//    CGSize screenSize = [UIScreen mainScreen].bounds.size;
-//    CGPoint center = CGPointMake(screenSize.width / 2, screenSize.height / 2);
-//    self.navigationController.view.center = center;
-//    CGAffineTransform transform = CGAffineTransformMakeRotation(angle);
-//    if (angle < 0) {
-//        transform = CGAffineTransformIdentity;
-//    }
-//    self.navigationController.view.transform = transform;
-//    
-//    CGRect bounds = CGRectMake(0, 0, screenSize.height , screenSize.width);
-//    if (angle < 0) {
-//        bounds = CGRectMake(0, 0, screenSize.width , screenSize.height);
-//    }
-//    
-//    self.navigationController.view.bounds = bounds;
-//}
-
-- (AVCaptureVideoOrientation)cameraOrientation {
-    return AVCaptureVideoOrientationLandscapeRight;
-}
 
 - (BOOL)prefersStatusBarHidden {
     return YES;
@@ -349,11 +351,15 @@ static NSString *cellID = @"cellId";
     int hourse = seconds/pow(60, 2);
     int second = seconds%60;
     
-    _shotingTimeLable.text = [NSString stringWithFormat:@"%02d:%02d:%02d",hourse,minutes,second];
+    self.CView.shotingTimeLable.text = [NSString stringWithFormat:@"%02d:%02d:%02d",hourse,minutes,second];
     double rate = [self.model.session getCurrentUploadBandwidthKbps];
-    _rateLabel.text = [NSString stringWithFormat:@"%.lf %@",rate,@"kb"];
+    self.CView.rateLabel.text = [NSString stringWithFormat:@"%.lf %@",rate,@"kb"];
     if (seconds == 38) {
         [self uploadZhiBoState:NO];
+    }
+    self.CView.redDotImage.hidden = !self.CView.redDotImage.hidden;
+    if (seconds/5==0) {
+        [self getWacthPeopleNumber];
     }
 }
 
@@ -383,8 +389,10 @@ static NSString *cellID = @"cellId";
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onAppDidEnterBackGround:) name:UIApplicationDidEnterBackgroundNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onAppWillEnterForeground:) name:UIApplicationWillEnterForegroundNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onAppDidBecomeActive:) name:UIApplicationDidBecomeActiveNotification object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(statusBarOrientationChanged:) name:UIApplicationDidChangeStatusBarOrientationNotification object:nil];
+//    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(statusBarOrientationChanged:) name:UIApplicationDidChangeStatusBarOrientationNotification object:nil];
+    [Progress progressShowcontent:@"直播时请将手机横置" currView:self.view];
 }
+
 
 /***************notice**************/
 //在低系统（如7.1.2）可能收不到这个回调，请在onAppDidEnterBackGround和onAppWillEnterForeground里面处理打断逻辑
@@ -392,31 +400,11 @@ static NSString *cellID = @"cellId";
     NSDictionary *info = notification.userInfo;
     AVAudioSessionInterruptionType type = [info[AVAudioSessionInterruptionTypeKey] unsignedIntegerValue];
     if (type == AVAudioSessionInterruptionTypeBegan) {
-    /*
-     if (_play_switch == YES && _appIsInterrupt == NO) {
-     if ([self isVODType:_playType]) {
-     if (!_videoPause) {
-     [_txLivePlayer pause];
-     }
-     }
-     _appIsInterrupt = YES;
-     }
-
-     */
+   
     } else {
         AVAudioSessionInterruptionOptions options = [info[AVAudioSessionInterruptionOptionKey] unsignedIntegerValue];
         if (options == AVAudioSessionInterruptionOptionShouldResume) {
-        /*
-         if (_play_switch == YES && _appIsInterrupt == YES) {
-         if ([self isVODType:_playType]) {
-         if (!_videoPause) {
-         [_txLivePlayer resume];
-         }
-         }
-         _appIsInterrupt = NO;
-         }
-
-         */
+     
         }
     }
 }
@@ -463,6 +451,8 @@ static NSString *cellID = @"cellId";
     [self.model.session setBeatyEffect:sender.value withSmooth:sender.value withPink:sender.value];
     
 }
+
+#pragma Mark - net service
 
 /****************selected school and class******************/
 
@@ -535,6 +525,9 @@ static NSString *cellID = @"cellId";
 
 - (void)uploadZhiBoState:(BOOL) stop {//flag:1开始直播2关闭直播
 
+    if (cameraDataId == nil || classId == nil) {
+        return;
+    }
     NSDictionary *parameter = @{@"id":cameraDataId,
                                 @"flag":stop?@"2":@"1",
                                 @"classId":classId};
@@ -551,12 +544,26 @@ static NSString *cellID = @"cellId";
 
 }
 
+- (void)getWacthPeopleNumber {
+    NSDictionary *parameter = @{@"id":@"d14d2d17e6c24a2086e6aa9d6060ea58"};
+    [WZBNetServiceAPI getWatchingNumberWithParameters:parameter success:^(id reponseObject) {
+        
+        if ([reponseObject[@"status"] integerValue] == 1) {
+            self.CView.watchLabel.text = [NSString safeString:reponseObject[@"data"][@"livePeople"]];
+            self.CView.thumbsUpLabel.text = [NSString safeString:reponseObject[@"data"][@"givePraise"]];
+        }
+    } failure:^(NSError *error) {
+        
+    }];
+
+}
+
 - (void)alertViewSendMassageToPatriarch {
     
     UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"提示" message:@"是否通知学生家长观看直播？" preferredStyle:UIAlertControllerStyleAlert];
     
     // 添加按钮
-    [alert addAction:[UIAlertAction actionWithTitle:@"是" style:UIAlertActionStyleDestructive handler:^(UIAlertAction *action) {
+    [alert addAction:[UIAlertAction actionWithTitle:@"是" style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
         [self startRtmp];
         [self groupSendMassage];
     }]];
@@ -564,6 +571,7 @@ static NSString *cellID = @"cellId";
     [alert addAction:[UIAlertAction actionWithTitle:@"否" style:UIAlertActionStyleCancel handler:^(UIAlertAction *action) {
         [self startRtmp];
     }]];
+    alert.view.subviews.firstObject.transform = CGAffineTransformMakeRotation(M_PI_2);
     
     [self presentViewController:alert animated:YES completion:nil];
     
@@ -576,15 +584,33 @@ static NSString *cellID = @"cellId";
     _classView = [[NSBundle mainBundle] loadNibNamed:@"ClassNameView" owner:self options:nil].lastObject;
     _classView.hidden = YES;
     _classView.userClassInfo = self.userClassInfo;
-    @WeakObj(_classNameLabel);
+    @WeakObj(_classNameLabel)
     @WeakObj(self)
+    
     _classView.getClassInfo = ^(BOOL success, NSDictionary *userInfo, NSString *schoolI, NSString *schoolN){
         if (success) {
-            classId = userInfo[@"classId"];
-            className = userInfo[@"className"];
+            
+            if ([[NSString safeNumber:userInfo[@"classId"]] isEqualToString:classId]) {
+                return ;
+            }
+            classId = [NSString safeNumber:userInfo[@"classId"]];
+            className = [NSString safeString:userInfo[@"className"]];
             schoolId = schoolI;
             schoolName = schoolN;
-            _classNameLabelWeak.text = userInfo[@"className"];
+            
+            if (classId.length == 0) {//ceshi
+                NSDictionary *schoolInfo = [NSDictionary safeDictionary:selfWeak.userClassInfo.firstObject];
+                NSDictionary *classInfo = [NSDictionary safeDictionary:[NSArray safeArray:schoolInfo[@"classes"]][0]];
+                schoolName = [NSString safeString:schoolInfo[@"schoolName"]];
+                schoolId = [NSString safeNumber:schoolInfo[@"schoolId"]];
+                className = [NSString safeString:classInfo[@"className"]];
+                classId = [NSString safeNumber:classInfo[@"classId"]];
+                _classNameLabelWeak.text = classInfo[@"className"];
+
+            } else {
+            
+                _classNameLabelWeak.text = userInfo[@"className"];
+            }
             [selfWeak showClassInfoTable:NO];
             [selfWeak getPushInfo];//get push info
 
@@ -592,6 +618,7 @@ static NSString *cellID = @"cellId";
             [selfWeak showClassInfoTable:NO];
         }
     };
+    [_classView.classPickerView reloadAllComponents];
     [self.view addSubview:_classView];
 }
 
@@ -607,11 +634,13 @@ static NSString *cellID = @"cellId";
 //            frame = CGRectMake(8, WIDTH - 55 -128, 200, 120);
 //
 //        }
-        frame = CGRectMake(0, 0, 260, 130);
+        
+        frame = CGRectMake(0, 0, 400, 250);
         [_classView.classPickerView reloadAllComponents];
+        [_classView.classPickerView selectRow:0 inComponent:0 animated:YES];
 
     } else {
-        frame = CGRectMake(0, 0, 260, 0);
+        frame = CGRectMake(0, 0, 400, 0);
 
     }
     _classView.hidden = !show;
@@ -664,15 +693,13 @@ static NSString *cellID = @"cellId";
     [UIView animateWithDuration:0.55 animations:^{
 
 //        self.classView.transform = CGAffineTransformMakeRotation(-n*M_PI/180.0);
-        self.topContentView.transform = CGAffineTransformMakeRotation(-n*M_PI/180.0);
         
         self.torchButton.transform = CGAffineTransformMakeRotation(-n*M_PI/180.0);
-        
         self.playBtn.transform = CGAffineTransformMakeRotation(-n*M_PI/180.0);
         self.classBtn.transform = CGAffineTransformMakeRotation(-n*M_PI/180.0);
         self.traformCameraBtn.transform = CGAffineTransformMakeRotation(-n*M_PI/180.0);
         self.beautyBtn.transform = CGAffineTransformMakeRotation(-n*M_PI/180.0);
-        self.rateLabel.transform = CGAffineTransformMakeRotation(-n*M_PI/180.0);
+        
 //        CGRect frame = _classView.frame;
 //        if (_deviceOrientation == UIDeviceOrientationPortrait) {
 //            frame = CGRectMake(8, WIDTH - 55 -208, 120, 200);
@@ -836,9 +863,9 @@ static NSString *cellID = @"cellId";
     return [NSArray safeArray:schoolInfo[@"classes"]].count;
 }
 #pragma Mark -- UIPickerViewDelegate
-// 每列宽度
-- (CGFloat)pickerView:(UIPickerView *)pickerView widthForComponent:(NSInteger)component {
-    return 30;
+
+- (CGFloat)pickerView:(UIPickerView *)pickerView rowHeightForComponent:(NSInteger)component {
+    return 45;
 }
 // 返回选中的行
 - (void)pickerView:(UIPickerView *)pickerView didSelectRow:(NSInteger)row inComponent:(NSInteger)component {
@@ -859,9 +886,12 @@ static NSString *cellID = @"cellId";
 //}
 
 - (UIView *)pickerView:(UIPickerView *)pickerView viewForRow:(NSInteger)row forComponent:(NSInteger)component reusingView:(UIView *)view {
-    UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, 260, 30)];
+    UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, 400, 45)];
     label.textAlignment = NSTextAlignmentCenter;
-    label.font = [UIFont systemFontOfSize:11];
+    label.font = [UIFont systemFontOfSize:15];
+    UIView *line = [[UIView alloc] initWithFrame:CGRectMake(0, 45, 400, 1)];
+    line.backgroundColor = RulesLineColor_LightGray;
+    [label addSubview:line];
     NSDictionary *classInfo = [NSDictionary safeDictionary:[NSArray safeArray:[NSDictionary safeDictionary:self.userClassInfo.firstObject][@"classes"]][row]];
     
     label.text = [NSString safeString:classInfo[@"className"]];
@@ -908,5 +938,14 @@ static NSString *cellID = @"cellId";
 //    
 //}
 
+
+@end
+
+@implementation ContentView
+
+- (void)awakeFromNib {
+
+    [super awakeFromNib];
+}
 
 @end

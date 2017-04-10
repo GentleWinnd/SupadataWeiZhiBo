@@ -33,6 +33,17 @@
 @end
 
 
+@interface ContentView : UIView
+@property (strong, nonatomic) IBOutlet UIImageView *redDotImage;
+
+@property (strong, nonatomic) IBOutlet UILabel *rateLabel;
+@property (strong, nonatomic) IBOutlet UILabel *thumbsUpLabel;
+@property (strong, nonatomic) IBOutlet UILabel *watchLabel;
+@property (strong, nonatomic) IBOutlet UILabel *shotingTimeLable;
+
+
+@end
+
 @interface ClassNameView : UIView
 
 @property (strong, nonatomic) NSArray *userClassInfo;
@@ -43,4 +54,5 @@
 @property (strong, nonatomic) NSString *schoolName;
 @property (strong, nonatomic) NSString *schoolId;
 @property (strong, nonatomic) NSDictionary *classInfo;
+
 @end

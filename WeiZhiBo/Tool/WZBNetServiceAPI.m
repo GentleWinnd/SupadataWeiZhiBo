@@ -15,7 +15,7 @@
 + (void)postLoginWithParameters:(id)parameters
                        success:(void(^)(id responseObject))success
                        failure:(void(^)(NSError *error))failure {
-    NSString *urlStr = @"pc/phoneLogin";
+    NSString *urlStr = @"appInfo/login";
     NSString *URLString = [NSString stringWithFormat:@"%@%@", HOST_URL, urlStr];
     [KTMWebService CMGetWithURL:URLString parameters:parameters sucess:^(id responseObject) {
         if (success) {
@@ -107,7 +107,7 @@
                                   failure:(void(^)(NSError *error))failure {
     
     NSString *urlStr = [NSString stringWithFormat:@"Linevideo/sendMessage?access_token=%@&open_id=%@&flag=%@&classId=%@&className=%@",parameters[@"access_token"],parameters[@"open_id"],parameters[@"flag"],parameters[@"classId"],parameters[@"className"]];
-    NSString *URLString = [NSString stringWithFormat:@"%@%@", HOST_URL_LOCAL, urlStr];
+    NSString *URLString = [NSString stringWithFormat:@"%@%@", HOST_URL, urlStr];
     [KTMWebService CMGetWithURL:URLString parameters:nil sucess:^(id responseObject) {
         if (success) {
             success(responseObject);
@@ -125,7 +125,7 @@
                                     failure:(void(^)(NSError *error))failure {
     
     NSString *urlStr = [NSString stringWithFormat:@"rootSchool/liveNotice?id=%@&flag=%@&calssId=%@",parameters[@"id"],parameters[@"flag"],parameters[@"classid"]];
-    NSString *URLString = [NSString stringWithFormat:@"%@%@", HOST_URL_LOCAL, urlStr];
+    NSString *URLString = [NSString stringWithFormat:@"%@%@", HOST_URL, urlStr];
     [KTMWebService CMGetWithURL:URLString parameters:nil sucess:^(id responseObject) {
         if (success) {
             success(responseObject);
