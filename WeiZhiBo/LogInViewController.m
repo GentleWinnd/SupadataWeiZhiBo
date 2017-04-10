@@ -15,6 +15,8 @@
 @property (strong, nonatomic) IBOutlet UITextField *accountField;
 @property (strong, nonatomic) IBOutlet UITextField *passwordField;
 @property (strong, nonatomic) MBProgressManager *progressM;
+@property (nonatomic, strong) NSString *accessToken;
+@property (nonatomic, strong) NSString *openId;
 
 @end
 
@@ -51,6 +53,8 @@
    [WZBNetServiceAPI postLoginWithParameters:parameter success:^(id responseObject) {
        if ([responseObject[@"status"] intValue] == 1) {//登陆成功
            NSDictionary *logInfo = [NSDictionary safeDictionary:responseObject[@"data"]];
+           self.accessToken = logInfo[@"uAccessToken"];
+           self.openId = logInfo[@"uOpenId"];
            [self loginByHeBaby:@{@"access_token":logInfo[@"uAccessToken"],
                                  @"open_id":logInfo[@"uOpenId"]}];
 
@@ -81,7 +85,9 @@
             HeEducationH5ViewController *heView = [[HeEducationH5ViewController alloc] init];
             heView.userClassInfo = [NSArray safeArray:responseObject[@"data"][@"school"]];
             heView.phoneNUM = responseObject[@"data"][@"user"][@"uId"];
-          
+            heView.accessToken = self.accessToken;
+            heView.openId = self.openId;
+            
             [self restoreRootViewController:heView];
             
         } else {

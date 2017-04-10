@@ -36,7 +36,7 @@
 - (void)customPlayBtn {
 
     UIButton *playBtn = [UIButton buttonWithType:UIButtonTypeCustom];
-    playBtn.frame = CGRectMake(SCREEN_WIDTH - 18 - 70, 25, 45, 45);
+    playBtn.frame = CGRectMake(SCREEN_WIDTH - 18 - 50, 30, 45, 45);
     [playBtn setImage:[UIImage imageNamed:@"zhibo"] forState:UIControlStateNormal];
     [playBtn addTarget:self action:@selector(playAction:) forControlEvents:UIControlEventTouchUpInside];
     playBtn.hidden = YES;
@@ -51,7 +51,7 @@
 - (void)createBackView {
     
     UIButton *backBtn = [UIButton buttonWithType:UIButtonTypeCustom];
-    backBtn.frame = CGRectMake(20, 25, 45, 45);
+    backBtn.frame = CGRectMake(15, 30, 45, 45);
     backBtn.backgroundColor = [UIColor whiteColor];
     backBtn.layer.cornerRadius = 45/2;
     
@@ -99,6 +99,8 @@
     ViewController *VC = [board instantiateViewControllerWithIdentifier:@"ViewController"];
     VC.userClassInfo = self.userClassInfo;
     VC.phoneNUM = self.phoneNUM;
+    VC.accessToken = self.accessToken;
+    VC.openId = self.openId;
 //    [self presentViewController:VC animated:YES completion:nil];
     [self.navigationController pushViewController:VC animated:YES];
 }

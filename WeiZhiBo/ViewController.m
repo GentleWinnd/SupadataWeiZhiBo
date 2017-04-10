@@ -11,6 +11,7 @@
 #import "ViewController.h"
 #import "SchoolNameView.h"
 #import "NSString+Extension.h"
+#import "ContentView.h"
 #include "AFNetworkReachabilityManager.h"
 #import "AppLogMgr.h"
 
@@ -21,6 +22,7 @@
 #import "StreamingViewModel.h"
 #import <VideoCore/VideoCore.h>
 #import <CoreMotion/CoreMotion.h>
+
 
 @interface ViewController ()<VCSessionDelegate>
 //手势
@@ -358,7 +360,7 @@ static NSString *cellID = @"cellId";
         [self uploadZhiBoState:NO];
     }
     self.CView.redDotImage.hidden = !self.CView.redDotImage.hidden;
-    if (seconds/5==0) {
+    if (seconds%5==0) {
         [self getWacthPeopleNumber];
     }
 }
@@ -504,11 +506,16 @@ static NSString *cellID = @"cellId";
 
 - (void)groupSendMassage {//发送消息通知家长
    
-    NSDictionary *parameter = @{@"access_token":@"0fc010d482d83c68ae2bfdf498ff108f",
-                                @"open_id":@"38fbb5cf11a22e96747eb07421056cce",
+//    NSDictionary *parameter = @{@"access_token":@"0fc010d482d83c68ae2bfdf498ff108f",
+//                                @"open_id":@"38fbb5cf11a22e96747eb07421056cce",
+//                                @"flag":@"1",
+//                                @"classId":@"10606073",
+//                                @"className":@"11111"};
+    NSDictionary *parameter = @{@"access_token":self.accessToken,
+                                @"open_id":self.openId,
                                 @"flag":@"1",
-                                @"classId":@"10606073",
-                                @"className":@"11111"};
+                                @"classId":classId,
+                                @"className":className};
     [WZBNetServiceAPI getGroupSendMassageWithParameters:parameter success:^(id reponseObject) {
         if ([reponseObject[@"status"] intValue] == 1) {
             [Progress progressShowcontent:@"已经通知家长了！！！"];
@@ -545,12 +552,15 @@ static NSString *cellID = @"cellId";
 }
 
 - (void)getWacthPeopleNumber {
-    NSDictionary *parameter = @{@"id":@"d14d2d17e6c24a2086e6aa9d6060ea58"};
+    NSDictionary *parameter = @{@"id":cameraDataId};
     [WZBNetServiceAPI getWatchingNumberWithParameters:parameter success:^(id reponseObject) {
         
         if ([reponseObject[@"status"] integerValue] == 1) {
-            self.CView.watchLabel.text = [NSString safeString:reponseObject[@"data"][@"livePeople"]];
-            self.CView.thumbsUpLabel.text = [NSString safeString:reponseObject[@"data"][@"givePraise"]];
+            int WNum = [[NSString safeString: [NSDictionary safeDictionary:reponseObject[@"data"]][@"livePeople"]] intValue];
+            self.CView.watchLabel.text = [NSString stringWithFormat:@"%d 人",WNum];
+            
+            int PNum = [[NSString safeNumber: [NSDictionary safeDictionary:reponseObject[@"data"]][@"givePraise"]] intValue];
+            self.CView.thumbsUpLabel.text = [NSString stringWithFormat:@"%d 人",PNum];
         }
     } failure:^(NSError *error) {
         
@@ -941,11 +951,4 @@ static NSString *cellID = @"cellId";
 
 @end
 
-@implementation ContentView
 
-- (void)awakeFromNib {
-
-    [super awakeFromNib];
-}
-
-@end

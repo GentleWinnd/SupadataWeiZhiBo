@@ -42,23 +42,18 @@
 		581683421E83A144003F669F /* MBProgressHUD.m in Sources */ = {isa = PBXBuildFile; fileRef = 5816833D1E83A144003F669F /* MBProgressHUD.m */; };
 		581683431E83A144003F669F /* MBProgressManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 5816833F1E83A144003F669F /* MBProgressManager.m */; };
 		581683441E83A144003F669F /* Progress.m in Sources */ = {isa = PBXBuildFile; fileRef = 581683411E83A144003F669F /* Progress.m */; };
-		581683471E83AD22003F669F /* libresolv.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 581683461E83AD22003F669F /* libresolv.tbd */; };
-		581683491E83AD2C003F669F /* libstdc++.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 581683481E83AD2C003F669F /* libstdc++.tbd */; };
 		5816834B1E83AD38003F669F /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5816834A1E83AD38003F669F /* AVFoundation.framework */; };
 		5816834D1E83AD45003F669F /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5816834C1E83AD45003F669F /* CoreMedia.framework */; };
 		5816834F1E83AD52003F669F /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5816834E1E83AD52003F669F /* CoreGraphics.framework */; };
-		581683511E83AD5D003F669F /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 581683501E83AD5D003F669F /* libz.tbd */; };
 		581683531E83AD68003F669F /* VideoToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 581683521E83AD68003F669F /* VideoToolbox.framework */; };
-		581683551E83AD72003F669F /* CoreTelephony.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 581683541E83AD72003F669F /* CoreTelephony.framework */; };
 		581683571E83AD7E003F669F /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 581683561E83AD7E003F669F /* SystemConfiguration.framework */; };
-		581683591E83AD9A003F669F /* libiconv.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 581683581E83AD9A003F669F /* libiconv.tbd */; };
 		581D07981E891F3600CB537E /* VideoCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 581D07971E891F3600CB537E /* VideoCore.framework */; };
 		581D07B61E89245500CB537E /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 581D07B51E89245500CB537E /* AudioToolbox.framework */; };
-		581D07B71E8926D800CB537E /* VideoCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 581D07971E891F3600CB537E /* VideoCore.framework */; };
 		581D07B81E8926D800CB537E /* VideoCore.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 581D07971E891F3600CB537E /* VideoCore.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		581D07CE1E89272900CB537E /* Defines.m in Sources */ = {isa = PBXBuildFile; fileRef = 581D07BD1E89272900CB537E /* Defines.m */; };
 		581D07D61E89272900CB537E /* StreamingViewModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 581D07CD1E89272900CB537E /* StreamingViewModel.m */; };
 		5824AFF41E860FC30083FA0F /* pause_publish.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 5824AFF31E860FC30083FA0F /* pause_publish.jpg */; };
+		58367BDE1E9BD492004CF4F1 /* ContentView.m in Sources */ = {isa = PBXBuildFile; fileRef = 58367BDD1E9BD492004CF4F1 /* ContentView.m */; };
 		585EF45D1E816EF600EC879F /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 585EF45C1E816EF600EC879F /* main.m */; };
 		585EF4601E816EF600EC879F /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 585EF45F1E816EF600EC879F /* AppDelegate.m */; };
 		585EF4631E816EF600EC879F /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 585EF4621E816EF600EC879F /* ViewController.m */; };
@@ -222,6 +217,8 @@
 		581D07CC1E89272900CB537E /* StreamingViewModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StreamingViewModel.h; sourceTree = "<group>"; };
 		581D07CD1E89272900CB537E /* StreamingViewModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = StreamingViewModel.m; sourceTree = "<group>"; };
 		5824AFF31E860FC30083FA0F /* pause_publish.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = pause_publish.jpg; sourceTree = "<group>"; };
+		58367BDC1E9BD492004CF4F1 /* ContentView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ContentView.h; sourceTree = "<group>"; };
+		58367BDD1E9BD492004CF4F1 /* ContentView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ContentView.m; sourceTree = "<group>"; };
 		585EF4581E816EF600EC879F /* WeiZhiBo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = WeiZhiBo.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		585EF45C1E816EF600EC879F /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		585EF45E1E816EF600EC879F /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
@@ -318,17 +315,11 @@
 			buildActionMask = 2147483647;
 			files = (
 				581D07B61E89245500CB537E /* AudioToolbox.framework in Frameworks */,
-				581D07B71E8926D800CB537E /* VideoCore.framework in Frameworks */,
-				581683591E83AD9A003F669F /* libiconv.tbd in Frameworks */,
 				581683571E83AD7E003F669F /* SystemConfiguration.framework in Frameworks */,
-				581683551E83AD72003F669F /* CoreTelephony.framework in Frameworks */,
 				581683531E83AD68003F669F /* VideoToolbox.framework in Frameworks */,
-				581683511E83AD5D003F669F /* libz.tbd in Frameworks */,
 				5816834F1E83AD52003F669F /* CoreGraphics.framework in Frameworks */,
 				5816834D1E83AD45003F669F /* CoreMedia.framework in Frameworks */,
 				5816834B1E83AD38003F669F /* AVFoundation.framework in Frameworks */,
-				581683491E83AD2C003F669F /* libstdc++.tbd in Frameworks */,
-				581683471E83AD22003F669F /* libresolv.tbd in Frameworks */,
 				581D07981E891F3600CB537E /* VideoCore.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -515,6 +506,8 @@
 				58FA06111E94D78400EFB656 /* ClassNameView.xib */,
 				58C87C071E8CADAF00A917FD /* ReloadView.xib */,
 				586ACE3F1E9B92D800B39FA1 /* ContentView.xib */,
+				58367BDC1E9BD492004CF4F1 /* ContentView.h */,
+				58367BDD1E9BD492004CF4F1 /* ContentView.m */,
 				5895850A1E84EF7100E4FAB7 /* SelectedClass */,
 				585EF4FC1E817E1300EC879F /* LogInViewController.xib */,
 				585EF4641E816EF600EC879F /* Main.storyboard */,
@@ -780,7 +773,7 @@
 				585EF4551E816EF600EC879F /* Frameworks */,
 				585EF4561E816EF600EC879F /* Resources */,
 				581D07B91E8926D800CB537E /* Embed Frameworks */,
-				585A7C981E8E6372008339D9 /* ShellScript */,
+				58367BD81E9BD189004CF4F1 /* ShellScript */,
 			);
 			buildRules = (
 			);
@@ -940,7 +933,7 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		585A7C981E8E6372008339D9 /* ShellScript */ = {
+		58367BD81E9BD189004CF4F1 /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -951,7 +944,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "APP_PATH=\"${TARGET_BUILD_DIR}/${WRAPPER_NAME}\"\n\n# This script loops through the frameworks embedded in the application and\n# removes unused architectures.\nfind \"$APP_PATH\" -name '*.framework' -type d | while read -r FRAMEWORK\ndo\nFRAMEWORK_EXECUTABLE_NAME=$(defaults read \"$FRAMEWORK/Info.plist\" CFBundleExecutable)\nFRAMEWORK_EXECUTABLE_PATH=\"$FRAMEWORK/$FRAMEWORK_EXECUTABLE_NAME\"\necho \"Executable is $FRAMEWORK_EXECUTABLE_PATH\"\n\nEXTRACTED_ARCHS=()\n\nfor ARCH in $ARCHS\ndo\necho \"Extracting $ARCH from $FRAMEWORK_EXECUTABLE_NAME\"\nlipo -extract \"$ARCH\" \"$FRAMEWORK_EXECUTABLE_PATH\" -o \"$FRAMEWORK_EXECUTABLE_PATH-$ARCH\"\nEXTRACTED_ARCHS+=(\"$FRAMEWORK_EXECUTABLE_PATH-$ARCH\")\ndone\n\necho \"Merging extracted architectures: ${ARCHS}\"\nlipo -o \"$FRAMEWORK_EXECUTABLE_PATH-merged\" -create \"${EXTRACTED_ARCHS[@]}\"\nrm \"${EXTRACTED_ARCHS[@]}\"\n\necho \"Replacing original executable with thinned version\"\nrm \"$FRAMEWORK_EXECUTABLE_PATH\"\nmv \"$FRAMEWORK_EXECUTABLE_PATH-merged\" \"$FRAMEWORK_EXECUTABLE_PATH\"\n\ndone\n\n";
+			shellScript = "APP_PATH=\"${TARGET_BUILD_DIR}/${WRAPPER_NAME}\"\n\n# This script loops through the frameworks embedded in the application and\n# removes unused architectures.\nfind \"$APP_PATH\" -name '*.framework' -type d | while read -r FRAMEWORK\ndo\nFRAMEWORK_EXECUTABLE_NAME=$(defaults read \"$FRAMEWORK/Info.plist\" CFBundleExecutable)\nFRAMEWORK_EXECUTABLE_PATH=\"$FRAMEWORK/$FRAMEWORK_EXECUTABLE_NAME\"\necho \"Executable is $FRAMEWORK_EXECUTABLE_PATH\"\n\nEXTRACTED_ARCHS=()\n\nfor ARCH in $ARCHS\ndo\necho \"Extracting $ARCH from $FRAMEWORK_EXECUTABLE_NAME\"\nlipo -extract \"$ARCH\" \"$FRAMEWORK_EXECUTABLE_PATH\" -o \"$FRAMEWORK_EXECUTABLE_PATH-$ARCH\"\nEXTRACTED_ARCHS+=(\"$FRAMEWORK_EXECUTABLE_PATH-$ARCH\")\ndone\n\necho \"Merging extracted architectures: ${ARCHS}\"\nlipo -o \"$FRAMEWORK_EXECUTABLE_PATH-merged\" -create \"${EXTRACTED_ARCHS[@]}\"\nrm \"${EXTRACTED_ARCHS[@]}\"\n\necho \"Replacing original executable with thinned version\"\nrm \"$FRAMEWORK_EXECUTABLE_PATH\"\nmv \"$FRAMEWORK_EXECUTABLE_PATH-merged\" \"$FRAMEWORK_EXECUTABLE_PATH\"\n\ndone";
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -982,6 +975,7 @@
 				585EF4601E816EF600EC879F /* AppDelegate.m in Sources */,
 				581683441E83A144003F669F /* Progress.m in Sources */,
 				589C58381E9B3471007D0EBB /* TPKeyboardAvoidingTableView.m in Sources */,
+				58367BDE1E9BD492004CF4F1 /* ContentView.m in Sources */,
 				581683351E83A079003F669F /* UIActivityIndicatorView+AFNetworking.m in Sources */,
 				581683341E83A079003F669F /* AFNetworkActivityIndicatorManager.m in Sources */,
 				589C58451E9B557E007D0EBB /* WebViewJavascriptBridgeBase.m in Sources */,
@@ -1177,7 +1171,7 @@
 				PROVISIONING_PROFILE = "";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				TARGETED_DEVICE_FAMILY = 1;
-				VALID_ARCHS = "arm64 armv7 armv7s";
+				VALID_ARCHS = "arm64 armv7";
 			};
 			name = Debug;
 		};
@@ -1205,7 +1199,7 @@
 				PROVISIONING_PROFILE = "";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				TARGETED_DEVICE_FAMILY = 1;
-				VALID_ARCHS = "arm64 armv7 armv7s";
+				VALID_ARCHS = "arm64 armv7";
 			};
 			name = Release;
 		};
