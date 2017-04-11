@@ -27,22 +27,12 @@
 }
 @property (strong, nonatomic) NSArray *userClassInfo;
 @property (strong, nonatomic) NSString *phoneNUM;
-@property(nonatomic, strong) StreamingViewModel* model;
-
-
-@end
-
-
-@interface ContentView : UIView
-@property (strong, nonatomic) IBOutlet UIImageView *redDotImage;
-
-@property (strong, nonatomic) IBOutlet UILabel *rateLabel;
-@property (strong, nonatomic) IBOutlet UILabel *thumbsUpLabel;
-@property (strong, nonatomic) IBOutlet UILabel *watchLabel;
-@property (strong, nonatomic) IBOutlet UILabel *shotingTimeLable;
-
+@property (nonatomic, strong) StreamingViewModel* model;
+@property (nonatomic, strong) NSString *accessToken;
+@property (nonatomic, strong) NSString *openId;
 
 @end
+
 
 @interface ClassNameView : UIView
 
