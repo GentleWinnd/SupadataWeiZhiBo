@@ -121,7 +121,7 @@ static NSString *cellID = @"cellId";
 #pragma mark - 创建班级label
 
 - (void)createClassLabel {
-    self.classNameLabel = [[UILabel alloc] initWithFrame:CGRectMake(20, SCREEN_HEIGHT/2, SCREEN_HEIGHT, 22)];
+    self.classNameLabel = [[UILabel alloc] initWithFrame:CGRectMake(20, SCREEN_HEIGHT/2+20, SCREEN_HEIGHT, 22)];
     self.classNameLabel.textAlignment = NSTextAlignmentLeft;
     self.classNameLabel.font = [UIFont systemFontOfSize:10];
     self.classNameLabel.textColor = [UIColor whiteColor];
@@ -250,7 +250,7 @@ static NSString *cellID = @"cellId";
         sender.selected = !sender.selected;
 
     } else {//选择班级
-        self.classBackView.backgroundColor = _classView.hidden?MainColor_White:MainBtnSelectedColor_lightBlue;
+        self.classBackView.backgroundColor = !_classView.hidden?MainColor_White:MainBtnSelectedColor_lightBlue;
         [self showClassInfoTable:_classView.hidden];
     }
 
