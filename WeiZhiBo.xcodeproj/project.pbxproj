@@ -54,6 +54,8 @@
 		581D07D61E89272900CB537E /* StreamingViewModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 581D07CD1E89272900CB537E /* StreamingViewModel.m */; };
 		5824AFF41E860FC30083FA0F /* pause_publish.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 5824AFF31E860FC30083FA0F /* pause_publish.jpg */; };
 		58367BDE1E9BD492004CF4F1 /* ContentView.m in Sources */ = {isa = PBXBuildFile; fileRef = 58367BDD1E9BD492004CF4F1 /* ContentView.m */; };
+		584C5BBC1E9C8AE7006D8AE6 /* dianzan@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 584C5BBA1E9C8AE7006D8AE6 /* dianzan@2x.png */; };
+		584C5BBD1E9C8AE7006D8AE6 /* dianzan@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 584C5BBB1E9C8AE7006D8AE6 /* dianzan@3x.png */; };
 		585EF45D1E816EF600EC879F /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 585EF45C1E816EF600EC879F /* main.m */; };
 		585EF4601E816EF600EC879F /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 585EF45F1E816EF600EC879F /* AppDelegate.m */; };
 		585EF4631E816EF600EC879F /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 585EF4621E816EF600EC879F /* ViewController.m */; };
@@ -92,8 +94,6 @@
 		589C58441E9B557E007D0EBB /* WebViewJavascriptBridge_JS.m in Sources */ = {isa = PBXBuildFile; fileRef = 589C583E1E9B557E007D0EBB /* WebViewJavascriptBridge_JS.m */; };
 		589C58451E9B557E007D0EBB /* WebViewJavascriptBridgeBase.m in Sources */ = {isa = PBXBuildFile; fileRef = 589C58401E9B557E007D0EBB /* WebViewJavascriptBridgeBase.m */; };
 		589C58461E9B557E007D0EBB /* WKWebViewJavascriptBridge.m in Sources */ = {isa = PBXBuildFile; fileRef = 589C58421E9B557E007D0EBB /* WKWebViewJavascriptBridge.m */; };
-		589C584B1E9B7627007D0EBB /* dianzan@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 589C58471E9B7627007D0EBB /* dianzan@2x.png */; };
-		589C584C1E9B7627007D0EBB /* dianzan@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 589C58481E9B7627007D0EBB /* dianzan@3x.png */; };
 		589C584D1E9B7627007D0EBB /* yigunkan-@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 589C58491E9B7627007D0EBB /* yigunkan-@2x.png */; };
 		589C584E1E9B7627007D0EBB /* yigunkan-@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 589C584A1E9B7627007D0EBB /* yigunkan-@3x.png */; };
 		58C87BFB1E8B9BE000A917FD /* HeEducationH5ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 58C87BF91E8B9BE000A917FD /* HeEducationH5ViewController.m */; };
@@ -219,6 +219,8 @@
 		5824AFF31E860FC30083FA0F /* pause_publish.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = pause_publish.jpg; sourceTree = "<group>"; };
 		58367BDC1E9BD492004CF4F1 /* ContentView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ContentView.h; sourceTree = "<group>"; };
 		58367BDD1E9BD492004CF4F1 /* ContentView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ContentView.m; sourceTree = "<group>"; };
+		584C5BBA1E9C8AE7006D8AE6 /* dianzan@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "dianzan@2x.png"; sourceTree = "<group>"; };
+		584C5BBB1E9C8AE7006D8AE6 /* dianzan@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "dianzan@3x.png"; sourceTree = "<group>"; };
 		585EF4581E816EF600EC879F /* WeiZhiBo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = WeiZhiBo.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		585EF45C1E816EF600EC879F /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		585EF45E1E816EF600EC879F /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
@@ -290,8 +292,6 @@
 		589C58401E9B557E007D0EBB /* WebViewJavascriptBridgeBase.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WebViewJavascriptBridgeBase.m; sourceTree = "<group>"; };
 		589C58411E9B557E007D0EBB /* WKWebViewJavascriptBridge.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WKWebViewJavascriptBridge.h; sourceTree = "<group>"; };
 		589C58421E9B557E007D0EBB /* WKWebViewJavascriptBridge.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WKWebViewJavascriptBridge.m; sourceTree = "<group>"; };
-		589C58471E9B7627007D0EBB /* dianzan@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "dianzan@2x.png"; sourceTree = "<group>"; };
-		589C58481E9B7627007D0EBB /* dianzan@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "dianzan@3x.png"; sourceTree = "<group>"; };
 		589C58491E9B7627007D0EBB /* yigunkan-@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "yigunkan-@2x.png"; sourceTree = "<group>"; };
 		589C584A1E9B7627007D0EBB /* yigunkan-@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "yigunkan-@3x.png"; sourceTree = "<group>"; };
 		58C87BF81E8B9BE000A917FD /* HeEducationH5ViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HeEducationH5ViewController.h; sourceTree = "<group>"; };
@@ -749,10 +749,10 @@
 		58C87BFD1E8BB7D600A917FD /* ImageFile */ = {
 			isa = PBXGroup;
 			children = (
+				584C5BBA1E9C8AE7006D8AE6 /* dianzan@2x.png */,
+				584C5BBB1E9C8AE7006D8AE6 /* dianzan@3x.png */,
 				589C58241E9B1FBA007D0EBB /* eyeclosed.png */,
 				589C58251E9B1FBA007D0EBB /* eyeopened.png */,
-				589C58471E9B7627007D0EBB /* dianzan@2x.png */,
-				589C58481E9B7627007D0EBB /* dianzan@3x.png */,
 				589C58491E9B7627007D0EBB /* yigunkan-@2x.png */,
 				589C584A1E9B7627007D0EBB /* yigunkan-@3x.png */,
 				585EF4931E8173CF00EC879F /* WeizhiboIcon */,
@@ -882,10 +882,10 @@
 				581683051E839FDD003F669F /* no.png in Resources */,
 				581683061E839FDD003F669F /* START.png in Resources */,
 				581682FA1E839FD1003F669F /* secput.png in Resources */,
+				584C5BBC1E9C8AE7006D8AE6 /* dianzan@2x.png in Resources */,
 				581682F51E839FD1003F669F /* hd.png in Resources */,
 				585EF4FE1E817E1300EC879F /* LogInViewController.xib in Resources */,
 				58FA06081E94CB2000EFB656 /* shouqi@2x.png in Resources */,
-				589C584C1E9B7627007D0EBB /* dianzan@3x.png in Resources */,
 				585EF4921E81721700EC879F /* BeautifulDaughter.png in Resources */,
 				581682F91E839FD1003F669F /* sec_n.png in Resources */,
 				58C87C011E8BB7EB00A917FD /* zhibo@3x.png in Resources */,
@@ -898,10 +898,10 @@
 				5824AFF41E860FC30083FA0F /* pause_publish.jpg in Resources */,
 				581683031E839FDD003F669F /* class.png in Resources */,
 				589C58271E9B1FBA007D0EBB /* eyeopened.png in Resources */,
+				584C5BBD1E9C8AE7006D8AE6 /* dianzan@3x.png in Resources */,
 				58FA06091E94CB2000EFB656 /* shouqi@3x.png in Resources */,
 				581683071E839FDD003F669F /* STOP.png in Resources */,
 				581682FC1E839FD1003F669F /* set_s.png in Resources */,
-				589C584B1E9B7627007D0EBB /* dianzan@2x.png in Resources */,
 				58C87C031E8CAC7C00A917FD /* reload.png in Resources */,
 				58FA06121E94D78400EFB656 /* ClassNameView.xib in Resources */,
 				581682F31E839FD1003F669F /* backcamero.png in Resources */,

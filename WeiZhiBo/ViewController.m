@@ -250,7 +250,7 @@ static NSString *cellID = @"cellId";
         sender.selected = !sender.selected;
 
     } else {//选择班级
-        self.classBackView.backgroundColor = !_classView.hidden?MainColor_White:MainBtnSelectedColor_lightBlue;
+//        self.classBackView.backgroundColor = !_classView.hidden?MainColor_White:MainBtnSelectedColor_lightBlue;
         [self showClassInfoTable:_classView.hidden];
     }
 
@@ -537,7 +537,9 @@ static NSString *cellID = @"cellId";
     }
     NSDictionary *parameter = @{@"id":cameraDataId,
                                 @"flag":stop?@"2":@"1",
-                                @"classId":classId};
+                                @"classId":classId,
+                                @"sumTime":stop?[NSNumber numberWithInt:seconds]:@"",
+                                @"userId":self.phoneNUM};
     [WZBNetServiceAPI postZhiBoStateMessageWithParameters:parameter success:^(id reponseObject) {
         if ([reponseObject[@"state"] intValue] == 1) {
             NSLog(@"send zhibo state success!!!!!");
@@ -658,7 +660,8 @@ static NSString *cellID = @"cellId";
     [UIView animateWithDuration:0.01 animations:^{
         _classView.frame = frame;
         _classView.center = CGPointMake(SCREEN_HEIGHT/2, SCREEN_WIDTH/2);
-        
+        self.classBackView.backgroundColor = _classView.hidden?MainColor_White:MainBtnSelectedColor_lightBlue;
+
     }];
 }
 

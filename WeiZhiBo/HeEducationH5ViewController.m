@@ -119,8 +119,8 @@
 //    [bridge callHandler:<#(NSString *)#> data:<#(id)#>];
 //    [webView loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:@"http://live.sch.supadata.cn/ssm//resource/html/teacher/?user=630584331#/tab/camera"]]];
 //   [webView loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:@"http://192.168.1.149:8080/ssm/resource/html/teacher/?user=630584331/tab/camera"]]];
-//    [webView loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:@"http://wangjunwei.uicp.io:8080/ssm/resource/html/teacher/?user=630584331/tab/camera"]]];
-    [webView loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"http://live.sch.supadata.cn/ssm//resource/html/teacher/?user=%@#/tab/camera",self.phoneNUM]]]];
+    [webView loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:@"http://wangjunwei.uicp.io:8080/ssm/resource/html/teacher/?user=630584331#/tab/camera"]]];
+//    [webView loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"http://live.sch.supadata.cn/ssm//resource/html/teacher/?user=%@#/tab/camera",self.phoneNUM]]]];
     //http://193.168.1.149:8080/ssm/resource/html/teacher/?user=630584331/tab/camera
     //http://wangjunwei.uicp.io:8080/ssm/resource/html/teacher/?user=630584331/tab/camera
     [self.view addSubview:webView];
