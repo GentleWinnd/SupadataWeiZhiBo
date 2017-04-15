@@ -17,5 +17,9 @@
 @property (strong, nonatomic) IBOutlet UILabel *thumbsUpLabel;
 @property (strong, nonatomic) IBOutlet UILabel *watchLabel;
 @property (strong, nonatomic) IBOutlet UILabel *shotingTimeLable;
+@property (strong, nonatomic) IBOutlet UILabel *classLabel;
+@property (strong, nonatomic) IBOutlet UIImageView *watchImg;
+@property (strong, nonatomic) IBOutlet UIImageView *thumbImg;
 
+- (void)hiddenDoingView:(BOOL)hidden;
 @end

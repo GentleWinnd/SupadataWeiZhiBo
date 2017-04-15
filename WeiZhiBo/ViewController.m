@@ -12,7 +12,8 @@
 #import "SchoolNameView.h"
 #import "NSString+Extension.h"
 #import "ContentView.h"
-#include "AFNetworkReachabilityManager.h"
+#import "AFNetworkReachabilityManager.h"
+
 #import "AppLogMgr.h"
 
 #import <sys/types.h>
@@ -22,7 +23,6 @@
 #import "StreamingViewModel.h"
 #import <VideoCore/VideoCore.h>
 #import <CoreMotion/CoreMotion.h>
-
 
 @interface ViewController ()<VCSessionDelegate>
 //手势
@@ -47,13 +47,14 @@
 
 /*************contentView**********/
 @property (strong, nonatomic) ContentView *CView;
-@property (strong, nonatomic) UILabel *classNameLabel;
 
 /************bttomView*********/
 @property (strong, nonatomic) IBOutlet NSLayoutConstraint *bottomViewHeight;
 @property (strong, nonatomic) IBOutlet NSLayoutConstraint *bottomViewSpace;
 @property (strong, nonatomic) IBOutlet UIButton *unfoldBtn;
 @property (strong, nonatomic) IBOutlet UIView *bottomView;
+@property (strong, nonatomic) IBOutlet UIImageView *foldImageView;
+
 
 @property (strong, nonatomic) IBOutlet UIView *classBackView;
 @property (strong, nonatomic) IBOutlet UIButton *classBtn;
@@ -75,13 +76,12 @@ static NSString *cellID = @"cellId";
 {
     NSString *classId;
     NSString *className;
-    NSString *schoolId;
-    NSString *schoolName;
     NSString *cameraDataId;
     CGFloat currentRotation;
     NSMutableDictionary *unfoldInfo;
     UIDeviceOrientation _deviceOrientation;
     CMMotionManager *motionManager;
+    AFNetworkReachabilityManager *manager;
 
     NSTimer *timer;
     int seconds;
@@ -92,43 +92,52 @@ static NSString *cellID = @"cellId";
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view, typically from a nib.
-    [self initNeedData];
     [self setBaiDuSDK];
-    [self createClassLabel];
+    [self setShowItem];
     [self createContentView];
     [self createCLassNamePickerView];
+    [self initNeedData];
+    [self AFNReachability];
 
     
-//    [self initDeviceOrientation];
+       
 }
 
+
 - (void)initNeedData {
+    
+    if (self.userClassInfo.count == 1) {
+        NSDictionary *classInfo = [NSDictionary safeDictionary:[self.userClassInfo firstObject]];
+        className = [NSString safeString:classInfo[@"className"]];
+        classId = [NSString safeNumber:classInfo[@"classId"]];
+        _CView.classLabel.text = classInfo[@"className"];
+
+        [self getPushInfo];
+    }
+    
+   
     currentRotation = 0;
     unfoldInfo = [NSMutableDictionary dictionaryWithCapacity:self.userClassInfo.count];
     
-//    self.logPlayId.transform = CGAffineTransformMakeRotation(M_PI_2);
+}
+
+#pragma mark - 创建班级label
+
+- (void)setShowItem {
+    
+    //    self.logPlayId.transform = CGAffineTransformMakeRotation(M_PI_2);
     self.backView.transform = CGAffineTransformMakeRotation(- M_PI_2);
     self.backViewWidth.constant = SCREEN_WIDTH;
     self.backViewHeight.constant = SCREEN_HEIGHT;
     self.tapGesture.numberOfTapsRequired = 1;
     self.doubleTapGesture.numberOfTapsRequired = 2;
+    self.tapGesture.enabled = NO;
     [self.tapGesture requireGestureRecognizerToFail:self.doubleTapGesture];
     _beautySlider.transform = CGAffineTransformMakeRotation(M_PI_2);
     [_beautySlider setThumbImage:[UIImage imageNamed:@"heart"] forState:UIControlStateNormal];
     [self orientationChangedWithDeviceOrientation:UIDeviceOrientationLandscapeLeft];
-}
 
-#pragma mark - 创建班级label
-
-- (void)createClassLabel {
-    self.classNameLabel = [[UILabel alloc] initWithFrame:CGRectMake(20, SCREEN_HEIGHT/2+20, SCREEN_HEIGHT, 22)];
-    self.classNameLabel.textAlignment = NSTextAlignmentLeft;
-    self.classNameLabel.font = [UIFont systemFontOfSize:10];
-    self.classNameLabel.textColor = [UIColor whiteColor];
-    self.classNameLabel.text = @"请选择班级";
-    [self.backView addSubview:self.classNameLabel];
-    self.classNameLabel.transform = CGAffineTransformMakeRotation(M_PI_2);
-
+    
 }
 
 #pragma mark - 创建contentView
@@ -137,7 +146,6 @@ static NSString *cellID = @"cellId";
     self.CView = [[NSBundle mainBundle] loadNibNamed:@"ContentView" owner:self options:nil].lastObject;
     self.CView.frame = CGRectMake(SCREEN_WIDTH-60, 50, 120, 30);
     self.CView.transform = CGAffineTransformMakeRotation(M_PI_2);
-    self.CView.hidden = YES;
     
     [self.backView addSubview:self.CView];
 
@@ -235,14 +243,14 @@ static NSString *cellID = @"cellId";
 
         } else {//开始直播
             if (!([_pushUrl hasPrefix:@"rtmp://"] )) {
-                [self toastTip:@"请选择班级"];
+                [Progress progressShowcontent:@"请选择班级" currView:self.view];
                 return;
             }
 
             [self alertViewSendMassageToPatriarch];
         }
         sender.selected = !sender.selected;
-        self.CView.hidden = !sender.selected;
+        [self.CView hiddenDoingView:!sender.selected];
 
 
     } else if (sender.tag == 2){//翻转摄像头
@@ -250,8 +258,12 @@ static NSString *cellID = @"cellId";
         sender.selected = !sender.selected;
 
     } else {//选择班级
-//        self.classBackView.backgroundColor = !_classView.hidden?MainColor_White:MainBtnSelectedColor_lightBlue;
-        [self showClassInfoTable:_classView.hidden];
+        if (_playBtn.selected) {
+            [Progress progressShowcontent:@"直播过程中不可选择班级" currView:self.view];
+        } else{
+            [self showClassInfoTable:_classView.hidden];
+
+        }
     }
 
 }
@@ -260,21 +272,21 @@ static NSString *cellID = @"cellId";
 #pragma mark - start push
 -(BOOL)startRtmp {
 //    NSString* rtmpUrl = @"rtmp://push.bcelive.com/live/ftqhgk3ch6wtwcvexu";//测试地址
-    [self.CView setHidden:NO];
     [self createTimer];
 
     NSString *rtmpUrl = _pushUrl;
     //是否有摄像头权限
     AVAuthorizationStatus statusVideo = [AVCaptureDevice authorizationStatusForMediaType:AVMediaTypeVideo];
     if (statusVideo == AVAuthorizationStatusDenied) {
-        [self toastTip:@"获取摄像头权限失败，请前往隐私-相机设置里面打开应用权限"];
+        [Progress progressShowcontent:@"获取摄像头权限失败，请前往隐私-相机设置里面打开应用权限" currView:self.view];
         return NO;
     }
     
     //是否有麦克风权限
     AVAuthorizationStatus statusAudio = [AVCaptureDevice authorizationStatusForMediaType:AVMediaTypeAudio];
     if (statusAudio == AVAuthorizationStatusDenied) {
-        [self toastTip:@"获取麦克风权限失败，请前往隐私-麦克风设置里面打开应用权限"];
+        [Progress progressShowcontent:@"获取麦克风权限失败，请前往隐私-麦克风设置里面打开应用权限" currView:self.view];
+
         return NO;
     }
     
@@ -283,7 +295,7 @@ static NSString *cellID = @"cellId";
     [[UIApplication sharedApplication] setIdleTimerDisabled:YES];
   
     self.isBacking = NO;
-
+    [manager startMonitoring];
     return YES;
 }
 
@@ -291,6 +303,7 @@ static NSString *cellID = @"cellId";
     self.isBacking = YES;
     BOOL result = [self.model back];
     [self stopTimer];
+    [manager stopMonitoring];
     [[UIApplication sharedApplication] setIdleTimerDisabled:NO];
 }
 
@@ -305,34 +318,43 @@ static NSString *cellID = @"cellId";
 }
 
 /*******************deal push****************/
-- (void)checkoutNet {
+//使用AFN框架来检测网络状态的改变
+-(void)AFNReachability {
+    //1.创建网络监听管理者
+    manager = [AFNetworkReachabilityManager sharedManager];
     
-    BOOL isWifi = [AFNetworkReachabilityManager sharedManager].reachableViaWiFi;
-    if (!isWifi) {
-        __weak typeof(self) weakSelf = self;
-        [[AFNetworkReachabilityManager sharedManager] setReachabilityStatusChangeBlock:^(AFNetworkReachabilityStatus status) {
-            if (_pushUrl.length == 0) {
-                return;
-            }
-            if (status == AFNetworkReachabilityStatusReachableViaWiFi) {
-                UIAlertController *alert = [UIAlertController alertControllerWithTitle:@""
-                                                                               message:@"您要切换到WiFi再推流吗?"
-                                                                        preferredStyle:UIAlertControllerStyleAlert];
-                [alert addAction:[UIAlertAction actionWithTitle:@"是" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
-                    [alert dismissViewControllerAnimated:YES completion:nil];
-                    [weakSelf stopRtmp];
-                    [weakSelf startRtmp];
-                }]];
-                [alert addAction:[UIAlertAction actionWithTitle:@"否" style:UIAlertActionStyleCancel handler:^(UIAlertAction * _Nonnull action) {
-                    [alert dismissViewControllerAnimated:YES completion:nil];
-                }]];
-                [weakSelf presentViewController:alert animated:YES completion:nil];
-            }
-        }];
-    }
+    //2.监听网络状态的改变
+    /*
+     AFNetworkReachabilityStatusUnknown          = 未知
+     AFNetworkReachabilityStatusNotReachable     = 没有网络
+     AFNetworkReachabilityStatusReachableViaWWAN = 3G
+     AFNetworkReachabilityStatusReachableViaWiFi = WIFI
+     */
+    @WeakObj(self)
+    [manager setReachabilityStatusChangeBlock:^(AFNetworkReachabilityStatus status) {
+        switch (status) {
+            case AFNetworkReachabilityStatusUnknown:
+                NSLog(@"未知");
+                break;
+            case AFNetworkReachabilityStatusNotReachable:
+                NSLog(@"没有网络");
+                [Progress progressShowcontent:@"当前网络不可用，请检查" currView:selfWeak.view];
+                break;
+            case AFNetworkReachabilityStatusReachableViaWWAN:
+                NSLog(@"3G");
+                [Progress progressShowcontent:@"您当前使用的是4G网络，直播时建议使用WiFi" currView:selfWeak.view];
+                break;
+            case AFNetworkReachabilityStatusReachableViaWiFi:
+                NSLog(@"WIFI");
+                [Progress progressShowcontent:@"当前是在WiFi环境下，您可以放心使用" currView:selfWeak.view];
+                break;
+                
+            default:
+                break;
+        }
+    }];
     
 }
-
 
 
 
@@ -355,6 +377,7 @@ static NSString *cellID = @"cellId";
     
     self.CView.shotingTimeLable.text = [NSString stringWithFormat:@"%02d:%02d:%02d",hourse,minutes,second];
     double rate = [self.model.session getCurrentUploadBandwidthKbps];
+    rate = rate < 0.0?0.0:rate;
     self.CView.rateLabel.text = [NSString stringWithFormat:@"%.lf %@",rate,@"kb"];
     if (seconds == 38) {
         [self uploadZhiBoState:NO];
@@ -460,11 +483,11 @@ static NSString *cellID = @"cellId";
 
 - (void)getPushInfo {
    
-    if (schoolId == nil) {
-        [Progress progressShowcontent:@"请选择学校"];
+    if (self.schoolId == nil || self.schoolName == nil) {
+        [Progress progressShowcontent:@"请选择学校" currView:self.view];
         return;
-    } else if (classId == nil) {
-        [Progress progressShowcontent:@"请选择班级"];
+    } else if (classId == nil || className == nil) {
+        [Progress progressShowcontent:@"请选择班级" currView:self.view];
         return;
     }
     
@@ -472,26 +495,26 @@ static NSString *cellID = @"cellId";
         className = @"";
     }
     
-    if (schoolName.length == 0) {
-        schoolName = @"";
+    if (self.schoolName.length == 0) {
+        self.schoolName = @"";
     }
     
     NSDictionary *parameter = @{@"userId":_phoneNUM,@"device":@"2",
-                                @"school_id":schoolId,@"class_id":classId,
+                                @"school_id":self.schoolId,@"class_id":classId,
                                 @"push_type":@"2",@"liveName":@"IOS",
-                                @"className":className,@"schoolName":schoolName,
+                                @"className":className,@"schoolName":self.schoolName,
                                 @"schoolIp":@"",@"cameraId":@"",
                                 @"schoolAdminName":@"",@"schoolAdminPhone":@"",
                                 @"adminClassName":@"",@"cameraClassLocation":@""};
     
     MBProgressManager *progressM = [[MBProgressManager alloc] init];
-    [progressM loadingWithTitleProgress:nil];
+    [progressM loadingWithTitleProgress:@""];
     [WZBNetServiceAPI postRegisterPhoneMicroLiveWithParameters:parameter success:^(id reponseObject) {
         [progressM hiddenProgress];
         if ([reponseObject[@"status"] intValue] == 1) {
             _pushUrl = [NSString safeString:reponseObject[@"data"][@"cameraPushUrl"]];
             _logPlayId.text = [NSString safeString:reponseObject[@"data"][@"cameraPlayUrl"]];
-            cameraDataId = [NSString safeNumber:reponseObject[@"id"]];
+            cameraDataId = [NSString safeString:reponseObject[@"data"][@"id"]];
 //            [self startRtmp];
         } else {
             
@@ -506,24 +529,19 @@ static NSString *cellID = @"cellId";
 
 - (void)groupSendMassage {//发送消息通知家长
    
-//    NSDictionary *parameter = @{@"access_token":@"0fc010d482d83c68ae2bfdf498ff108f",
-//                                @"open_id":@"38fbb5cf11a22e96747eb07421056cce",
-//                                @"flag":@"1",
-//                                @"classId":@"10606073",
-//                                @"className":@"11111"};
     NSDictionary *parameter = @{@"access_token":self.accessToken,
                                 @"open_id":self.openId,
-                                @"flag":@"1",
+                                @"flag":@"2",
                                 @"classId":classId,
                                 @"className":className};
     [WZBNetServiceAPI getGroupSendMassageWithParameters:parameter success:^(id reponseObject) {
         if ([reponseObject[@"status"] intValue] == 1) {
-            [Progress progressShowcontent:@"已经通知家长了！！！"];
+            [Progress progressShowcontent:@"已经通知家长了！！！" currView:self.view];
         } else {
-            [Progress progressShowcontent:@"通知家长失败了！！！"];
+            [Progress progressShowcontent:@"通知家长失败了！！！" currView:self.view];
         }
     } failure:^(NSError *error) {
-         [Progress progressShowcontent:@"通知家长失败了！！！"];
+         [Progress progressShowcontent:@"通知家长失败了！！！" currView:self.view];
     }];
     
 }
@@ -558,7 +576,7 @@ static NSString *cellID = @"cellId";
     [WZBNetServiceAPI getWatchingNumberWithParameters:parameter success:^(id reponseObject) {
         
         if ([reponseObject[@"status"] integerValue] == 1) {
-            int WNum = [[NSString safeString: [NSDictionary safeDictionary:reponseObject[@"data"]][@"livePeople"]] intValue];
+            int WNum = [[NSString safeNumber: [NSDictionary safeDictionary:reponseObject[@"data"]][@"livePeople"]] intValue];
             self.CView.watchLabel.text = [NSString stringWithFormat:@"%d 人",WNum];
             
             int PNum = [[NSString safeNumber: [NSDictionary safeDictionary:reponseObject[@"data"]][@"givePraise"]] intValue];
@@ -596,36 +614,28 @@ static NSString *cellID = @"cellId";
     _classView = [[NSBundle mainBundle] loadNibNamed:@"ClassNameView" owner:self options:nil].lastObject;
     _classView.hidden = YES;
     _classView.userClassInfo = self.userClassInfo;
-    @WeakObj(_classNameLabel)
     @WeakObj(self)
     
-    _classView.getClassInfo = ^(BOOL success, NSDictionary *userInfo, NSString *schoolI, NSString *schoolN){
+    _classView.getClassInfo = ^(BOOL success, NSDictionary *userInfo){
         if (success) {
             
             if ([[NSString safeNumber:userInfo[@"classId"]] isEqualToString:classId]) {
                 return ;
             }
-            classId = [NSString safeNumber:userInfo[@"classId"]];
-            className = [NSString safeString:userInfo[@"className"]];
-            schoolId = schoolI;
-            schoolName = schoolN;
+            NSString *CId = [NSString safeNumber:userInfo[@"classId"]];
+            NSString *CName = [NSString safeString:userInfo[@"className"]];
             
-            if (classId.length == 0) {//ceshi
-                NSDictionary *schoolInfo = [NSDictionary safeDictionary:selfWeak.userClassInfo.firstObject];
-                NSDictionary *classInfo = [NSDictionary safeDictionary:[NSArray safeArray:schoolInfo[@"classes"]][0]];
-                schoolName = [NSString safeString:schoolInfo[@"schoolName"]];
-                schoolId = [NSString safeNumber:schoolInfo[@"schoolId"]];
-                className = [NSString safeString:classInfo[@"className"]];
-                classId = [NSString safeNumber:classInfo[@"classId"]];
-                _classNameLabelWeak.text = classInfo[@"className"];
+            if (CId.length != 0) {//ceshi
+                classId = CId;
+                className = CName.length == 0?@"未命名班级":CName;
+                _CView.classLabel.text = className;
+                [selfWeak showClassInfoTable:NO];
+                [selfWeak getPushInfo];//get push info
 
             } else {
-            
-                _classNameLabelWeak.text = userInfo[@"className"];
+                [Progress progressShowcontent:@"此班级不存在" currView:self.view];
             }
-            [selfWeak showClassInfoTable:NO];
-            [selfWeak getPushInfo];//get push info
-
+           
         } else {
             [selfWeak showClassInfoTable:NO];
         }
@@ -669,7 +679,7 @@ static NSString *cellID = @"cellId";
 - (void)showBottomView {
     
     if (self.classView.hidden == NO) {
-        [Progress progressShowcontent:@"请选择班级！！！"];
+        [Progress progressShowcontent:@"请选择班级！！！" currView:self.view];
         return;
     }
     CGRect frame = self.bottomView.frame;
@@ -682,9 +692,10 @@ static NSString *cellID = @"cellId";
 //            
 //        }
         frame = CGRectMake(0, SCREEN_HEIGHT - 98, SCREEN_WIDTH , 98);
-        
+        self.foldImageView.image = [UIImage imageNamed:@"shouqi"];
     } else {
        frame = CGRectMake(0, SCREEN_HEIGHT - 48, SCREEN_WIDTH, 48);
+        self.foldImageView.image = [UIImage imageNamed:@"zhankai"];
     }
     
     [UIView animateWithDuration:0.01 animations:^{
@@ -783,48 +794,6 @@ static NSString *cellID = @"cellId";
     }
 }
 
-/************toastTip*********/
-
-#pragma mark - toastTip
-- (void) toastTip:(NSString*)toastInfo {
-    
-    CGRect frameRC = [[UIScreen mainScreen] bounds];
-    frameRC.origin.y = frameRC.size.height - 110;
-    frameRC.size.height -= 110;
-    __block UITextView * toastView = [[UITextView alloc] init];
-    
-    toastView.editable = NO;
-    toastView.selectable = NO;
-    
-    frameRC.size.height = [self heightForString:toastView andWidth:frameRC.size.width];
-    
-    toastView.frame = frameRC;
-    
-    toastView.text = toastInfo;
-    toastView.backgroundColor = [UIColor whiteColor];
-    toastView.alpha = 0.5;
-    
-    [self.view addSubview:toastView];
-    
-    dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, 2 * NSEC_PER_SEC);
-    
-    dispatch_after(popTime, dispatch_get_main_queue(), ^(){
-        [toastView removeFromSuperview];
-        toastView = nil;
-    });
-}
-
-/**
- @method 获取指定宽度width的字符串在UITextView上的高度
- @param textView 待计算的UITextView
- @param Width 限制字符串显示区域的宽度
- @result float 返回的高度
- */
-- (float) heightForString:(UITextView *)textView andWidth:(float)width {
-    CGSize sizeToFit = [textView sizeThatFits:CGSizeMake(width, MAXFLOAT)];
-    return sizeToFit.height;
-}
-
 
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
@@ -872,8 +841,7 @@ static NSString *cellID = @"cellId";
 
 // pickerView 每列个数
 - (NSInteger)pickerView:(UIPickerView *)pickerView numberOfRowsInComponent:(NSInteger)component {
-    NSDictionary *schoolInfo = [NSDictionary safeDictionary:self.userClassInfo.firstObject];
-    return [NSArray safeArray:schoolInfo[@"classes"]].count;
+    return self.userClassInfo.count;
 }
 #pragma Mark -- UIPickerViewDelegate
 
@@ -882,10 +850,7 @@ static NSString *cellID = @"cellId";
 }
 // 返回选中的行
 - (void)pickerView:(UIPickerView *)pickerView didSelectRow:(NSInteger)row inComponent:(NSInteger)component {
-    NSDictionary *schoolInfo = [NSDictionary safeDictionary:self.userClassInfo.firstObject];
-    NSDictionary *classInfo = [NSDictionary safeDictionary:[NSArray safeArray:schoolInfo[@"classes"]][row]];
-    self.schoolName = [NSString safeString:schoolInfo[@"schoolName"]];
-    self.schoolId = [NSString safeNumber:schoolInfo[@"schoolId"]];
+    NSDictionary *classInfo = [NSDictionary safeDictionary:self.userClassInfo[row]];
     self.className = [NSString safeString:classInfo[@"className"]];
     self.classId = [NSString safeNumber:classInfo[@"classId"]];
     self.classInfo = [NSDictionary safeDictionary:classInfo];
@@ -905,9 +870,15 @@ static NSString *cellID = @"cellId";
     UIView *line = [[UIView alloc] initWithFrame:CGRectMake(0, 45, 400, 1)];
     line.backgroundColor = RulesLineColor_LightGray;
     [label addSubview:line];
-    NSDictionary *classInfo = [NSDictionary safeDictionary:[NSArray safeArray:[NSDictionary safeDictionary:self.userClassInfo.firstObject][@"classes"]][row]];
-    
-    label.text = [NSString safeString:classInfo[@"className"]];
+    NSDictionary *classInfo = [NSDictionary safeDictionary:self.userClassInfo[row]];
+    NSString *classN = [NSString safeString:classInfo[@"className"]];
+    if (classN.length == 0) {
+        label.text = @"未命名班级";
+
+    } else {
+        label.text = classN;
+
+    }
     return label;
     
 }
@@ -931,12 +902,12 @@ static NSString *cellID = @"cellId";
 - (IBAction)selectedClassBtn:(UIButton *)sender {
     if (sender.tag == 1122) {//取消
         if (self.getClassInfo) {
-            self.getClassInfo(NO,self.classInfo,_schoolId,_schoolName );
+            self.getClassInfo(NO,self.classInfo);
         }
 
     } else {//确定
         if (self.getClassInfo) {
-            self.getClassInfo(YES,self.classInfo,_schoolId,_schoolName);
+            self.getClassInfo(YES,self.classInfo);
         }
     }
 }

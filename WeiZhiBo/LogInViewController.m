@@ -5,15 +5,24 @@
 //  Created by YH on 2017/3/21.
 //  Copyright © 2017年 YH. All rights reserved.
 //
-
+#import "HeEducationH5ViewController.h"
 #import "LogInViewController.h"
 #import "ViewController.h"
-#import "HeEducationH5ViewController.h"
+#import "UserData.h"
+#import "User.h"
 
 
 @interface LogInViewController ()<UITextFieldDelegate>
 @property (strong, nonatomic) IBOutlet UITextField *accountField;
 @property (strong, nonatomic) IBOutlet UITextField *passwordField;
+@property (strong, nonatomic) IBOutlet UIButton *loginBtn;
+
+@property (strong, nonatomic) IBOutlet UIImageView *PLIne;
+@property (strong, nonatomic) IBOutlet UIImageView *Aline;
+@property (strong, nonatomic) IBOutlet UIImageView *AImageView;
+@property (strong, nonatomic) IBOutlet UIImageView *PImageView;
+
+
 @property (strong, nonatomic) MBProgressManager *progressM;
 @property (nonatomic, strong) NSString *accessToken;
 @property (nonatomic, strong) NSString *openId;
@@ -25,8 +34,95 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view from its nib.
-    _accountField.text = @"13770623329";
-    _passwordField.text = @"abc123";
+   
+    [self setTextFeild];
+}
+
+- (void)setTextFeild {
+//    _accountField.text = @"18360869634";
+//    _passwordField.text = @"abc123";
+    User *user = [UserData getUser];
+    _accountField.text = user.userName;
+    _passwordField.text = user.userPass;
+    _passwordField.delegate = self;
+    _accountField.delegate = self;
+    
+    [_accountField addTarget:self action:@selector(acountAction:) forControlEvents:UIControlEventEditingChanged];
+    [_passwordField addTarget:self action:@selector(passwordAction:) forControlEvents:UIControlEventEditingChanged];
+
+    [self setShowData];
+
+}
+
+- (void)acountAction:(UITextField *)textfeild {
+    [self setShowData];
+}
+
+- (void)passwordAction:(UITextField *)textfeild {
+    [self setShowData];
+}
+
+- (void)textFieldDidEndEditing:(UITextField *)textField {
+    [self setShowData];
+
+}
+
+- (void)textFieldDidBeginEditing:(UITextField *)textField {
+//    [self setShowData];
+    
+    UIImage *Orangeimage = [UIImage imageNamed:@"line_orange"];
+    
+    if (textField == _accountField) {
+        _AImageView.image = [UIImage imageNamed:@"tel_s"];
+        _Aline.image = Orangeimage;
+        if (_passwordField.text.length>0) {
+            _loginBtn.selected = YES;
+        } else {
+            _loginBtn.selected = NO;
+        }
+    }
+    
+    if ( textField == _passwordField) {
+        _PLIne.image = Orangeimage;
+        _PImageView.image = [UIImage imageNamed:@"sec_s"];
+        if (_accountField.text.length > 0) {
+            _loginBtn.selected = YES;
+
+        } else {
+            _loginBtn.selected = NO;
+        }
+    }
+}
+
+
+#pragma mark - showSetData
+
+- (void)setShowData {
+    UIImage *GrayImage = [UIImage imageNamed:@"line_gray"];
+    UIImage *Orangeimage = [UIImage imageNamed:@"line_orange"];
+    
+    BOOL canLogin = _accountField.text.length >0 && _passwordField.text.length >0?YES:NO;
+    if (_accountField.text.length == 0) {
+        _Aline.image = GrayImage;
+        _AImageView.image = [UIImage imageNamed:@"tel_n"];
+    } else {
+        _AImageView.image = [UIImage imageNamed:@"tel_s"];
+        _Aline.image = Orangeimage;
+    }
+    
+    if (_passwordField.text.length == 0) {
+        _PLIne.image = GrayImage;
+        _PImageView.image = [UIImage imageNamed:@"sec_n"];
+    
+    } else {
+        _PLIne.image = Orangeimage;
+        _PImageView.image = [UIImage imageNamed:@"sec_s"];
+    
+    }
+    
+    
+    _loginBtn.selected = canLogin;
+    
 }
 
 
@@ -57,7 +153,10 @@
            self.openId = logInfo[@"uOpenId"];
            [self loginByHeBaby:@{@"access_token":logInfo[@"uAccessToken"],
                                  @"open_id":logInfo[@"uOpenId"]}];
-
+           User *user = [[User alloc] init];
+           user.userName = self.accountField.text;
+           user.userPass = self.passwordField.text;
+           [UserData storeUserData:user];
        } else {
            [_progressM hiddenProgress];
            [Progress progressShowcontent:@"账户或密码错误，请检查"];
@@ -108,7 +207,7 @@
     UINavigationController *navVC = [[UINavigationController alloc] initWithRootViewController:rootViewController];
     
     UIWindow* window = [UIApplication sharedApplication].keyWindow;
-    navVC.navigationBarHidden = YES;
+//    navVC.navigationBarHidden = YES;
     navVC.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;
     Animation animation = ^{
         BOOL oldState = [UIView areAnimationsEnabled];

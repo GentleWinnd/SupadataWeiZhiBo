@@ -12,7 +12,12 @@
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="LogInViewController">
             <connections>
+                <outlet property="AImageView" destination="6GK-xj-JXs" id="sbO-Ma-S0G"/>
+                <outlet property="Aline" destination="mIx-it-1a3" id="wGI-60-t8A"/>
+                <outlet property="PImageView" destination="aiD-Hd-XUN" id="pKN-jl-aRI"/>
+                <outlet property="PLIne" destination="icb-T3-M6N" id="F77-oo-47P"/>
                 <outlet property="accountField" destination="l0e-c7-9IG" id="iOf-Nl-Q4j"/>
+                <outlet property="loginBtn" destination="B8d-hk-bEb" id="nzN-UX-PN4"/>
                 <outlet property="passwordField" destination="vu5-Iz-HXA" id="vb2-mT-xkw"/>
                 <outlet property="view" destination="i5M-Pr-FkT" id="k2x-wd-aF1"/>
             </connections>
@@ -32,7 +37,7 @@
                                 <constraint firstAttribute="width" secondItem="Nhy-Mw-2DX" secondAttribute="height" multiplier="364:135" id="CEM-69-LHa"/>
                             </constraints>
                         </imageView>
-                        <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="telput.png" translatesAutoresizingMaskIntoConstraints="NO" id="6GK-xj-JXs" userLabel="ImageOne View">
+                        <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="tel_n.png" translatesAutoresizingMaskIntoConstraints="NO" id="6GK-xj-JXs" userLabel="ImageOne View">
                             <rect key="frame" x="34" y="261.5" width="22" height="24"/>
                             <constraints>
                                 <constraint firstAttribute="width" secondItem="6GK-xj-JXs" secondAttribute="height" multiplier="11:12" id="7NY-ZV-Dst"/>
@@ -48,9 +53,8 @@
                             <fontDescription key="fontDescription" type="system" pointSize="14"/>
                             <textInputTraits key="textInputTraits"/>
                         </textField>
-                        <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="mIx-it-1a3" userLabel="lineTwo.png">
+                        <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="line_gray.png" translatesAutoresizingMaskIntoConstraints="NO" id="mIx-it-1a3" userLabel="lineTwo.png">
                             <rect key="frame" x="37" y="289.5" width="301" height="1"/>
-                            <color key="backgroundColor" red="0.40000000600000002" green="0.80000001190000003" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                         </imageView>
                         <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="请输入密码" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="vu5-Iz-HXA">
                             <rect key="frame" x="68" y="314.5" width="270" height="26"/>
@@ -61,9 +65,8 @@
                             <fontDescription key="fontDescription" type="system" pointSize="14"/>
                             <textInputTraits key="textInputTraits" secureTextEntry="YES"/>
                         </textField>
-                        <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="icb-T3-M6N">
+                        <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="line_gray.png" translatesAutoresizingMaskIntoConstraints="NO" id="icb-T3-M6N">
                             <rect key="frame" x="34" y="346.5" width="304" height="1"/>
-                            <color key="backgroundColor" red="0.40000000600000002" green="0.80000001190000003" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                             <constraints>
                                 <constraint firstAttribute="height" constant="1" id="RTm-w9-yoc"/>
                             </constraints>
@@ -82,18 +85,18 @@
                         </button>
                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="B8d-hk-bEb">
                             <rect key="frame" x="34" y="429.5" width="304" height="40"/>
-                            <color key="backgroundColor" red="0.99215686270000003" green="0.67843137249999996" blue="0.070588235289999995" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                             <constraints>
                                 <constraint firstAttribute="height" constant="40" id="srn-2b-Za0"/>
                             </constraints>
-                            <state key="normal" title="登录">
+                            <state key="normal" title="登录" backgroundImage="line_gray.png">
                                 <color key="titleColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                             </state>
+                            <state key="selected" backgroundImage="line_orange.png"/>
                             <connections>
                                 <action selector="loginClickAction:" destination="-1" eventType="touchUpInside" id="i4p-HI-Y07"/>
                             </connections>
                         </button>
-                        <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="secput.png" translatesAutoresizingMaskIntoConstraints="NO" id="aiD-Hd-XUN">
+                        <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="sec_n.png" translatesAutoresizingMaskIntoConstraints="NO" id="aiD-Hd-XUN">
                             <rect key="frame" x="34" y="318.5" width="22" height="22"/>
                             <constraints>
                                 <constraint firstAttribute="height" constant="22" id="RT8-gL-PNi"/>
@@ -142,14 +145,16 @@
                 <constraint firstItem="OeB-eR-FOD" firstAttribute="leading" secondItem="i5M-Pr-FkT" secondAttribute="leading" id="kxd-V6-QSw"/>
                 <constraint firstAttribute="trailing" secondItem="Nhy-Mw-2DX" secondAttribute="trailing" constant="78" id="woP-UP-Lhc"/>
             </constraints>
-            <point key="canvasLocation" x="-166" y="101"/>
+            <point key="canvasLocation" x="-458" y="99"/>
         </view>
     </objects>
     <resources>
         <image name="eyeclosed.png" width="200" height="200"/>
         <image name="eyeopened.png" width="200" height="200"/>
+        <image name="line_gray.png" width="4" height="1"/>
+        <image name="line_orange.png" width="4" height="1"/>
         <image name="logo.png" width="364" height="135"/>
-        <image name="secput.png" width="48" height="48"/>
-        <image name="telput.png" width="24" height="24"/>
+        <image name="sec_n.png" width="48" height="48"/>
+        <image name="tel_n.png" width="24" height="24"/>
     </resources>
 </document>

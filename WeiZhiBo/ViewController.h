@@ -30,6 +30,9 @@
 @property (nonatomic, strong) StreamingViewModel* model;
 @property (nonatomic, strong) NSString *accessToken;
 @property (nonatomic, strong) NSString *openId;
+@property (nonatomic, strong) NSString *schoolId;
+@property (nonatomic, strong) NSString *schoolName;
+
 
 @end
 
@@ -38,7 +41,7 @@
 
 @property (strong, nonatomic) NSArray *userClassInfo;
 @property (strong, nonatomic) IBOutlet UIPickerView *classPickerView;
-@property (copy, nonatomic) void(^ getClassInfo)(BOOL success, NSDictionary *classInfo, NSString *schoolId, NSString *schoolName);
+@property (copy, nonatomic) void(^ getClassInfo)(BOOL success, NSDictionary *classInfo);
 @property (strong, nonatomic) NSString *className;
 @property (strong, nonatomic) NSString *classId;
 @property (strong, nonatomic) NSString *schoolName;

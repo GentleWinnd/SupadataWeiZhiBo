@@ -48,6 +48,8 @@
     configuration.cameraDevice = VCCameraStateBack;
     configuration.continuousAutofocus = NO;
     configuration.continuousExposure = YES;
+    configuration.profile = VCH264ProfileBaseline;
+    configuration.gopLength = 6;
     
     self.session = [[VCSimpleSession alloc] initWithConfiguration:configuration];
     self.session.aspectMode = VCAspectModeFill;
