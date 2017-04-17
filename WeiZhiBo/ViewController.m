@@ -23,8 +23,11 @@
 #import "StreamingViewModel.h"
 #import <VideoCore/VideoCore.h>
 #import <CoreMotion/CoreMotion.h>
+#import "UserData.h"
+#import "SocketRocket.h"
 
-@interface ViewController ()<VCSessionDelegate>
+
+@interface ViewController ()<VCSessionDelegate, SRWebSocketDelegate>
 //手势
 @property (strong, nonatomic) IBOutlet UIPinchGestureRecognizer *pinchGesture;//缩放手势
 @property (strong, nonatomic) IBOutlet UITapGestureRecognizer *tapGesture;//点击手势
@@ -82,11 +85,22 @@ static NSString *cellID = @"cellId";
     UIDeviceOrientation _deviceOrientation;
     CMMotionManager *motionManager;
     AFNetworkReachabilityManager *manager;
+    SRWebSocket *_webSocket;
+    MessageType *messageType;
+
 
     NSTimer *timer;
     int seconds;
     BOOL isTengXun;
     
+}
+
+- (void)viewWillDisappear:(BOOL)animated {
+    [super viewWillDisappear:animated];
+    
+    [_webSocket close];
+    _webSocket = nil;
+
 }
 
 - (void)viewDidLoad {
@@ -98,9 +112,7 @@ static NSString *cellID = @"cellId";
     [self createCLassNamePickerView];
     [self initNeedData];
     [self AFNReachability];
-
     
-       
 }
 
 
@@ -258,6 +270,7 @@ static NSString *cellID = @"cellId";
         sender.selected = !sender.selected;
 
     } else {//选择班级
+        sender.selected = !sender.selected;
         if (_playBtn.selected) {
             [Progress progressShowcontent:@"直播过程中不可选择班级" currView:self.view];
         } else{
@@ -295,7 +308,9 @@ static NSString *cellID = @"cellId";
     [[UIApplication sharedApplication] setIdleTimerDisabled:YES];
   
     self.isBacking = NO;
-    [manager startMonitoring];
+    [manager startMonitoring];//开启网络监听
+    [self reconnectWebSocket];
+    
     return YES;
 }
 
@@ -304,6 +319,7 @@ static NSString *cellID = @"cellId";
     BOOL result = [self.model back];
     [self stopTimer];
     [manager stopMonitoring];
+    [self closeWebSocket];//关闭socket
     [[UIApplication sharedApplication] setIdleTimerDisabled:NO];
 }
 
@@ -383,8 +399,12 @@ static NSString *cellID = @"cellId";
         [self uploadZhiBoState:NO];
     }
     self.CView.redDotImage.hidden = !self.CView.redDotImage.hidden;
-    if (seconds%5==0) {
+    if (seconds%5==0) {//获取观看人数
         [self getWacthPeopleNumber];
+    }
+    
+    if (seconds%10 == 0 && _webSocket) {//发送心跳包
+        [_webSocket sendPing:nil error:nil];
     }
 }
 
@@ -499,7 +519,7 @@ static NSString *cellID = @"cellId";
         self.schoolName = @"";
     }
     
-    NSDictionary *parameter = @{@"userId":_phoneNUM,@"device":@"2",
+    NSDictionary *parameter = @{@"userId":self.userId,@"device":@"2",
                                 @"school_id":self.schoolId,@"class_id":classId,
                                 @"push_type":@"2",@"liveName":@"IOS",
                                 @"className":className,@"schoolName":self.schoolName,
@@ -557,7 +577,7 @@ static NSString *cellID = @"cellId";
                                 @"flag":stop?@"2":@"1",
                                 @"classId":classId,
                                 @"sumTime":stop?[NSNumber numberWithInt:seconds]:@"",
-                                @"userId":self.phoneNUM};
+                                @"userId":self.userId};
     [WZBNetServiceAPI postZhiBoStateMessageWithParameters:parameter success:^(id reponseObject) {
         if ([reponseObject[@"state"] intValue] == 1) {
             NSLog(@"send zhibo state success!!!!!");
@@ -590,7 +610,7 @@ static NSString *cellID = @"cellId";
 
 - (void)alertViewSendMassageToPatriarch {
     
-    UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"提示" message:@"是否通知学生家长观看直播？" preferredStyle:UIAlertControllerStyleAlert];
+    UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"提示" message:@"是否短信告知家长？" preferredStyle:UIAlertControllerStyleAlert];
     
     // 添加按钮
     [alert addAction:[UIAlertAction actionWithTitle:@"是" style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
@@ -614,12 +634,16 @@ static NSString *cellID = @"cellId";
     _classView = [[NSBundle mainBundle] loadNibNamed:@"ClassNameView" owner:self options:nil].lastObject;
     _classView.hidden = YES;
     _classView.userClassInfo = self.userClassInfo;
+    _classView.classInfo = [NSDictionary safeDictionary:[self.userClassInfo firstObject]];
     @WeakObj(self)
     
     _classView.getClassInfo = ^(BOOL success, NSDictionary *userInfo){
+        
         if (success) {
             
             if ([[NSString safeNumber:userInfo[@"classId"]] isEqualToString:classId]) {
+                [selfWeak showClassInfoTable:NO];
+
                 return ;
             }
             NSString *CId = [NSString safeNumber:userInfo[@"classId"]];
@@ -640,7 +664,7 @@ static NSString *cellID = @"cellId";
             [selfWeak showClassInfoTable:NO];
         }
     };
-    [_classView.classPickerView reloadAllComponents];
+    [_classView.classNameTab reloadData];
     [self.view addSubview:_classView];
 }
 
@@ -657,9 +681,10 @@ static NSString *cellID = @"cellId";
 //
 //        }
         
-        frame = CGRectMake(0, 0, 400, 250);
-        [_classView.classPickerView reloadAllComponents];
-        [_classView.classPickerView selectRow:0 inComponent:0 animated:YES];
+        CGFloat height = 36 + WIDTH_6_ZSCALE(45)*5;
+        
+        frame = CGRectMake(0, 0,WIDTH_6_ZSCALE(350) , HEIGHT_6_ZSCALE(height));
+        [_classView.classNameTab reloadData];
 
     } else {
         frame = CGRectMake(0, 0, 400, 0);
@@ -795,6 +820,114 @@ static NSString *cellID = @"cellId";
 }
 
 
+
+/****************webSocket*****************/
+
+///--------------------------------------
+#pragma mark - Actions web socket
+///--------------------------------------
+
+- (void)reconnectWebSocket {//创建webSocket
+    
+    _webSocket.delegate = nil;
+    [_webSocket close];
+    
+    _webSocket = [[SRWebSocket alloc] initWithURL:[NSURL URLWithString:@"ws://baihongyu1234567.xicp.io/ssm/websocket"]];
+    _webSocket.delegate = self;
+    
+    [_webSocket open];
+}
+
+- (void)closeWebSocket {//关闭webSocket
+    [self sendMessage:MessageTypeClose messageString:@"WebSocket closed"];
+    [_webSocket close];
+    _webSocket = nil;
+
+}
+
+//- (void)sendPing:(id)sender;
+//{
+//    [_webSocket sendPing:nil];
+//}
+
+///--------------------------------------
+#pragma mark - SRWebSocketDelegate
+///--------------------------------------
+
+
+- (void)webSocketDidOpen:(SRWebSocket *)webSocket {
+    NSLog(@"Websocket Connected");
+//    self.title = @"Connected!";
+    NSLog(@"Websocket Connected");
+    [self sendMessage:MessageTypeOpen messageString:@"Websocket Connected"];
+}
+
+- (void)webSocket:(SRWebSocket *)webSocket didFailWithError:(NSError *)error {
+    NSLog(@":( Websocket Failed With Error %@", error);
+    
+    _webSocket = nil;
+}
+
+- (void)webSocket:(SRWebSocket *)webSocket didReceiveMessageWithString:(nonnull NSString *)string {
+    NSLog(@"Received \"%@\"", string);
+
+}
+
+- (void)webSocket:(SRWebSocket *)webSocket didCloseWithCode:(NSInteger)code reason:(NSString *)reason wasClean:(BOOL)wasClean {
+    NSLog(@"WebSocket closed");
+
+    _webSocket = nil;
+    
+    
+}
+
+- (void)webSocket:(SRWebSocket *)webSocket didReceivePong:(NSData *)pongPayload {//每次发送一次心跳包时，服务器返回的消息
+    
+    NSLog(@"WebSocket received pong");
+}
+
+
+#pragma mark - sendMessage
+- (void)sendMessage:(MessageType)type messageString:(NSString *)messageStr {
+    /*
+     "message": {
+     "type": 1,(1建立连接第一次发，2发消息，3关闭连接发)
+     "userType": 1,(1老师，3家长)
+     "classId": 43432,(老师必传)
+     "parentId": 123,(家长必传)
+     "teacherId": 321,
+     "livePeopel": 321,
+     "content": "fsdjkgdaga"
+     "userName": "李家长",
+     "userPic": "http://aservice.139jy.cn/webshare/static/ucenter/user/64066/2100.jpg",
+     "videoId":
+     },
+     
+     
+     */
+    NSString *userId = [UserData getUser].userID;
+    NSString *userNickName = [NSString safeString:[UserData getUser].nickName];
+    
+    NSError *error;
+    
+    NSData *jsonData = [NSJSONSerialization dataWithJSONObject:@{@"message":@{@"type":[NSNumber numberWithInteger:type],
+                                                                 @"userType":@"1",
+                                                                 @"classId":classId,
+                                                                 @"parentId":@"",
+                                                                 @"teacherId":self.userId,
+                                                                 @"livePeopel":@"",
+                                                                 @"content":messageStr,
+                                                                 @"userName":userNickName,
+                                                                 @"userPic":@"",
+                                                                 @"videoId":cameraDataId}} options:NSJSONWritingPrettyPrinted error:&error];
+    
+    NSString *jsonString = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
+    
+    [_webSocket sendString:jsonString error:nil];
+    
+}
+
+
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
@@ -810,106 +943,80 @@ static NSString *cellID = @"cellId";
 /*******************classNameView****************/
 #pragma mark - classNameView
 
-@interface ClassNameView()<UIPickerViewDelegate, UIPickerViewDataSource>
+#import "ClassNameTableViewCell.h"
+
+@interface ClassNameView()<UITableViewDelegate, UITableViewDataSource>
 @property (strong, nonatomic) IBOutlet UIView *classInfoView;
 
 @end
-
+static NSString *CellIdOfClass = @"cellIdOfClass";
 
 @implementation ClassNameView
 
 - (void)awakeFromNib {
     [super awakeFromNib];
-    [self customCLassNamePickerView];
+    [self customCLassNameTableView];
     
 }
 
-- (void)customCLassNamePickerView {
+- (void)customCLassNameTableView {
     // 显示选中框
-    _classPickerView.showsSelectionIndicator=YES;
-    _classPickerView.dataSource = self;
-    _classPickerView.delegate = self;
-    [_classPickerView reloadAllComponents];
+    self.classNameTab.backgroundColor = [UIColor clearColor];
+    self.classNameTab.dataSource = self;
+    self.classNameTab.delegate = self;
+    [self.classNameTab registerNib:[UINib nibWithNibName:@"ClassNameTableViewCell" bundle:nil] forCellReuseIdentifier:CellIdOfClass];
     
 }
 
-#pragma Mark -- UIPickerViewDataSource
-// pickerView 列数
-- (NSInteger)numberOfComponentsInPickerView:(UIPickerView *)pickerView {
+- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
     return 1;
 }
 
-// pickerView 每列个数
-- (NSInteger)pickerView:(UIPickerView *)pickerView numberOfRowsInComponent:(NSInteger)component {
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
+    
     return self.userClassInfo.count;
 }
-#pragma Mark -- UIPickerViewDelegate
 
-- (CGFloat)pickerView:(UIPickerView *)pickerView rowHeightForComponent:(NSInteger)component {
-    return 45;
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
+    return WIDTH_6_ZSCALE(45);
 }
-// 返回选中的行
-- (void)pickerView:(UIPickerView *)pickerView didSelectRow:(NSInteger)row inComponent:(NSInteger)component {
-    NSDictionary *classInfo = [NSDictionary safeDictionary:self.userClassInfo[row]];
+
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
+
+    ClassNameTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdOfClass forIndexPath:indexPath];
+    NSDictionary *classInfo = [NSDictionary safeDictionary:self.userClassInfo[indexPath.row]];
+    NSString *classN = [NSString safeString:classInfo[@"className"]];
+    if (classN.length == 0) {
+        cell.classNameLabel.text = @"未命名班级";
+        
+    } else {
+        cell.classNameLabel.text = classN;
+        
+    }
+    return cell;
+}
+
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
+    
+    NSDictionary *classInfo = [NSDictionary safeDictionary:self.userClassInfo[indexPath.row]];
     self.className = [NSString safeString:classInfo[@"className"]];
     self.classId = [NSString safeNumber:classInfo[@"classId"]];
     self.classInfo = [NSDictionary safeDictionary:classInfo];
-}
-
-//返回当前行的内容,此处是将数组中数值添加到滚动的那个显示栏上
-//-(NSString *)pickerView:(UIPickerView *)pickerView titleForRow:(NSInteger)row forComponent:(NSInteger)component {
-//    NSDictionary *classInfo = [NSDictionary safeDictionary:[NSArray safeArray:[NSDictionary safeDictionary:self.userClassInfo.firstObject][@"classes"]][row]];
-//    
-//    return [NSString safeString:classInfo[@"className"]];
-//}
-
-- (UIView *)pickerView:(UIPickerView *)pickerView viewForRow:(NSInteger)row forComponent:(NSInteger)component reusingView:(UIView *)view {
-    UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, 400, 45)];
-    label.textAlignment = NSTextAlignmentCenter;
-    label.font = [UIFont systemFontOfSize:15];
-    UIView *line = [[UIView alloc] initWithFrame:CGRectMake(0, 45, 400, 1)];
-    line.backgroundColor = RulesLineColor_LightGray;
-    [label addSubview:line];
-    NSDictionary *classInfo = [NSDictionary safeDictionary:self.userClassInfo[row]];
-    NSString *classN = [NSString safeString:classInfo[@"className"]];
-    if (classN.length == 0) {
-        label.text = @"未命名班级";
-
-    } else {
-        label.text = classN;
-
+    if (self.getClassInfo) {
+        self.getClassInfo(YES,self.classInfo);
     }
-    return label;
-    
-}
 
-//- (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
-//
-//    SchoolNameView *headerView = [[SchoolNameView alloc] initWithFrame:CGRectMake(0, 0, CGRectGetWidth(tableView.frame), 28)];
-//    NSDictionary *schoolInfo = [NSDictionary safeDictionary:self.userClassInfo[section]];
-//    headerView.schoolView.text = [NSString safeString:schoolInfo[@"schoolName"]];
-//    headerView.tag = section;
-//
-//    UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(unFoldCell:)];
-//    [headerView addGestureRecognizer:tap];
-//
-//    return headerView;
-//
-//}
+
+}
 
 
 #pragma mark - selectedCLass
-- (IBAction)selectedClassBtn:(UIButton *)sender {
-    if (sender.tag == 1122) {//取消
-        if (self.getClassInfo) {
-            self.getClassInfo(NO,self.classInfo);
-        }
-
-    } else {//确定
-        if (self.getClassInfo) {
-            self.getClassInfo(YES,self.classInfo);
-        }
+- (IBAction)cancelBtnAction:(UIButton *)sender {
+    
+    if (self.getClassInfo) {
+        self.getClassInfo(NO,self.classInfo);
     }
+
 }
 
 //#pragma mark - unfold or fold cell

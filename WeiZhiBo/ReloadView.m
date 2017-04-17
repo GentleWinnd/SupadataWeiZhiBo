@@ -18,6 +18,7 @@
 }
 */
 - (IBAction)reloadbtn:(UIButton *)sender {
+    
     if (_reloadView) {
         self.reloadView();
     }

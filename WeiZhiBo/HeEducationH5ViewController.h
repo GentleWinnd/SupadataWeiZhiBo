@@ -10,9 +10,9 @@
 
 @interface HeEducationH5ViewController : UIViewController
 
-@property (nonatomic, strong) NSString *phoneNUM;
 @property (nonatomic, strong) NSArray *userClassInfo;
 @property (nonatomic, strong) NSString *userId;
+
 @property (nonatomic, strong) NSString *accessToken;
 @property (nonatomic, strong) NSString *openId;
 @end

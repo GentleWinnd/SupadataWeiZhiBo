@@ -158,7 +158,7 @@
     if (classesArray.count >0) {
         ViewController *VC = [board instantiateViewControllerWithIdentifier:@"ViewController"];
         VC.userClassInfo = classesArray;
-        VC.phoneNUM = self.phoneNUM;
+        VC.userId = self.userId;
         VC.accessToken = self.accessToken;
         VC.openId = self.openId;
         VC.schoolId = CSchoolId;
@@ -177,7 +177,7 @@
     webView.delegate = self;
 //    [webView loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:@"http://live.sch.supadata.cn/ssm//resource/html/teacher/?user=630584331#/tab/camera"]]];
 //    [webView loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"http://wangjunwei.uicp.io/ssm/resource/html/teacher/?user=%@#/tab/camera",self.phoneNUM]]]];
-    [webView loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"http://live.sch.supadata.cn/ssm//resource/html/teacher/?user=%@#/tab/camera",self.phoneNUM]]]];
+    [webView loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"http://live.sch.supadata.cn/ssm//resource/html/teacher/?user=%@#/tab/camera",self.userId]]]];
    
     [self.view addSubview:webView];
 
@@ -199,17 +199,21 @@
     return YES;
 }
 - (void)webViewDidFinishLoad:(UIWebView *)webView {
-    
+    [loadProgress hiddenProgress];
+
     self.jsContext = [webView valueForKeyPath:@"documentView.webView.mainFrame.javaScriptContext"];
     self.jsContext[@"Supadata"] = self;//给js 注册对象，
     self.jsContext.exceptionHandler = ^(JSContext *context, JSValue *exceptionValue) {
         context.exception = exceptionValue;
+        [loadProgress hiddenProgress];
         NSLog(@"异常信息：%@", exceptionValue);
     };
     
 }
 
 - (void)webView:(UIWebView *)webView didFailLoadWithError:(NSError *)error {
+    [loadProgress hiddenProgress];
+
     [self createReloadView];
     
 }
@@ -219,7 +223,6 @@
 
 - (void)getSchoolId:(NSString *)schoolId {
     if (schoolId) {
-        [loadProgress hiddenProgress];
         UIButton *btn = (UIButton *)[self.view viewWithTag:110];
         btn.hidden = NO;
         CSchoolId = [NSString stringWithFormat:@"%@",schoolId];
@@ -246,9 +249,13 @@
 #pragma mark - 创建没有数据view
 
 - (void)createReloadView {
-    ReloadView *reloadView = [[ReloadView alloc] initWithFrame:CGRectMake(0, 0, 38, 48)];
+    ReloadView *reloadView = [[NSBundle mainBundle] loadNibNamed:@"ReloadView" owner:nil options:nil].firstObject;
+    reloadView.frame = CGRectMake(0, 0, SCREEN_WIDTH,SCREEN_HEIGHT);
+//    reloadView.center = CGPointMake(SCREEN_WIDTH/2, SCREEN_HEIGHT/2 -32);
     reloadView.reloadView = ^(){
-        [webView reload];
+        if (webView) {
+            [webView loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"http://live.sch.supadata.cn/ssm//resource/html/teacher/?user=%@#/tab/camera",self.userId]]]];
+        }
     };
     reloadView.tag = 112;
     [self.view addSubview:reloadView];

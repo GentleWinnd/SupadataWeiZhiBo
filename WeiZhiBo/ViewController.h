@@ -6,6 +6,12 @@
 //  Copyright © 2017年 YH. All rights reserved.
 //
 
+typedef NS_ENUM(NSInteger, MessageType) {
+
+    MessageTypeOpen=1,
+    MessageTypeSendMessage,
+    MessageTypeClose
+};
 
 #import <UIKit/UIKit.h>
 #import <Foundation/Foundation.h>
@@ -26,13 +32,14 @@
 
 }
 @property (strong, nonatomic) NSArray *userClassInfo;
-@property (strong, nonatomic) NSString *phoneNUM;
-@property (nonatomic, strong) StreamingViewModel* model;
+@property (strong, nonatomic) NSString *userId;
+
 @property (nonatomic, strong) NSString *accessToken;
 @property (nonatomic, strong) NSString *openId;
 @property (nonatomic, strong) NSString *schoolId;
 @property (nonatomic, strong) NSString *schoolName;
 
+@property (nonatomic, strong) StreamingViewModel* model;
 
 @end
 
@@ -40,12 +47,10 @@
 @interface ClassNameView : UIView
 
 @property (strong, nonatomic) NSArray *userClassInfo;
-@property (strong, nonatomic) IBOutlet UIPickerView *classPickerView;
+@property (strong, nonatomic) IBOutlet UITableView *classNameTab;
 @property (copy, nonatomic) void(^ getClassInfo)(BOOL success, NSDictionary *classInfo);
 @property (strong, nonatomic) NSString *className;
 @property (strong, nonatomic) NSString *classId;
-@property (strong, nonatomic) NSString *schoolName;
-@property (strong, nonatomic) NSString *schoolId;
 @property (strong, nonatomic) NSDictionary *classInfo;
 
 @end

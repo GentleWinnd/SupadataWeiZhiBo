@@ -4,7 +4,6 @@
         <adaptation id="fullscreen"/>
     </device>
     <dependencies>
-        <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="12086"/>
         <capability name="Aspect ratio constraints" minToolsVersion="5.1"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
@@ -40,16 +39,12 @@
                                                 <rect key="frame" x="0.0" y="49" width="123.5" height="49"/>
                                                 <subviews>
                                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="N5O-VC-ecw">
-                                                        <rect key="frame" x="42" y="5.5" width="38" height="38"/>
-                                                        <constraints>
-                                                            <constraint firstAttribute="width" constant="38" id="Cyn-KR-Zda"/>
-                                                            <constraint firstAttribute="height" constant="38" id="Yfy-t3-Bsm"/>
-                                                        </constraints>
+                                                        <rect key="frame" x="46" y="-1.5" width="30" height="52"/>
                                                         <fontDescription key="fontDescription" type="system" pointSize="16"/>
-                                                        <state key="normal" image="class.png">
+                                                        <state key="normal" image="class_n.png">
                                                             <color key="titleColor" red="0.0" green="0.47843137250000001" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                         </state>
-                                                        <state key="selected">
+                                                        <state key="selected" image="class_s.png">
                                                             <color key="titleColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                                                         </state>
                                                         <connections>
@@ -67,9 +62,9 @@
                                                 <rect key="frame" x="123.5" y="49" width="123" height="49"/>
                                                 <subviews>
                                                     <button opaque="NO" tag="1" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="hMH-KT-L3A">
-                                                        <rect key="frame" x="42" y="5.5" width="38" height="38"/>
-                                                        <state key="normal" image="open.png"/>
-                                                        <state key="selected" title="停止播放" image="putoff.png">
+                                                        <rect key="frame" x="46" y="-1.5" width="30" height="52"/>
+                                                        <state key="normal" image="play_n.png"/>
+                                                        <state key="selected" image="play_s.png">
                                                             <color key="titleColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                                                         </state>
                                                         <connections>
@@ -87,9 +82,9 @@
                                                 <rect key="frame" x="246.5" y="49" width="123.5" height="49"/>
                                                 <subviews>
                                                     <button opaque="NO" tag="2" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Tc8-WL-3bp">
-                                                        <rect key="frame" x="43" y="5.5" width="38" height="38"/>
-                                                        <state key="normal" image="camero.png"/>
-                                                        <state key="selected" image="backcamero.png">
+                                                        <rect key="frame" x="47" y="-1.5" width="30" height="52"/>
+                                                        <state key="normal" image="camera_back.png"/>
+                                                        <state key="selected" image="camera_front.png">
                                                             <color key="titleColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                                                         </state>
                                                         <connections>
@@ -286,7 +281,6 @@
         </scene>
     </scenes>
     <resources>
-        <image name="backcamero.png" width="52" height="52"/>
         <image name="beauty_off" width="101" height="101"/>
         <image name="beauty_on" width="101" height="101"/>
         <image name="button:TqS-Mv-MFZ:backgroundImage" width="101" height="101">
@@ -1789,12 +1783,14 @@ j62SrZetpq2qrbGtua3Grcutza3PrdSt3K3freSt7K3vrgGuBK4JAAAAAAAAAgEAAAAAAAAAPgAAAAAA
 AAAAAAAAAAAArgs
 </mutableData>
         </image>
-        <image name="camero.png" width="52" height="52"/>
-        <image name="class.png" width="52" height="52"/>
+        <image name="camera_back.png" width="30" height="52"/>
+        <image name="camera_front.png" width="30" height="52"/>
+        <image name="class_n.png" width="30" height="51"/>
+        <image name="class_s.png" width="30" height="51"/>
         <image name="flash_off" width="101" height="101"/>
-        <image name="open.png" width="52" height="52"/>
         <image name="pause_publish.jpg" width="720" height="1280"/>
-        <image name="putoff.png" width="52" height="52"/>
+        <image name="play_n.png" width="30" height="51"/>
+        <image name="play_s.png" width="30" height="51"/>
         <image name="quxiao.png" width="21" height="21"/>
         <image name="shouqi.png" width="23" height="23"/>
     </resources>

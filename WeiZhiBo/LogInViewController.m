@@ -147,17 +147,14 @@
     [_progressM loadingWithTitleProgress:@""];
     
    [WZBNetServiceAPI postLoginWithParameters:parameter success:^(id responseObject) {
+      
        if ([responseObject[@"status"] intValue] == 1) {//登陆成功
            NSDictionary *logInfo = [NSDictionary safeDictionary:responseObject[@"data"]];
            self.accessToken = logInfo[@"uAccessToken"];
            self.openId = logInfo[@"uOpenId"];
            [self loginByHeBaby:@{@"access_token":logInfo[@"uAccessToken"],
                                  @"open_id":logInfo[@"uOpenId"]}];
-           User *user = [[User alloc] init];
-           user.userName = self.accountField.text;
-           user.userPass = self.passwordField.text;
-           [UserData storeUserData:user];
-       } else {
+        } else {
            [_progressM hiddenProgress];
            [Progress progressShowcontent:@"账户或密码错误，请检查"];
        }
@@ -183,10 +180,17 @@
 
             HeEducationH5ViewController *heView = [[HeEducationH5ViewController alloc] init];
             heView.userClassInfo = [NSArray safeArray:responseObject[@"data"][@"school"]];
-            heView.phoneNUM = responseObject[@"data"][@"user"][@"uId"];
+            heView.userId = responseObject[@"data"][@"user"][@"uId"];
             heView.accessToken = self.accessToken;
             heView.openId = self.openId;
             
+            User *user = [[User alloc] init];
+            user.userName = self.accountField.text;
+            user.userPass = self.passwordField.text;
+            user.userID = [NSString stringWithFormat:@"%@",heView.userId];
+            user.nickName = [NSString stringWithFormat:@"%@",responseObject[@"data"][@"user"][@"uNickName"]];
+            [UserData storeUserData:user];
+
             [self restoreRootViewController:heView];
             
         } else {
@@ -199,6 +203,14 @@
     }];
 
 }
+
+
+- (void)saveUserData {
+
+
+}
+
+
 
 // 登陆后淡入淡出更换rootViewController
 - (void)restoreRootViewController:(UIViewController *)rootViewController {
