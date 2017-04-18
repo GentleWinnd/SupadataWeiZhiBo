@@ -23,5 +23,6 @@
 #import "NSDictionary+Extension.h"
 #import "NSArray+Extension.h"
 #import "Header.h"
+#import "NSString+Extension.h"
 
 #endif /* PrefixHeader_pch */

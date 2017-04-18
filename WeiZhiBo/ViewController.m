@@ -25,6 +25,7 @@
 #import <CoreMotion/CoreMotion.h>
 #import "UserData.h"
 #import "SocketRocket.h"
+#import "CommentMessageView.h"
 
 
 @interface ViewController ()<VCSessionDelegate, SRWebSocketDelegate>
@@ -50,6 +51,12 @@
 
 /*************contentView**********/
 @property (strong, nonatomic) ContentView *CView;
+@property (strong, nonatomic) IBOutlet UIView *inputView;
+
+@property (strong, nonatomic) IBOutlet NSLayoutConstraint *inputViewBottomSpace;
+@property (strong, nonatomic) IBOutlet UIButton *sendBtnAction;
+@property (strong, nonatomic) IBOutlet UITextField *inputTextFeild;
+
 
 /************bttomView*********/
 @property (strong, nonatomic) IBOutlet NSLayoutConstraint *bottomViewHeight;
@@ -86,9 +93,11 @@ static NSString *cellID = @"cellId";
     CMMotionManager *motionManager;
     AFNetworkReachabilityManager *manager;
     SRWebSocket *_webSocket;
-    MessageType *messageType;
+    MessageType messageType;
+    NSMutableArray *messageArr;
 
 
+    CommentMessageView *commentView;
     NSTimer *timer;
     int seconds;
     BOOL isTengXun;
@@ -112,6 +121,7 @@ static NSString *cellID = @"cellId";
     [self createCLassNamePickerView];
     [self initNeedData];
     [self AFNReachability];
+    [self createMessageView];
     
 }
 
@@ -148,8 +158,9 @@ static NSString *cellID = @"cellId";
     _beautySlider.transform = CGAffineTransformMakeRotation(M_PI_2);
     [_beautySlider setThumbImage:[UIImage imageNamed:@"heart"] forState:UIControlStateNormal];
     [self orientationChangedWithDeviceOrientation:UIDeviceOrientationLandscapeLeft];
+    [self performSelector:@selector(showCommentMessageView) withObject:nil afterDelay:2.0];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(changeContentViewPoint:) name:UIKeyboardWillShowNotification object:nil];
 
-    
 }
 
 #pragma mark - 创建contentView
@@ -405,6 +416,7 @@ static NSString *cellID = @"cellId";
     
     if (seconds%10 == 0 && _webSocket) {//发送心跳包
         [_webSocket sendPing:nil error:nil];
+        [self sendMessage:MessageTypeSendMessage messageString:@"测试消息"];
     }
 }
 
@@ -695,7 +707,7 @@ static NSString *cellID = @"cellId";
     [UIView animateWithDuration:0.01 animations:^{
         _classView.frame = frame;
         _classView.center = CGPointMake(SCREEN_HEIGHT/2, SCREEN_WIDTH/2);
-        self.classBackView.backgroundColor = _classView.hidden?MainColor_White:MainBtnSelectedColor_lightBlue;
+        self.classBackView.backgroundColor = _classView.hidden?MAIN_WHITE:MAIN_LIGHTBLUE_BTN_SELECTED;
 
     }];
 }
@@ -832,7 +844,8 @@ static NSString *cellID = @"cellId";
     _webSocket.delegate = nil;
     [_webSocket close];
     
-    _webSocket = [[SRWebSocket alloc] initWithURL:[NSURL URLWithString:@"ws://baihongyu1234567.xicp.io/ssm/websocket"]];
+//    _webSocket = [[SRWebSocket alloc] initWithURL:[NSURL URLWithString:@"ws://baihongyu1234567.xicp.io/ssm/websocket"]];
+    _webSocket = [[SRWebSocket alloc] initWithURL:[NSURL URLWithString:@"ws://live.sch.supadata.cn:9080/ssm/websocket"]];
     _webSocket.delegate = self;
     
     [_webSocket open];
@@ -870,6 +883,17 @@ static NSString *cellID = @"cellId";
 
 - (void)webSocket:(SRWebSocket *)webSocket didReceiveMessageWithString:(nonnull NSString *)string {
     NSLog(@"Received \"%@\"", string);
+    if (messageArr.count == 0) {
+        messageArr = nil;
+        messageArr = [NSMutableArray arrayWithCapacity:0];
+        [messageArr addObject:[self dictionaryWithJsonString:string]];
+    } else {
+    
+        [messageArr addObject:[self dictionaryWithJsonString:string]];
+    }
+    
+    commentView.messageArray = messageArr;
+    [commentView.messageTable reloadData];
 
 }
 
@@ -923,10 +947,117 @@ static NSString *cellID = @"cellId";
     
     NSString *jsonString = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
     
-    [_webSocket sendString:jsonString error:nil];
+    BOOL success = [_webSocket sendString:jsonString error:nil];
+    if (messageType == MessageTypeSendMessage) {
+        [messageArr addObject:@{@"type":[NSNumber numberWithInteger:type],
+                               @"userType":@"1",
+                               @"classId":classId,
+                               @"parentId":@"",
+                               @"teacherId":self.userId,
+                               @"livePeopel":@"",
+                               @"content":messageStr,
+                               @"userName":userNickName,
+                               @"userPic":@"",
+                               @"videoId":cameraDataId,
+                                @"isTeacher":[NSNumber numberWithBool:YES]}];
+
+    }
     
 }
 
+#pragma mark- jsonString To dictionary
+
+- (NSDictionary *)dictionaryWithJsonString:(NSString *)jsonString {
+    if (jsonString == nil) {
+        return nil;
+    }
+    
+    NSData *jsonData = [jsonString dataUsingEncoding:NSUTF8StringEncoding];
+    NSError *err;
+    NSDictionary *dic = [NSJSONSerialization JSONObjectWithData:jsonData
+                                                        options:NSJSONReadingMutableContainers
+                                                          error:&err];
+    if(err)
+    {
+        NSLog(@"json解析失败：%@",err);
+        return nil;
+    }
+    return dic;
+}
+
+- (void)createMessageView {
+
+    commentView = [[NSBundle mainBundle] loadNibNamed:@"CommentMessageView" owner:self options:nil].lastObject;
+    commentView.messageArray = messageArr;
+    commentView.hidden = YES;
+    commentView.frame = CGRectMake(0, 0, 280, 0);
+    commentView.sendMessage = ^(BOOL selected){
+        
+        if (selected) {
+            [_inputTextFeild resignFirstResponder];
+            
+        } else {
+            [_inputTextFeild becomeFirstResponder];
+            
+        }
+            NSInteger windowCount = [[[UIApplication sharedApplication] windows] count];
+        UIWindow *keyboardWindow = [[[UIApplication sharedApplication] windows] objectAtIndex:(windowCount-1)];
+        keyboardWindow.transform = CGAffineTransformMakeRotation(M_PI_2);
+        
+        keyboardWindow.bounds =CGRectMake(0, 0,SCREEN_HEIGHT, 200);
+        keyboardWindow.center = CGPointMake(SCREEN_HEIGHT/2, 100+(SCREEN_WIDTH-200)/2);
+//        [self performSelector:@selector(changeOration) withObject:nil afterDelay:2.0];
+    };
+    [self.view addSubview:commentView];
+ 
+    
+}
+
+- (void)changeOration {
+    NSInteger windowCount = [[[UIApplication sharedApplication] windows] count];
+    UIWindow *keyboardWindow = [[[UIApplication sharedApplication] windows] objectAtIndex:(windowCount-1)];
+    keyboardWindow.transform = CGAffineTransformMakeRotation(M_PI_2);
+    
+    keyboardWindow.bounds =CGRectMake(100, 0,SCREEN_HEIGHT-100, 200);
+
+
+}
+
+- (void)showCommentMessageView {
+    
+    [UIView animateWithDuration:0.1 animations:^{
+        commentView.frame = CGRectMake(0, 0, HEIGHT_6_ZSCALE(222), SCREEN_WIDTH);
+        commentView.hidden = NO;
+    }];
+
+}
+- (IBAction)sendMessageAction:(UIButton *)sender {
+   
+    
+}
+
+
+// 根据键盘状态，调整_mainView的位置
+- (void) changeContentViewPoint:(NSNotification *)notification{
+    NSDictionary *userInfo = [notification userInfo];
+    NSValue *value = [userInfo objectForKey:UIKeyboardFrameEndUserInfoKey];
+    CGFloat keyBoardEndY = value.CGRectValue.origin.y;  // 得到键盘弹出后的键盘视图所在y坐标
+    
+    NSNumber *duration = [userInfo objectForKey:UIKeyboardAnimationDurationUserInfoKey];
+    NSNumber *curve = [userInfo objectForKey:UIKeyboardAnimationCurveUserInfoKey];
+    
+    // 添加移动动画，使视图跟随键盘移动
+    [UIView animateWithDuration:duration.doubleValue animations:^{
+        [UIView setAnimationBeginsFromCurrentState:YES];
+        [UIView setAnimationCurve:[curve intValue]];
+        
+        _inputView.center = CGPointMake(_inputView.center.x, keyBoardEndY - 20 - _inputView.bounds.size.height/2.0);   // keyBoardEndY的坐标包括了状态栏的高度，要减去
+        
+    }];
+    
+    
+    
+}
 
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];

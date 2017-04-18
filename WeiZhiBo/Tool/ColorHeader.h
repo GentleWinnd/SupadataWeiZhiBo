@@ -11,36 +11,25 @@
 
 #import "NSString+Color.h"
 
-// text color
-#define MainTextColor_Black [@"#202020" toColor]
-#define MainTextColor_DarkBlack [@"#333333" toColor]
-#define MaintextColor_LightBlack [@"#999999" toColor] 
 
-#define ClassNameTextColor_Dark [@"#4c5d6a" toColor]
-#define ClassNameTextColor_LightDark [@"#6a7680" toColor]
-#define ClassNameTextColor_PLightDark [@"#"]
+#define MAIN_BLUE [@"#38a5f9" toColor]
+#define MAIN_LIGHTBLUE_SELECTEDVIEW [@"#a3bfdd" toColor]
+
+// text color
+#define MAIN_BLACK_TEXT [@"#202020" toColor]
+#define MAIN_MIDDLEBLACK_TEXT [@"#333333" toColor]
+#define MAIN_LIGHTBLACK_TEXT [@"#999999" toColor]
 
 //line color
-#define RulesLineColor_LightGray [@"#f4f4f4" toColor]
-#define RulesLineColor_DarkGray [@"#b2b2b2" toColor]
+#define MAIN_LIGHTGRAY_LINE [@"#f4f4f4" toColor]
 
+#define MAIN_GRAYAWHITE_BACKGROUND [@"#f8f8f8" toColor]
 
-#define MainThemeColor_Blue [@"#38a5f9" toColor]
-#define MainThemeColor_LightBlue [@"#a3bfdd" toColor]
+#define MAIN_LIGHTBLUE_BTN_SELECTED [@"#eaf7ff" toColor]
+#define MAIN_WHITE [@"#ffffff" toColor]
+#define MAIN_YELLOW_MESSAGE [@"#ffc600" toColor]
+#define MAIN_BLUE_MESSAGE [@"#02bbff" toColor]
 
-#define MainBackgroudColor_GrayAndWhite [@"#f8f8f8" toColor]
-
-#define MainColor_Red [@"ff3b30" toColor]
-#define MainColor_Orange [@"#ff9f49" toColor]
-#define MainColor_Green [@"#3bbf8e" toColor]
-#define MainDateColor_Green [@"#8FF393" toColor]
-#define MainDotColor_green [@"#77C06C" toColor]
-#define MainDateColor_Purple [@"#FA98EF" toColor]
-
-#define MainEvaluColor_Green [@"#008040" toColor]
-
-#define MainBtnSelectedColor_lightBlue [@"#eaf7ff" toColor]
-#define MainColor_White [@"#ffffff" toColor]
 
 
 #endif /* ColorHeader_h */

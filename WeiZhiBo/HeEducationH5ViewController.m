@@ -292,6 +292,22 @@
     self.navigationController.view.bounds = bounds;
 }
 
+////支持设备自动旋转
+//
+//- (BOOL)shouldAutorotate{
+//    
+//    return NO;
+//    
+//}
+//
+////支持横竖屏显示
+//
+//- (UIInterfaceOrientationMask)supportedInterfaceOrientations{
+//    
+//    return UIInterfaceOrientationMaskLandscapeRight;
+//    
+//}
+
 // 登陆后淡入淡出更换rootViewController
 - (void)restoreRootViewController:(UIViewController *)rootViewController {
     typedef void (^Animation)(void);
