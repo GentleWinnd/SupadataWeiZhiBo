@@ -26,9 +26,10 @@
 #import "UserData.h"
 #import "SocketRocket.h"
 #import "CommentMessageView.h"
+#import "InputView.h"
 
 
-@interface ViewController ()<VCSessionDelegate, SRWebSocketDelegate>
+@interface ViewController ()<VCSessionDelegate, SRWebSocketDelegate, InputViewDelegate>
 //手势
 @property (strong, nonatomic) IBOutlet UIPinchGestureRecognizer *pinchGesture;//缩放手势
 @property (strong, nonatomic) IBOutlet UITapGestureRecognizer *tapGesture;//点击手势
@@ -54,8 +55,6 @@
 @property (strong, nonatomic) IBOutlet UIView *inputView;
 
 @property (strong, nonatomic) IBOutlet NSLayoutConstraint *inputViewBottomSpace;
-@property (strong, nonatomic) IBOutlet UIButton *sendBtnAction;
-@property (strong, nonatomic) IBOutlet UITextField *inputTextFeild;
 
 
 /************bttomView*********/
@@ -95,9 +94,11 @@ static NSString *cellID = @"cellId";
     SRWebSocket *_webSocket;
     MessageType messageType;
     NSMutableArray *messageArr;
+    CGFloat keyBoardHeight;
 
 
     CommentMessageView *commentView;
+    InputView *inputView;
     NSTimer *timer;
     int seconds;
     BOOL isTengXun;
@@ -121,8 +122,9 @@ static NSString *cellID = @"cellId";
     [self createCLassNamePickerView];
     [self initNeedData];
     [self AFNReachability];
+    [self createInputView];
     [self createMessageView];
-    
+
 }
 
 
@@ -991,36 +993,33 @@ static NSString *cellID = @"cellId";
     commentView.messageArray = messageArr;
     commentView.hidden = YES;
     commentView.frame = CGRectMake(0, 0, 280, 0);
+    @WeakObj(inputView)
+    @WeakObj(self)
     commentView.sendMessage = ^(BOOL selected){
         
         if (selected) {
-            [_inputTextFeild resignFirstResponder];
-            
+            [inputViewWeak.textView resignFirstResponder];
+            inputViewWeak.hidden = YES;
         } else {
-            [_inputTextFeild becomeFirstResponder];
             
+            inputViewWeak.hidden = NO;
+            inputViewWeak.frame = CGRectMake(0, 0, SCREEN_HEIGHT, 42);
+
+            [inputViewWeak.textView becomeFirstResponder];
+//            [selfWeak.view becomeFirstResponder];
+
         }
-            NSInteger windowCount = [[[UIApplication sharedApplication] windows] count];
-        UIWindow *keyboardWindow = [[[UIApplication sharedApplication] windows] objectAtIndex:(windowCount-1)];
-        keyboardWindow.transform = CGAffineTransformMakeRotation(M_PI_2);
         
-        keyboardWindow.bounds =CGRectMake(0, 0,SCREEN_HEIGHT, 200);
-        keyboardWindow.center = CGPointMake(SCREEN_HEIGHT/2, 100+(SCREEN_WIDTH-200)/2);
-//        [self performSelector:@selector(changeOration) withObject:nil afterDelay:2.0];
+        NSInteger windowCount = [[[UIApplication sharedApplication] windows] count];
+        if (windowCount <=2) {
+            return ;
+        }
+//        [selfWeak performSelector:@selector(changeOration) withObject:nil afterDelay:0];
+        [selfWeak changeOration];
     };
     [self.view addSubview:commentView];
  
     
-}
-
-- (void)changeOration {
-    NSInteger windowCount = [[[UIApplication sharedApplication] windows] count];
-    UIWindow *keyboardWindow = [[[UIApplication sharedApplication] windows] objectAtIndex:(windowCount-1)];
-    keyboardWindow.transform = CGAffineTransformMakeRotation(M_PI_2);
-    
-    keyboardWindow.bounds =CGRectMake(100, 0,SCREEN_HEIGHT-100, 200);
-
-
 }
 
 - (void)showCommentMessageView {
@@ -1028,35 +1027,68 @@ static NSString *cellID = @"cellId";
     [UIView animateWithDuration:0.1 animations:^{
         commentView.frame = CGRectMake(0, 0, HEIGHT_6_ZSCALE(222), SCREEN_WIDTH);
         commentView.hidden = NO;
+        CGRect frame = CGRectMake(0,SCREEN_WIDTH/2-42, SCREEN_HEIGHT, 42);
+        inputView.frame = frame;
     }];
 
 }
-- (IBAction)sendMessageAction:(UIButton *)sender {
-   
+
+- (void)changeOration {
+    NSInteger windowCount = [[[UIApplication sharedApplication] windows] count];
+
+    UIWindow *keyboardWindow = [[[UIApplication sharedApplication] windows]  lastObject];
+    UIWindow *textWindow = [[[UIApplication sharedApplication] windows] objectAtIndex:windowCount-2];
     
+    keyboardWindow.transform = CGAffineTransformMakeRotation(M_PI_2);
+    keyboardWindow.bounds = CGRectMake(0, -60,SCREEN_HEIGHT, 200);
+    
+    textWindow.transform = CGAffineTransformMakeRotation(M_PI_2);
+    textWindow.bounds = CGRectMake(0, -60,SCREEN_HEIGHT, 200);
+
+
+    [UIView animateWithDuration:0.01  animations:^{
+        [UIView setAnimationBeginsFromCurrentState:YES];
+        inputView.hidden = NO;
+        
+    }];
 }
 
-
 // 根据键盘状态，调整_mainView的位置
-- (void) changeContentViewPoint:(NSNotification *)notification{
+- (void) changeContentViewPoint:(NSNotification *)notification {
     NSDictionary *userInfo = [notification userInfo];
     NSValue *value = [userInfo objectForKey:UIKeyboardFrameEndUserInfoKey];
     CGFloat keyBoardEndY = value.CGRectValue.origin.y;  // 得到键盘弹出后的键盘视图所在y坐标
     
-    NSNumber *duration = [userInfo objectForKey:UIKeyboardAnimationDurationUserInfoKey];
-    NSNumber *curve = [userInfo objectForKey:UIKeyboardAnimationCurveUserInfoKey];
     
+    keyBoardHeight = keyBoardEndY;
     // 添加移动动画，使视图跟随键盘移动
-    [UIView animateWithDuration:duration.doubleValue animations:^{
-        [UIView setAnimationBeginsFromCurrentState:YES];
-        [UIView setAnimationCurve:[curve intValue]];
-        
-        _inputView.center = CGPointMake(_inputView.center.x, keyBoardEndY - 20 - _inputView.bounds.size.height/2.0);   // keyBoardEndY的坐标包括了状态栏的高度，要减去
-        
-    }];
+}
+
+
+#pragma mark - 创建输入评论的消息
+
+- (void)createInputView {
+    inputView = [[NSBundle mainBundle] loadNibNamed:@"InputView" owner:self options:nil].lastObject;
+    inputView.frame = CGRectMake(0, 0, SCREEN_HEIGHT, 42);
+    inputView.hidden = YES;
+    inputView.delegate = self;
+
+    inputView.sendMessage = ^(NSString *message) {
     
     
+    };
     
+    [self.view addSubview:inputView];
+    
+}
+
+- (void)inputViewTextChanged:(NSInteger)lineNum {
+    
+    CGRect frame = inputView.frame;
+    NSInteger number = lineNum==0?1:lineNum;
+    frame.size.height = 12+15+15*number;
+    inputView.frame = CGRectMake(0, SCREEN_WIDTH/2-frame.size.height, SCREEN_HEIGHT, frame.size.height);
+
 }
 
 - (void)didReceiveMemoryWarning {

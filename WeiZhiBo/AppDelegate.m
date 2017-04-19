@@ -48,6 +48,27 @@
 - (void)applicationDidBecomeActive:(UIApplication *)application {
     // Restart any tasks that were paused (or not yet started) while the application was inactive. If the application was previously in the background, optionally refresh the user interface.
 }
+- (BOOL)application:(UIApplication *)application openURL:(NSURL *)url sourceApplication:(NSString *)sourceApplication annotation:(id)annotation {
+    NSString *urlStr = [url absoluteString];
+    if ([urlStr hasPrefix:@"AgriculturalOfHeBei://"]) {
+//        NSLog(@"TestAppDemo1 request params: %@", urlStr);
+        urlStr = [urlStr stringByReplacingOccurrencesOfString:@"AgriculturalOfHeBei://" withString:@""];
+        NSArray *paramArray = [urlStr componentsSeparatedByString:@"&"];
+        NSLog(@"paramArray: %@", paramArray);
+        
+        NSMutableDictionary *paramsDic = [[NSMutableDictionary alloc] initWithCapacity:0];
+        for (int i = 0; i < paramArray.count; i++) {
+            NSString *str = paramArray[i];
+            NSArray *keyArray = [str componentsSeparatedByString:@"="];
+            NSString *key = keyArray[0];
+            NSString *value = keyArray[1];
+            [paramsDic setObject:value forKey:key];
+            NSLog(@"key:%@ ==== value:%@", key, value);
+        }
+        
+    }
+    return NO;
+}
 
 
 - (void)applicationWillTerminate:(UIApplication *)application {

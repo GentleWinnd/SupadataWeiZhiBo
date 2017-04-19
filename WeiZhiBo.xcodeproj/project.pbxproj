@@ -67,6 +67,8 @@
 		586851641E83903400115227 /* KTMErrorHint.m in Sources */ = {isa = PBXBuildFile; fileRef = 5868514C1E83903400115227 /* KTMErrorHint.m */; };
 		586851651E83903400115227 /* KTMWebService.m in Sources */ = {isa = PBXBuildFile; fileRef = 586851501E83903400115227 /* KTMWebService.m */; };
 		586ACE401E9B92D800B39FA1 /* ContentView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 586ACE3F1E9B92D800B39FA1 /* ContentView.xib */; };
+		588735E81EA7340B00ADA1DA /* InputView.m in Sources */ = {isa = PBXBuildFile; fileRef = 588735E71EA7340B00ADA1DA /* InputView.m */; };
+		588735EA1EA7341900ADA1DA /* InputView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 588735E91EA7341900ADA1DA /* InputView.xib */; };
 		588F8FD61EA5B457003486AE /* MessageTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 588F8FD41EA5B457003486AE /* MessageTableViewCell.m */; };
 		588F8FD71EA5B457003486AE /* MessageTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 588F8FD51EA5B457003486AE /* MessageTableViewCell.xib */; };
 		588F8FDB1EA5B992003486AE /* ParentsTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 588F8FD91EA5B992003486AE /* ParentsTableViewCell.m */; };
@@ -290,6 +292,9 @@
 		5868514F1E83903400115227 /* KTMWebService.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KTMWebService.h; sourceTree = "<group>"; };
 		586851501E83903400115227 /* KTMWebService.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KTMWebService.m; sourceTree = "<group>"; };
 		586ACE3F1E9B92D800B39FA1 /* ContentView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ContentView.xib; sourceTree = "<group>"; };
+		588735E61EA7340B00ADA1DA /* InputView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = InputView.h; sourceTree = "<group>"; };
+		588735E71EA7340B00ADA1DA /* InputView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = InputView.m; sourceTree = "<group>"; };
+		588735E91EA7341900ADA1DA /* InputView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = InputView.xib; sourceTree = "<group>"; };
 		588F8FD31EA5B457003486AE /* MessageTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MessageTableViewCell.h; sourceTree = "<group>"; };
 		588F8FD41EA5B457003486AE /* MessageTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MessageTableViewCell.m; sourceTree = "<group>"; };
 		588F8FD51EA5B457003486AE /* MessageTableViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MessageTableViewCell.xib; sourceTree = "<group>"; };
@@ -1024,6 +1029,9 @@
 				588F8FD81EA5B992003486AE /* ParentsTableViewCell.h */,
 				588F8FD91EA5B992003486AE /* ParentsTableViewCell.m */,
 				588F8FDA1EA5B992003486AE /* ParentsTableViewCell.xib */,
+				588735E61EA7340B00ADA1DA /* InputView.h */,
+				588735E71EA7340B00ADA1DA /* InputView.m */,
+				588735E91EA7341900ADA1DA /* InputView.xib */,
 			);
 			name = Views;
 			sourceTree = "<group>";
@@ -1190,6 +1198,7 @@
 				58CDBD341EA4AA2800C9FE30 /* zhankai@2x.png in Resources */,
 				58CDBD261EA4AA2800C9FE30 /* doing@2x.png in Resources */,
 				58CDBD181EA4AA2800C9FE30 /* camera_back@2x.png in Resources */,
+				588735EA1EA7341900ADA1DA /* InputView.xib in Resources */,
 				5857BAE91E9F1DC200339D60 /* pause_publish.jpg in Resources */,
 				58CDBCE41EA4631800C9FE30 /* Info.plist in Resources */,
 				58CDBD2C1EA4AA2800C9FE30 /* quxiao@2x.png in Resources */,
@@ -1260,6 +1269,7 @@
 				581683381E83A079003F669F /* UIProgressView+AFNetworking.m in Sources */,
 				589C58371E9B3471007D0EBB /* TPKeyboardAvoidingScrollView.m in Sources */,
 				586851631E83903400115227 /* KTMError.m in Sources */,
+				588735E81EA7340B00ADA1DA /* InputView.m in Sources */,
 				581683431E83A144003F669F /* MBProgressManager.m in Sources */,
 				589C58431E9B557E007D0EBB /* WebViewJavascriptBridge.m in Sources */,
 				581683331E83A079003F669F /* AFImageDownloader.m in Sources */,

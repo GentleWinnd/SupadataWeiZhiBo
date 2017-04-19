@@ -211,7 +211,6 @@
 }
 
 
-
 // 登陆后淡入淡出更换rootViewController
 - (void)restoreRootViewController:(UIViewController *)rootViewController {
     typedef void (^Animation)(void);
