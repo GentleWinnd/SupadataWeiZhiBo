@@ -13,6 +13,8 @@
 
 @property (strong, nonatomic) UIWindow *window;
 @property (strong, nonatomic) UIViewController *MainVC;
+@property (assign, nonatomic) BOOL shouldChangeOrientation;
+
 
 @property (readonly, strong) NSPersistentContainer *persistentContainer;
 

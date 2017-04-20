@@ -14,6 +14,8 @@
 #import "ReloadView.h"
 #import <MediaPlayer/MediaPlayer.h>
 #import <JavaScriptCore/JavaScriptCore.h>//(此处为尖括号)
+#import "AppDelegate.h"
+
 
 @protocol JSObjcDelegate <JSExport>//设置代理方法暴露给JS
 
@@ -22,7 +24,7 @@
 @end
 
 
-@interface HeEducationH5ViewController ()<UIWebViewDelegate,UINavigationControllerDelegate,JSObjcDelegate>
+@interface HeEducationH5ViewController ()<UIWebViewDelegate,JSObjcDelegate>
 {
     UIWebView *webView;
     NSString *CSchoolId;
@@ -156,6 +158,9 @@
     UIStoryboard *board = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
     
     if (classesArray.count >0) {
+        AppDelegate * app = [UIApplication sharedApplication].delegate;
+        app.shouldChangeOrientation = YES;
+
         ViewController *VC = [board instantiateViewControllerWithIdentifier:@"ViewController"];
         VC.userClassInfo = classesArray;
         VC.userId = self.userId;
@@ -164,8 +169,11 @@
         VC.schoolId = CSchoolId;
         VC.schoolName = CSchoolName;
         self.navigationController.navigationBarHidden = YES;
-        [self.navigationController pushViewController:VC animated:YES];
-
+//        [self.navigationController pushViewController:VC animated:YES];
+        
+        UINavigationController * nav = [[UINavigationController alloc] initWithRootViewController:VC];
+        
+        [self.navigationController presentViewController:nav animated:YES completion:nil];
     }
 }
 
@@ -263,16 +271,16 @@
 }
 
 /****************************/
-- (void)navigationController:(UINavigationController *)navigationController
-      willShowViewController:(UIViewController *)viewController
-                    animated:(BOOL)animated {
-    
-    if (viewController != self) {
-        [self rotateVC:M_PI_2];
-    } else {
-        [self rotateVC:-M_PI_2];
-    }
-}
+//- (void)navigationController:(UINavigationController *)navigationController
+//      willShowViewController:(UIViewController *)viewController
+//                    animated:(BOOL)animated {
+////    
+////    if (viewController != self) {
+////        [self rotateVC:M_PI_2];
+////    } else {
+////        [self rotateVC:-M_PI_2];
+////    }
+//}
 
 - (void)rotateVC:(CGFloat)angle {
     CGSize screenSize = [UIScreen mainScreen].bounds.size;
@@ -291,22 +299,6 @@
     
     self.navigationController.view.bounds = bounds;
 }
-
-////支持设备自动旋转
-//
-//- (BOOL)shouldAutorotate{
-//    
-//    return NO;
-//    
-//}
-//
-////支持横竖屏显示
-//
-//- (UIInterfaceOrientationMask)supportedInterfaceOrientations{
-//    
-//    return UIInterfaceOrientationMaskLandscapeRight;
-//    
-//}
 
 // 登陆后淡入淡出更换rootViewController
 - (void)restoreRootViewController:(UIViewController *)rootViewController {

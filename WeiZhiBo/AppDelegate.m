@@ -123,4 +123,18 @@
     }
 }
 
+- (UIInterfaceOrientationMask)application:(UIApplication *)application supportedInterfaceOrientationsForWindow:(UIWindow *)window {
+    
+    
+    if (self.shouldChangeOrientation == YES) {
+        return UIInterfaceOrientationMaskLandscape;
+    }
+    else
+    {
+        return UIInterfaceOrientationMaskPortrait;
+    }
+    //    return UIInterfaceOrientationMaskAll;
+}
+
+
 @end

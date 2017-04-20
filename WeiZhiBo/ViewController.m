@@ -1091,6 +1091,16 @@ static NSString *cellID = @"cellId";
 
 }
 
+-(BOOL)shouldAutorotate {
+    return YES;
+}
+
+-(UIInterfaceOrientationMask)supportedInterfaceOrientations {
+    return UIInterfaceOrientationMaskLandscape;
+}
+
+
+
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
