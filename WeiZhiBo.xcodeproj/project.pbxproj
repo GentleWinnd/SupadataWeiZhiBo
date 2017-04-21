@@ -73,6 +73,7 @@
 		588BC0481EA99EA100524C2A /* JKEncrypt.m in Sources */ = {isa = PBXBuildFile; fileRef = 588BC0441EA99EA100524C2A /* JKEncrypt.m */; };
 		588BC0491EA99EA100524C2A /* README.md in Sources */ = {isa = PBXBuildFile; fileRef = 588BC0461EA99EA100524C2A /* README.md */; };
 		588BC04D1EA9AF9000524C2A /* DeviceDetailManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 588BC04C1EA9AF9000524C2A /* DeviceDetailManager.m */; };
+		588BC06F1EAA074C00524C2A /* Des3.java in Sources */ = {isa = PBXBuildFile; fileRef = 588BC06E1EAA074C00524C2A /* Des3.java */; };
 		588F8FD61EA5B457003486AE /* MessageTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 588F8FD41EA5B457003486AE /* MessageTableViewCell.m */; };
 		588F8FD71EA5B457003486AE /* MessageTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 588F8FD51EA5B457003486AE /* MessageTableViewCell.xib */; };
 		588F8FDB1EA5B992003486AE /* ParentsTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 588F8FD91EA5B992003486AE /* ParentsTableViewCell.m */; };
@@ -308,6 +309,7 @@
 		588BC0461EA99EA100524C2A /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		588BC04B1EA9AF9000524C2A /* DeviceDetailManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DeviceDetailManager.h; sourceTree = "<group>"; };
 		588BC04C1EA9AF9000524C2A /* DeviceDetailManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DeviceDetailManager.m; sourceTree = "<group>"; };
+		588BC06E1EAA074C00524C2A /* Des3.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = Des3.java; sourceTree = "<group>"; };
 		588F8FD31EA5B457003486AE /* MessageTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MessageTableViewCell.h; sourceTree = "<group>"; };
 		588F8FD41EA5B457003486AE /* MessageTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MessageTableViewCell.m; sourceTree = "<group>"; };
 		588F8FD51EA5B457003486AE /* MessageTableViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MessageTableViewCell.xib; sourceTree = "<group>"; };
@@ -705,6 +707,7 @@
 		5868511C1E83901B00115227 /* ThirdFrame */ = {
 			isa = PBXGroup;
 			children = (
+				588BC06E1EAA074C00524C2A /* Des3.java */,
 				588BC03F1EA99EA100524C2A /* 3DESEnCrypt */,
 				58CDBCAB1EA4631800C9FE30 /* SocketRocket */,
 				589C583A1E9B557E007D0EBB /* WebViewJavascriptBridge */,
@@ -1371,6 +1374,7 @@
 				58CDBCE51EA4631800C9FE30 /* SRWebSocket.m in Sources */,
 				581683301E83A079003F669F /* AFURLResponseSerialization.m in Sources */,
 				581683371E83A079003F669F /* UIImageView+AFNetworking.m in Sources */,
+				588BC06F1EAA074C00524C2A /* Des3.java in Sources */,
 				58CDBCDE1EA4631800C9FE30 /* SRLog.m in Sources */,
 				589584F01E84CD0400E4FAB7 /* UserData.m in Sources */,
 				585EF45D1E816EF600EC879F /* main.m in Sources */,
