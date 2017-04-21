@@ -11,9 +11,12 @@
 #import "CommentMessageView.h"
 #import "MessageTableViewCell.h"
 #import "ParentsTableViewCell.h"
+#import "UserData.h"
 
 @interface CommentMessageView()<UITableViewDelegate, UITableViewDataSource>
+@property (strong, nonatomic) IBOutlet UITableView *messageTable;
 
+@property (strong, nonatomic) NSMutableArray *contentArr;
 @end
 
 static NSString *CellIdTeacher = @"cellIdOfTeacher";
@@ -30,9 +33,25 @@ static NSString *CellIdParents = @"cellIdOfParents";
 
 - (void)awakeFromNib {
     [super awakeFromNib];
+    _contentArr = [NSMutableArray arrayWithCapacity:0];
     [self creatMessageTable];
 }
 
+- (void)reloadMessageTable {
+    if (self.messageArray.count>_contentArr.count) {
+        [_contentArr removeAllObjects];
+        [_contentArr addObjectsFromArray:self.messageArray];
+    } else {
+        return;
+    }
+    
+    if (_contentArr.count == 1) {
+        [_messageTable reloadData];
+    } else {
+        [_messageTable insertRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:self.contentArr.count-1 inSection:0]] withRowAnimation:UITableViewRowAnimationAutomatic];
+    }
+    [_messageTable scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:self.contentArr.count-1 inSection:0] atScrollPosition:UITableViewScrollPositionBottom animated:NO];
+}
 
 - (void)creatMessageTable {
 
@@ -50,7 +69,7 @@ static NSString *CellIdParents = @"cellIdOfParents";
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    return self.messageArray.count;
+    return self.contentArr.count;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -72,19 +91,22 @@ static NSString *CellIdParents = @"cellIdOfParents";
  */
     
     
-    NSDictionary *messageInfo = [NSDictionary safeDictionary:self.messageArray[indexPath.row]];
+    NSDictionary *messageInfo = [NSDictionary safeDictionary:self.contentArr[indexPath.row]];
     UITableViewCell *cell;
-    BOOL isTeacher = [messageInfo[@"isTeacher"] boolValue];
-    NSString *name = [NSString safeString:messageInfo[@"userName"]];
+    NSString *name = [UserData getUser].nickName;
+    NSString *userName = [NSString safeString:messageInfo[@"userName"]];
+    BOOL isTeacher = [name isEqualToString:userName];
+    
+    NSString *nameStr = [NSString stringWithFormat:@"%@:",userName];
     NSString *message = [NSString safeString:messageInfo[@"content"]];;
 
     if (isTeacher) {
         MessageTableViewCell *TCell = [tableView dequeueReusableCellWithIdentifier:CellIdTeacher forIndexPath:indexPath];
-        TCell.messageLabel.attributedText = [self setAttributeString:message subString:name isTeacher:YES];
+        TCell.messageLabel.attributedText = [self setAttributeString:message subString:nameStr isTeacher:YES];
         cell =TCell;
     } else {
         ParentsTableViewCell *PCell = [tableView dequeueReusableCellWithIdentifier:CellIdParents forIndexPath:indexPath];
-        PCell.messageLabel.attributedText = [self setAttributeString:message subString:name isTeacher:NO];
+        PCell.messageLabel.attributedText = [self setAttributeString:message subString:nameStr isTeacher:NO];
         cell = PCell;
     }
     
@@ -94,38 +116,20 @@ static NSString *CellIdParents = @"cellIdOfParents";
 
 - (NSAttributedString*)setAttributeString:(NSString *)string subString:(NSString *)subStr isTeacher:(BOOL)isTeacher {
 
-    NSString *contentStr = [NSString stringWithFormat:@"%@:  %@",subStr,string];
+    NSString *contentStr = [NSString stringWithFormat:@"%@ %@",subStr,string];
     NSMutableAttributedString *MString = [[NSMutableAttributedString alloc] initWithString:contentStr];
 
     if ([subStr isEqualToString:@""]) {
-//        
-//        NSString *listStr = [NSString stringWithFormat:@"%@:%@",critics,commentContent];
-//        
-//        NSRange trueNameRange = [listStr rangeOfString:critics];
-//        
-//        NSMutableAttributedString *AttributedStr = [[NSMutableAttributedString alloc]initWithString:listStr];
-//        
-//        [AttributedStr addAttribute:NSFontAttributeName value:[UIFont systemFontOfSize:20.0] range:trueNameRange];
-//        
-//        [AttributedStr addAttribute:NSForegroundColorAttributeName value:[UIColor redColor] range:trueNameRange];
-//        
-//        self.commentLabel.attributedText = AttributedStr;
+        
         return MString;
     
     } else {
-        
-
-        /*
-         一开始这样取range并不能得到想要的结果
-         */
         UIColor *textColor = isTeacher ?MAIN_BLUE_MESSAGE:MAIN_WHITE;
         
-        NSRange trueNameRange = [subStr rangeOfString:contentStr];
+        NSRange trueNameRange = [contentStr rangeOfString:subStr];
         [MString addAttribute:NSFontAttributeName value:[UIFont systemFontOfSize:12.0] range:trueNameRange];
-//        [MString addAttribute:NSForegroundColorAttributeName value:[UIColor redColor] range:NSMakeRange(0, critics.length)];
         [MString addAttribute:NSForegroundColorAttributeName value:textColor range:trueNameRange];
 
-        
     }
     return MString;
 }

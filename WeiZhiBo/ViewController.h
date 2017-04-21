@@ -13,13 +13,27 @@ typedef NS_ENUM(NSInteger, MessageType) {
     MessageTypeClose
 };
 
+typedef NS_ENUM(NSInteger, AlertViewType) {
+
+    AlertViewTypeSendParents,
+    AlertViewTypeQuitPlayView,
+    AlertViewTypeStopPlay
+
+};
+
+typedef NS_ENUM(NSInteger, MessageSocketType) {
+    MessageSocketTypeDefualtMessage=1,
+    MessageSocketTypeLivePeople,
+    MessageSocketTypeThumbNumebr
+
+};
+
 #import <UIKit/UIKit.h>
 #import <Foundation/Foundation.h>
 #import <AVFoundation/AVFoundation.h>
-#import "V8HorizontalPickerView.h"
 @class StreamingViewModel;
 
-@interface ViewController : UIViewController<V8HorizontalPickerViewDelegate,V8HorizontalPickerViewDataSource>
+@interface ViewController : UIViewController
 {
     BOOL         _isPreviewing;
     NSString   * _pushUrl;

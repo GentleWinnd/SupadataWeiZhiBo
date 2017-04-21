@@ -40,6 +40,7 @@
     NSDictionary *dict=@{NSFontAttributeName:[UIFont systemFontOfSize:14.0]};
     CGSize contentSize=[content sizeWithAttributes:dict];//计算文字长度
     float numLine=ceilf(contentSize.width/textViewWidth); //计算当前文字长度对应的行数
+    _messageStr = textView.text;
     [self.delegate inputViewTextChanged:numLine];
 
 }
@@ -62,10 +63,10 @@
 
 - (IBAction)sendBtnAction:(UIButton *)sender {
     
-    if (self.sendMessage) {
-        self.sendMessage(self.messageStr);
-        [self.textView resignFirstResponder];
-    }
+//    if (self.sendMessage) {
+//        self.sendMessage(self.messageStr);
+//        [self.textView resignFirstResponder];
+//    }
     
 }
 

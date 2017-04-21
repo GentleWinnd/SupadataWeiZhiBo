@@ -27,6 +27,9 @@
     [aCoder encodeObject:self.userToken forKey:@"userToken"];
     [aCoder encodeObject:self.userQuitTime forKey:@"userQuitTime"];
     
+    [aCoder encodeObject:self.openId forKey:@"openId"];
+    [aCoder encodeObject:self.openToken forKey:@"openToken"];
+    
     [aCoder encodeObject:self.accessToken forKey:ACCESS_TOKEN];
     [aCoder encodeObject:[NSNumber numberWithInt:self.expiresIn] forKey:EXPIRES_IN];
     [aCoder encodeObject:self.refreshToken forKey:REFRESH_TOKEN];

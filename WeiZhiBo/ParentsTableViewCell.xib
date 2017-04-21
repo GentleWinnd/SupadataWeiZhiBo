@@ -17,9 +17,9 @@
                 <rect key="frame" x="0.0" y="0.0" width="320" height="34"/>
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
-                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="I36-Vh-TeI">
-                        <rect key="frame" x="6" y="6" width="306" height="21"/>
-                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="I36-Vh-TeI">
+                        <rect key="frame" x="8" y="6" width="304" height="21"/>
+                        <fontDescription key="fontDescription" type="system" pointSize="12"/>
                         <color key="textColor" red="1" green="0.77647058823529413" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                         <nil key="highlightedColor"/>
                     </label>
@@ -27,7 +27,7 @@
                 <constraints>
                     <constraint firstAttribute="trailing" secondItem="I36-Vh-TeI" secondAttribute="trailing" constant="8" id="2uU-9n-guu"/>
                     <constraint firstItem="I36-Vh-TeI" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="top" constant="6" id="C6N-0g-YFW"/>
-                    <constraint firstItem="I36-Vh-TeI" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" constant="6" id="Mwa-Df-ljX"/>
+                    <constraint firstItem="I36-Vh-TeI" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" constant="8" id="Mwa-Df-ljX"/>
                     <constraint firstAttribute="bottom" secondItem="I36-Vh-TeI" secondAttribute="bottom" constant="6.5" id="XLB-FB-XZA"/>
                 </constraints>
             </tableViewCellContentView>

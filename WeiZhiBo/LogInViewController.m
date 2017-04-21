@@ -173,10 +173,6 @@
     [WZBNetServiceAPI postLoginByHeBabyWithParameters:parameter success:^(id responseObject) {
         [_progressM hiddenProgress];
         if ([responseObject[@"status"] intValue] == 1) {//登陆成功
-            dispatch_async(dispatch_get_main_queue(), ^{
-                [Progress progressShowcontent:@"登陆成功"];
-                
-            });
 
             HeEducationH5ViewController *heView = [[HeEducationH5ViewController alloc] init];
             heView.userClassInfo = [NSArray safeArray:responseObject[@"data"][@"school"]];

@@ -69,6 +69,10 @@
 		586ACE401E9B92D800B39FA1 /* ContentView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 586ACE3F1E9B92D800B39FA1 /* ContentView.xib */; };
 		588735E81EA7340B00ADA1DA /* InputView.m in Sources */ = {isa = PBXBuildFile; fileRef = 588735E71EA7340B00ADA1DA /* InputView.m */; };
 		588735EA1EA7341900ADA1DA /* InputView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 588735E91EA7341900ADA1DA /* InputView.xib */; };
+		588BC0471EA99EA100524C2A /* GTMBase64.m in Sources */ = {isa = PBXBuildFile; fileRef = 588BC0411EA99EA100524C2A /* GTMBase64.m */; };
+		588BC0481EA99EA100524C2A /* JKEncrypt.m in Sources */ = {isa = PBXBuildFile; fileRef = 588BC0441EA99EA100524C2A /* JKEncrypt.m */; };
+		588BC0491EA99EA100524C2A /* README.md in Sources */ = {isa = PBXBuildFile; fileRef = 588BC0461EA99EA100524C2A /* README.md */; };
+		588BC04D1EA9AF9000524C2A /* DeviceDetailManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 588BC04C1EA9AF9000524C2A /* DeviceDetailManager.m */; };
 		588F8FD61EA5B457003486AE /* MessageTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 588F8FD41EA5B457003486AE /* MessageTableViewCell.m */; };
 		588F8FD71EA5B457003486AE /* MessageTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 588F8FD51EA5B457003486AE /* MessageTableViewCell.xib */; };
 		588F8FDB1EA5B992003486AE /* ParentsTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 588F8FD91EA5B992003486AE /* ParentsTableViewCell.m */; };
@@ -295,6 +299,15 @@
 		588735E61EA7340B00ADA1DA /* InputView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = InputView.h; sourceTree = "<group>"; };
 		588735E71EA7340B00ADA1DA /* InputView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = InputView.m; sourceTree = "<group>"; };
 		588735E91EA7341900ADA1DA /* InputView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = InputView.xib; sourceTree = "<group>"; };
+		588BC0401EA99EA100524C2A /* GTMBase64.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GTMBase64.h; sourceTree = "<group>"; };
+		588BC0411EA99EA100524C2A /* GTMBase64.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GTMBase64.m; sourceTree = "<group>"; };
+		588BC0421EA99EA100524C2A /* GTMDefines.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GTMDefines.h; sourceTree = "<group>"; };
+		588BC0431EA99EA100524C2A /* JKEncrypt.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JKEncrypt.h; sourceTree = "<group>"; };
+		588BC0441EA99EA100524C2A /* JKEncrypt.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JKEncrypt.m; sourceTree = "<group>"; };
+		588BC0451EA99EA100524C2A /* ReadMe.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ReadMe.h; sourceTree = "<group>"; };
+		588BC0461EA99EA100524C2A /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
+		588BC04B1EA9AF9000524C2A /* DeviceDetailManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DeviceDetailManager.h; sourceTree = "<group>"; };
+		588BC04C1EA9AF9000524C2A /* DeviceDetailManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DeviceDetailManager.m; sourceTree = "<group>"; };
 		588F8FD31EA5B457003486AE /* MessageTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MessageTableViewCell.h; sourceTree = "<group>"; };
 		588F8FD41EA5B457003486AE /* MessageTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MessageTableViewCell.m; sourceTree = "<group>"; };
 		588F8FD51EA5B457003486AE /* MessageTableViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MessageTableViewCell.xib; sourceTree = "<group>"; };
@@ -692,6 +705,7 @@
 		5868511C1E83901B00115227 /* ThirdFrame */ = {
 			isa = PBXGroup;
 			children = (
+				588BC03F1EA99EA100524C2A /* 3DESEnCrypt */,
 				58CDBCAB1EA4631800C9FE30 /* SocketRocket */,
 				589C583A1E9B557E007D0EBB /* WebViewJavascriptBridge */,
 				589C58301E9B3471007D0EBB /* AvoidKeyBoard */,
@@ -745,6 +759,7 @@
 		586851661E83905100115227 /* Tool */ = {
 			isa = PBXGroup;
 			children = (
+				588BC04A1EA9AF9000524C2A /* DeviceDetailManager */,
 				5898E3821E8644D600FC7CCB /* AppLogMgr.h */,
 				5898E3831E8644D600FC7CCB /* AppLogMgr.m */,
 				589584F41E84CD8200E4FAB7 /* ColorHeader.h */,
@@ -753,6 +768,29 @@
 				581682D91E83927B003F669F /* NetService */,
 			);
 			path = Tool;
+			sourceTree = "<group>";
+		};
+		588BC03F1EA99EA100524C2A /* 3DESEnCrypt */ = {
+			isa = PBXGroup;
+			children = (
+				588BC0401EA99EA100524C2A /* GTMBase64.h */,
+				588BC0411EA99EA100524C2A /* GTMBase64.m */,
+				588BC0421EA99EA100524C2A /* GTMDefines.h */,
+				588BC0431EA99EA100524C2A /* JKEncrypt.h */,
+				588BC0441EA99EA100524C2A /* JKEncrypt.m */,
+				588BC0451EA99EA100524C2A /* ReadMe.h */,
+				588BC0461EA99EA100524C2A /* README.md */,
+			);
+			path = 3DESEnCrypt;
+			sourceTree = "<group>";
+		};
+		588BC04A1EA9AF9000524C2A /* DeviceDetailManager */ = {
+			isa = PBXGroup;
+			children = (
+				588BC04B1EA9AF9000524C2A /* DeviceDetailManager.h */,
+				588BC04C1EA9AF9000524C2A /* DeviceDetailManager.m */,
+			);
+			path = DeviceDetailManager;
 			sourceTree = "<group>";
 		};
 		589584ED1E84CCE600E4FAB7 /* Model */ = {
@@ -1272,6 +1310,8 @@
 				588735E81EA7340B00ADA1DA /* InputView.m in Sources */,
 				581683431E83A144003F669F /* MBProgressManager.m in Sources */,
 				589C58431E9B557E007D0EBB /* WebViewJavascriptBridge.m in Sources */,
+				588BC0491EA99EA100524C2A /* README.md in Sources */,
+				588BC0481EA99EA100524C2A /* JKEncrypt.m in Sources */,
 				581683331E83A079003F669F /* AFImageDownloader.m in Sources */,
 				58CDBCD61EA4631800C9FE30 /* SRIOConsumer.m in Sources */,
 				58CDBCDB1EA4631800C9FE30 /* SRError.m in Sources */,
@@ -1295,6 +1335,7 @@
 				58CDBD451EA4D10C00C9FE30 /* CommentMessageView.m in Sources */,
 				581683341E83A079003F669F /* AFNetworkActivityIndicatorManager.m in Sources */,
 				58CDBCDD1EA4631800C9FE30 /* SRHTTPConnectMessage.m in Sources */,
+				588BC04D1EA9AF9000524C2A /* DeviceDetailManager.m in Sources */,
 				589C58451E9B557E007D0EBB /* WebViewJavascriptBridgeBase.m in Sources */,
 				58CDBCD51EA4631800C9FE30 /* SRDelegateController.m in Sources */,
 				588F8FDB1EA5B992003486AE /* ParentsTableViewCell.m in Sources */,
@@ -1303,6 +1344,7 @@
 				58CDBCDC1EA4631800C9FE30 /* SRHash.m in Sources */,
 				5816832F1E83A079003F669F /* AFURLRequestSerialization.m in Sources */,
 				585EF4FD1E817E1300EC879F /* LogInViewController.m in Sources */,
+				588BC0471EA99EA100524C2A /* GTMBase64.m in Sources */,
 				5898E3841E8644D600FC7CCB /* AppLogMgr.m in Sources */,
 				58CDBCE31EA4631800C9FE30 /* NSURLRequest+SRWebSocket.m in Sources */,
 				589584FC1E84CE1F00E4FAB7 /* UIColor+HexString.m in Sources */,

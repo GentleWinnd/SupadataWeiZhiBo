@@ -15,15 +15,14 @@
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
                 <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="BN9-TQ-Ggm">
-                    <rect key="frame" x="0.0" y="0.0" width="375" height="60"/>
-                    <color key="backgroundColor" white="1" alpha="0.10616438356164383" colorSpace="calibratedWhite"/>
+                    <rect key="frame" x="0.0" y="0.0" width="375" height="66"/>
                     <constraints>
-                        <constraint firstAttribute="height" constant="60" id="6o4-Dr-KQh"/>
+                        <constraint firstAttribute="height" constant="66" id="6o4-Dr-KQh"/>
                     </constraints>
                 </imageView>
                 <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" style="plain" separatorStyle="none" allowsSelection="NO" rowHeight="44" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="myK-Qm-S0B">
-                    <rect key="frame" x="0.0" y="60" width="375" height="557"/>
-                    <color key="backgroundColor" white="1" alpha="0.10546875" colorSpace="calibratedWhite"/>
+                    <rect key="frame" x="0.0" y="66" width="375" height="551"/>
+                    <color key="backgroundColor" white="1" alpha="0.0" colorSpace="calibratedWhite"/>
                 </tableView>
                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="r2u-l3-v03">
                     <rect key="frame" x="0.0" y="617" width="375" height="50"/>
@@ -36,7 +35,6 @@
                             </connections>
                         </button>
                     </subviews>
-                    <color key="backgroundColor" red="0.0" green="0.0" blue="0.0" alpha="0.10645869006849312" colorSpace="calibratedRGB"/>
                     <constraints>
                         <constraint firstAttribute="height" constant="50" id="QVE-Dn-jgV"/>
                         <constraint firstItem="PZu-Ri-gCU" firstAttribute="centerY" secondItem="r2u-l3-v03" secondAttribute="centerY" id="ZuF-eU-9hC"/>

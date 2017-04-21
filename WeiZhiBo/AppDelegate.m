@@ -50,6 +50,10 @@
 }
 - (BOOL)application:(UIApplication *)application openURL:(NSURL *)url sourceApplication:(NSString *)sourceApplication annotation:(id)annotation {
     NSString *urlStr = [url absoluteString];
+    /*
+     URL Schemes?appToken=xxxx
+     URL Schemes+?+appToken=xxxx
+     */
     if ([urlStr hasPrefix:@"AgriculturalOfHeBei://"]) {
 //        NSLog(@"TestAppDemo1 request params: %@", urlStr);
         urlStr = [urlStr stringByReplacingOccurrencesOfString:@"AgriculturalOfHeBei://" withString:@""];
@@ -75,6 +79,10 @@
     // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
     // Saves changes in the application's managed object context before the application terminates.
     [self saveContext];
+}
+
+- (BOOL)application:(UIApplication *)application shouldAllowExtensionPointIdentifier:(NSString *)extensionPointIdentifier {
+    return NO;
 }
 
 
@@ -121,19 +129,6 @@
         NSLog(@"Unresolved error %@, %@", error, error.userInfo);
         abort();
     }
-}
-
-- (UIInterfaceOrientationMask)application:(UIApplication *)application supportedInterfaceOrientationsForWindow:(UIWindow *)window {
-    
-    
-    if (self.shouldChangeOrientation == YES) {
-        return UIInterfaceOrientationMaskLandscape;
-    }
-    else
-    {
-        return UIInterfaceOrientationMaskPortrait;
-    }
-    //    return UIInterfaceOrientationMaskAll;
 }
 
 

@@ -53,8 +53,10 @@
     
     self.session = [[VCSimpleSession alloc] initWithConfiguration:configuration];
     self.session.aspectMode = VCAspectModeFill;
-    self.session.beautyLevel = VCBeautyLevelWhiten;
+    self.session.beautyLevel = VCBeautyLevelNatural;
     self.session.delegate = delegate;
+    [self.session setBeatyEffect:1.0 withSmooth:1.0 withPink:0.5];
+
 }
 
 - (void)onNotification:(NSNotification*)notification {

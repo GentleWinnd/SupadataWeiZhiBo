@@ -7,6 +7,8 @@
 //
 #define  HEIGHT CGRectGetHeight(self.view.frame)
 #define  WIDTH CGRectGetWidth(self.view.frame)
+#define  KEY_BOARD_M_H 162
+#define  KEY_BOARD_H_H 193
 
 #import "ViewController.h"
 #import "SchoolNameView.h"
@@ -27,6 +29,7 @@
 #import "SocketRocket.h"
 #import "CommentMessageView.h"
 #import "InputView.h"
+#import "DeviceDetailManager.h"
 
 
 @interface ViewController ()<VCSessionDelegate, SRWebSocketDelegate, InputViewDelegate>
@@ -55,6 +58,7 @@
 @property (strong, nonatomic) IBOutlet UIView *inputView;
 
 @property (strong, nonatomic) IBOutlet NSLayoutConstraint *inputViewBottomSpace;
+@property (strong, nonatomic) IBOutlet UIButton *backBtn;
 
 
 /************bttomView*********/
@@ -95,6 +99,7 @@ static NSString *cellID = @"cellId";
     MessageType messageType;
     NSMutableArray *messageArr;
     CGFloat keyBoardHeight;
+    CGFloat textMessgeHeight;
 
 
     CommentMessageView *commentView;
@@ -124,7 +129,7 @@ static NSString *cellID = @"cellId";
     [self AFNReachability];
     [self createInputView];
     [self createMessageView];
-
+    [self.view bringSubviewToFront:self.backBtn];
 }
 
 
@@ -134,13 +139,14 @@ static NSString *cellID = @"cellId";
         NSDictionary *classInfo = [NSDictionary safeDictionary:[self.userClassInfo firstObject]];
         className = [NSString safeString:classInfo[@"className"]];
         classId = [NSString safeNumber:classInfo[@"classId"]];
-        _CView.classLabel.text = classInfo[@"className"];
+        _CView.classLabel.text = [NSString stringWithFormat:@"%@-%@",_schoolName,className];
 
         [self getPushInfo];
     }
     
-   
+    textMessgeHeight = 42;
     currentRotation = 0;
+    messageArr = [NSMutableArray arrayWithCapacity:0];
     unfoldInfo = [NSMutableDictionary dictionaryWithCapacity:self.userClassInfo.count];
     
 }
@@ -160,8 +166,7 @@ static NSString *cellID = @"cellId";
     _beautySlider.transform = CGAffineTransformMakeRotation(M_PI_2);
     [_beautySlider setThumbImage:[UIImage imageNamed:@"heart"] forState:UIControlStateNormal];
     [self orientationChangedWithDeviceOrientation:UIDeviceOrientationLandscapeLeft];
-    [self performSelector:@selector(showCommentMessageView) withObject:nil afterDelay:2.0];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(changeContentViewPoint:) name:UIKeyboardWillShowNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(changeContentViewPoint:) name:UIKeyboardDidChangeFrameNotification object:nil];
 
 }
 
@@ -170,10 +175,9 @@ static NSString *cellID = @"cellId";
 - (void)createContentView {
     self.CView = [[NSBundle mainBundle] loadNibNamed:@"ContentView" owner:self options:nil].lastObject;
     self.CView.frame = CGRectMake(SCREEN_WIDTH-60, 50, 120, 30);
-    self.CView.transform = CGAffineTransformMakeRotation(M_PI_2);
+    self.CView.transform = CGAffineTransformMakeRotation(M_PI_2);http://www.cocoachina.com/ios/20150918/13449.html
     
     [self.backView addSubview:self.CView];
-
 }
 
 /*************************set baidu sdk**********************/
@@ -189,7 +193,8 @@ static NSString *cellID = @"cellId";
 
 }
 - (IBAction)unfoldBtnClick:(UIButton *)sender {//显示或收起底部按钮栏
-    [self showBottomView];
+    sender.selected = !sender.selected;
+    [self showBottomView:sender.selected];
 }
 
 #pragma mark - action
@@ -208,9 +213,12 @@ static NSString *cellID = @"cellId";
         _beautySlider.hidden = !sender.selected;
         
     } else {//返回
-        [self clearLog];
+        if (timer) {
+            [self alertViewMessage:@"正在直播，是否关闭？" alertType:AlertViewTypeQuitPlayView];
 
-        [self.navigationController popViewControllerAnimated:NO];
+        } else {
+            [self.navigationController popViewControllerAnimated:NO];
+        }
     }
 }
 
@@ -264,19 +272,14 @@ static NSString *cellID = @"cellId";
 - (IBAction)btnClickAction:(UIButton *)sender {
     if (sender.tag == 1) {//播放
         if (sender.selected) {//停止zhibo
-            [self stopRtmp];
-
+            [self alertViewMessage:@"是否停止直播？" alertType:AlertViewTypeStopPlay];
         } else {//开始直播
             if (!([_pushUrl hasPrefix:@"rtmp://"] )) {
                 [Progress progressShowcontent:@"请选择班级" currView:self.view];
                 return;
             }
-
-            [self alertViewSendMassageToPatriarch];
+            [self alertViewMessage:@"是否短信告知家长？" alertType:AlertViewTypeSendParents];
         }
-        sender.selected = !sender.selected;
-        [self.CView hiddenDoingView:!sender.selected];
-
 
     } else if (sender.tag == 2){//翻转摄像头
         [self.model switchCamera];
@@ -298,6 +301,7 @@ static NSString *cellID = @"cellId";
 #pragma mark - start push
 -(BOOL)startRtmp {
 //    NSString* rtmpUrl = @"rtmp://push.bcelive.com/live/ftqhgk3ch6wtwcvexu";//测试地址
+    
     [self createTimer];
 
     NSString *rtmpUrl = _pushUrl;
@@ -322,7 +326,11 @@ static NSString *cellID = @"cellId";
   
     self.isBacking = NO;
     [manager startMonitoring];//开启网络监听
+    [self showBottomView:NO];//隐藏侧边栏
+    [self showCommentMessageView:YES];
     [self reconnectWebSocket];
+    [self.CView hiddenDoingView:NO];
+    _playBtn.selected = YES;
     
     return YES;
 }
@@ -330,9 +338,16 @@ static NSString *cellID = @"cellId";
 - (void)stopRtmp {
     self.isBacking = YES;
     BOOL result = [self.model back];
+    
     [self stopTimer];
-    [manager stopMonitoring];
     [self closeWebSocket];//关闭socket
+    [self showBottomView:YES];
+    [self showCommentMessageView:NO];
+    [self.CView hiddenDoingView:YES];
+    _playBtn.selected = NO;
+    
+    [manager stopMonitoring];
+    [messageArr removeAllObjects];
     [[UIApplication sharedApplication] setIdleTimerDisabled:NO];
 }
 
@@ -340,52 +355,6 @@ static NSString *cellID = @"cellId";
     [self stopRtmp];
     self.model = nil;
 }
-
-
-- (BOOL)prefersStatusBarHidden {
-    return YES;
-}
-
-/*******************deal push****************/
-//使用AFN框架来检测网络状态的改变
--(void)AFNReachability {
-    //1.创建网络监听管理者
-    manager = [AFNetworkReachabilityManager sharedManager];
-    
-    //2.监听网络状态的改变
-    /*
-     AFNetworkReachabilityStatusUnknown          = 未知
-     AFNetworkReachabilityStatusNotReachable     = 没有网络
-     AFNetworkReachabilityStatusReachableViaWWAN = 3G
-     AFNetworkReachabilityStatusReachableViaWiFi = WIFI
-     */
-    @WeakObj(self)
-    [manager setReachabilityStatusChangeBlock:^(AFNetworkReachabilityStatus status) {
-        switch (status) {
-            case AFNetworkReachabilityStatusUnknown:
-                NSLog(@"未知");
-                break;
-            case AFNetworkReachabilityStatusNotReachable:
-                NSLog(@"没有网络");
-                [Progress progressShowcontent:@"当前网络不可用，请检查" currView:selfWeak.view];
-                break;
-            case AFNetworkReachabilityStatusReachableViaWWAN:
-                NSLog(@"3G");
-                [Progress progressShowcontent:@"您当前使用的是4G网络，直播时建议使用WiFi" currView:selfWeak.view];
-                break;
-            case AFNetworkReachabilityStatusReachableViaWiFi:
-                NSLog(@"WIFI");
-                [Progress progressShowcontent:@"当前是在WiFi环境下，您可以放心使用" currView:selfWeak.view];
-                break;
-                
-            default:
-                break;
-        }
-    }];
-    
-}
-
-
 
 #pragma mark - create timer
 - (void)createTimer {
@@ -412,13 +381,12 @@ static NSString *cellID = @"cellId";
         [self uploadZhiBoState:NO];
     }
     self.CView.redDotImage.hidden = !self.CView.redDotImage.hidden;
-    if (seconds%5==0) {//获取观看人数
-        [self getWacthPeopleNumber];
-    }
+//    if (seconds%5==0) {//获取观看人数
+//        [self getWacthPeopleNumber];
+//    }
     
     if (seconds%10 == 0 && _webSocket) {//发送心跳包
         [_webSocket sendPing:nil error:nil];
-        [self sendMessage:MessageTypeSendMessage messageString:@"测试消息"];
     }
 }
 
@@ -449,7 +417,6 @@ static NSString *cellID = @"cellId";
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onAppWillEnterForeground:) name:UIApplicationWillEnterForegroundNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onAppDidBecomeActive:) name:UIApplicationDidBecomeActiveNotification object:nil];
 //    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(statusBarOrientationChanged:) name:UIApplicationDidChangeStatusBarOrientationNotification object:nil];
-    [Progress progressShowcontent:@"直播时请将手机横置" currView:self.view];
 }
 
 
@@ -622,26 +589,6 @@ static NSString *cellID = @"cellId";
 
 }
 
-- (void)alertViewSendMassageToPatriarch {
-    
-    UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"提示" message:@"是否短信告知家长？" preferredStyle:UIAlertControllerStyleAlert];
-    
-    // 添加按钮
-    [alert addAction:[UIAlertAction actionWithTitle:@"是" style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
-        [self startRtmp];
-        [self groupSendMassage];
-    }]];
-    
-    [alert addAction:[UIAlertAction actionWithTitle:@"否" style:UIAlertActionStyleCancel handler:^(UIAlertAction *action) {
-        [self startRtmp];
-    }]];
-    alert.view.subviews.firstObject.transform = CGAffineTransformMakeRotation(M_PI_2);
-    
-    [self presentViewController:alert animated:YES completion:nil];
-    
-}
-
-
 /*******************create class name pickerview*****************/
 
 - (void)createCLassNamePickerView {
@@ -666,7 +613,7 @@ static NSString *cellID = @"cellId";
             if (CId.length != 0) {//ceshi
                 classId = CId;
                 className = CName.length == 0?@"未命名班级":CName;
-                _CView.classLabel.text = className;
+                _CView.classLabel.text = [NSString stringWithFormat:@"%@-%@",_schoolName,className];
                 [selfWeak showClassInfoTable:NO];
                 [selfWeak getPushInfo];//get push info
 
@@ -715,7 +662,7 @@ static NSString *cellID = @"cellId";
 }
 
 #pragma mark - show classInfo table
-- (void)showBottomView {
+- (void)showBottomView:(BOOL) show {
     
     if (self.classView.hidden == NO) {
         [Progress progressShowcontent:@"请选择班级！！！" currView:self.view];
@@ -723,7 +670,7 @@ static NSString *cellID = @"cellId";
     }
     CGRect frame = self.bottomView.frame;
     
-    if (frame.origin.y > SCREEN_HEIGHT - 98 ) {
+    if (show) {
 //        if (_deviceOrientation == UIDeviceOrientationPortrait ||_deviceOrientation == UIDeviceOrientationUnknown) {
 //            frame = CGRectMake(8, WIDTH - 55 -208, 120, 200);
 //        } else {
@@ -737,16 +684,348 @@ static NSString *cellID = @"cellId";
         self.foldImageView.image = [UIImage imageNamed:@"zhankai"];
     }
     
-    [UIView animateWithDuration:0.01 animations:^{
+    [UIView animateWithDuration:0.001 animations:^{
         _bottomView.frame = frame;
     }];
     
 }
 
 
+/****************webSocket*****************/
+
+///--------------------------------------
+#pragma mark - Actions web socket
+///--------------------------------------
+
+- (void)reconnectWebSocket {//创建webSocket
+    
+    _webSocket.delegate = nil;
+    [_webSocket close];
+    
+    _webSocket = [[SRWebSocket alloc] initWithURL:[NSURL URLWithString:@"ws://baihongyu1234567.xicp.io/ssm/websocket"]];
+//    _webSocket = [[SRWebSocket alloc] initWithURL:[NSURL URLWithString:@"ws://live.sch.supadata.cn:9080/ssm/websocket"]];
+    _webSocket.delegate = self;
+    
+    [_webSocket open];
+}
+
+- (void)closeWebSocket {//关闭webSocket
+    [self sendMessage:MessageTypeClose messageString:@"WebSocket closed"];
+    [_webSocket close];
+    _webSocket = nil;
+
+}
+
+///--------------------------------------
+#pragma mark - SRWebSocketDelegate
+///--------------------------------------
+
+- (void)webSocketDidOpen:(SRWebSocket *)webSocket {
+    NSLog(@"Websocket Connected");
+//    self.title = @"Connected!";
+    NSLog(@"Websocket Connected");
+    [self sendMessage:MessageTypeOpen messageString:@"Websocket Connected"];
+}
+
+- (void)webSocket:(SRWebSocket *)webSocket didFailWithError:(NSError *)error {
+    NSLog(@":( Websocket Failed With Error %@", error);
+    
+    _webSocket = nil;
+}
+
+- (void)webSocket:(SRWebSocket *)webSocket didReceiveMessageWithString:(nonnull NSString *)string {
+    NSLog(@"Received \"%@\"", string);
+//    if (messageArr.count == 0) {
+//        messageArr = nil;
+//        [messageArr addObject:[self dictionaryWithJsonString:string]];
+//    } else {
+    
+//    }
+    NSDictionary *messageInfos = [NSDictionary safeDictionary:[self dictionaryWithJsonString:string]];
+    MessageSocketType type = [NSString safeNumber:messageInfos[@"flag"]].integerValue;
+    if (type == MessageSocketTypeDefualtMessage) {
+        [messageArr addObject:messageInfos];
+        commentView.messageArray = messageArr;
+        [commentView reloadMessageTable];
+
+    } else if (type == MessageSocketTypeLivePeople) {
+        int WNum = [[NSString safeNumber:messageInfos[@"livePeople"]] intValue];
+        self.CView.watchLabel.text = [NSString stringWithFormat:@"%d 人",WNum];
+       
+    } else if (type == MessageSocketTypeThumbNumebr) {
+        int PNum = [[NSString safeNumber: messageInfos[@"givePraise"]] intValue];
+        self.CView.thumbsUpLabel.text = [NSString stringWithFormat:@"%d 人",PNum];
+
+    }
+    
+}
+
+- (void)webSocket:(SRWebSocket *)webSocket didCloseWithCode:(NSInteger)code reason:(NSString *)reason wasClean:(BOOL)wasClean {
+    NSLog(@"WebSocket closed");
+    _webSocket = nil;
+    
+}
+
+- (void)webSocket:(SRWebSocket *)webSocket didReceivePong:(NSData *)pongPayload {//每次发送一次心跳包时，服务器返回的消息
+    
+    NSLog(@"WebSocket received pong");
+}
 
 
-#pragma mark - 
+#pragma mark - sendMessage
+- (void)sendMessage:(MessageType)type messageString:(NSString *)messageStr {
+    /*
+     "message": {
+     "type": 1,(1建立连接第一次发，2发消息，3关闭连接发)
+     "userType": 1,(1老师，3家长)
+     "classId": 43432,(老师必传)
+     "parentId": 123,(家长必传)
+     "teacherId": 321,
+     "livePeopel": 321,
+     "content": "fsdjkgdaga"
+     "userName": "李家长",
+     "userPic": "http://aservice.139jy.cn/webshare/static/ucenter/user/64066/2100.jpg",
+     "videoId":
+     },
+     
+     
+     */
+    if (classId == nil) {
+        return;
+    }
+    NSString *userNickName = [NSString safeString:[UserData getUser].nickName];
+    
+    NSError *error;
+    
+    NSData *jsonData = [NSJSONSerialization dataWithJSONObject:@{@"message":@{@"type":[NSNumber numberWithInteger:type],
+                                                                 @"userType":@"1",
+                                                                 @"classId":classId,
+                                                                 @"parentId":@"",
+                                                                 @"teacherId":self.userId,
+                                                                 @"livePeopel":@"",
+                                                                 @"content":messageStr,
+                                                                 @"userName":userNickName,
+                                                                 @"userPic":@"",
+                                                                 @"videoId":cameraDataId}} options:NSJSONWritingPrettyPrinted error:&error];
+    
+    NSString *jsonString = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
+    
+    BOOL success = [_webSocket sendString:jsonString error:nil];
+}
+
+#pragma mark- jsonString To dictionary
+
+- (NSDictionary *)dictionaryWithJsonString:(NSString *)jsonString {
+    if (jsonString == nil) {
+        return nil;
+    }
+    
+    NSData *jsonData = [jsonString dataUsingEncoding:NSUTF8StringEncoding];
+    NSError *err;
+    NSDictionary *dic = [NSJSONSerialization JSONObjectWithData:jsonData
+                                                        options:NSJSONReadingMutableContainers
+                                                          error:&err];
+    if(err)
+    {
+        NSLog(@"json解析失败：%@",err);
+        return nil;
+    }
+    return dic;
+}
+
+#pragma mark- 创建评论view
+
+- (void)createMessageView {
+
+    commentView = [[NSBundle mainBundle] loadNibNamed:@"CommentMessageView" owner:self options:nil].lastObject;
+    commentView.messageArray = messageArr;
+    commentView.hidden = YES;
+    commentView.frame = CGRectMake(0, 0, 280, 0);
+    @WeakObj(inputView)
+    @WeakObj(self)
+    commentView.sendMessage = ^(BOOL selected){
+        
+        inputViewWeak.hidden = NO;
+        inputViewWeak.frame = CGRectMake(0, SCREEN_WIDTH, SCREEN_HEIGHT, 42);
+        [inputViewWeak.textView becomeFirstResponder];
+
+        [selfWeak changeOration];
+        [selfWeak addKeyBoardBackView];
+
+    };
+    [self.view insertSubview:commentView belowSubview:inputView];
+}
+
+- (void)showCommentMessageView:(BOOL)show {
+    _backBtn.hidden = show;
+    [UIView animateWithDuration:0.1 animations:^{
+        commentView.frame = CGRectMake(0, 0, HEIGHT_6_ZSCALE(222), SCREEN_WIDTH);
+        commentView.hidden = !show;
+    }];
+
+}
+
+- (void)changeOration {
+    NSInteger windowCount = [[[UIApplication sharedApplication] windows] count];
+    if (windowCount < 2) {
+        return;
+    }
+    
+    UIWindow *keyboardWindow = [[[UIApplication sharedApplication] windows]  lastObject];
+    UIWindow *textWindow = [[[UIApplication sharedApplication] windows] objectAtIndex:windowCount-2];
+//    CGPoint point = keyboardWindow.frame.origin;
+    keyboardWindow.transform = CGAffineTransformMakeRotation(M_PI_2);
+    keyboardWindow.bounds = CGRectMake(0,0,SCREEN_HEIGHT, SCREEN_WIDTH);
+    
+    textWindow.transform = CGAffineTransformMakeRotation(M_PI_2);
+    textWindow.bounds = CGRectMake(0, 0,SCREEN_HEIGHT, SCREEN_WIDTH);
+ 
+}
+
+
+- (void) changeContentViewPoint:(NSNotification *)notification {// 根据键盘状态，调整_mainView的位置
+    NSDictionary *userInfo = [notification userInfo];
+    NSValue *value = [userInfo objectForKey:UIKeyboardFrameEndUserInfoKey];
+    CGFloat keyBoardEndX = value.CGRectValue.size.width;
+    if (keyBoardEndX>200) {
+        return;
+    }
+    
+    NSString *device = [DeviceDetailManager getSystemDeviceModel];
+    if ([device isEqualToString:@"iPad"]) {
+//        [self changeOration];
+    }
+    CGRect frame = CGRectMake(0,SCREEN_WIDTH-keyBoardEndX-textMessgeHeight, SCREEN_HEIGHT, textMessgeHeight);
+    inputView.frame = frame;
+    keyBoardHeight = keyBoardEndX;
+    
+    [UIView animateWithDuration:0.01  animations:^{
+        [UIView setAnimationBeginsFromCurrentState:YES];
+        inputView.frame = frame;
+    }];
+
+    // 添加移动动画，使视图跟随键盘移动
+}
+
+/***************评论输入框***************/
+#pragma mark - 创建输入评论的消息
+
+- (void)createInputView {
+    inputView = [[NSBundle mainBundle] loadNibNamed:@"InputView" owner:self options:nil].lastObject;
+    inputView.frame = CGRectMake(0, 0, SCREEN_HEIGHT, 42);
+    inputView.hidden = YES;
+    inputView.delegate = self;
+    @WeakObj(self)
+    @WeakObj(inputView)
+    inputView.sendMessage = ^(NSString *message) {
+        if (message.length>60) {
+            [Progress progressShowcontent:@"发表评论内容不能超过60字"];
+            return ;
+        }
+        [selfWeak removeBackView];
+        inputViewWeak.hidden = YES;
+        inputViewWeak.textView.text = @"";
+        inputViewWeak.frame = CGRectMake(0, SCREEN_WIDTH, SCREEN_HEIGHT, 42);
+        if (message.length<=0) {
+            return ;
+        }
+        [selfWeak sendMessage:MessageTypeSendMessage messageString:message];
+    
+    };
+    
+    [self.view addSubview:inputView];
+    
+}
+
+- (void)inputViewTextChanged:(NSInteger)lineNum {//监听textView输入
+    
+    CGRect frame = inputView.frame;
+    NSInteger number = lineNum==0?1:lineNum;
+    frame.size.height = 12+15+15*number;
+    textMessgeHeight = frame.size.height;
+    
+    inputView.frame = CGRectMake(0, SCREEN_WIDTH-keyBoardHeight-textMessgeHeight, SCREEN_HEIGHT, textMessgeHeight);
+}
+
+#pragma mark - 添加键盘的backView
+
+- (void)addKeyBoardBackView {
+    UIView *view = [self.view viewWithTag:1234];
+    if (view) {
+        return;
+    }
+    UIView *backViewKey = [[UIView alloc] initWithFrame:CGRectMake(0, 0, SCREEN_HEIGHT, SCREEN_WIDTH)];
+    backViewKey.tag = 1234;
+    backViewKey.backgroundColor = [UIColor clearColor];
+    UIView *MView = [[UIView alloc] initWithFrame:CGRectMake(0, SCREEN_WIDTH-keyBoardHeight, SCREEN_HEIGHT, keyBoardHeight)];
+    MView.backgroundColor = [UIColor whiteColor];
+    [backViewKey addSubview:MView];
+    
+    [self.view insertSubview:backViewKey belowSubview:inputView];
+    UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(removeBackView)];;
+    [backViewKey addGestureRecognizer:tap];
+
+}
+
+- (void)removeBackView {
+    UIView *view = [self.view viewWithTag:1234];
+    if (view == nil) {
+        return;
+    }
+    UIView *MV = view.subviews.lastObject;
+    [MV removeFromSuperview];
+    [view removeFromSuperview];
+    
+    MV = nil;
+    view = nil;
+    
+    [inputView.textView resignFirstResponder];
+    inputView.hidden = YES;
+    inputView.textView.text = @"";
+    inputView.frame = CGRectMake(0, SCREEN_WIDTH, SCREEN_HEIGHT, 42);
+
+}
+
+- (void)alertViewMessage:(NSString *)messageStr alertType:(AlertViewType)type {
+    
+    UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"温馨提示" message:messageStr preferredStyle:UIAlertControllerStyleAlert];
+    
+    // 添加按钮
+    [alert addAction:[UIAlertAction actionWithTitle:@"是" style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
+        if (type == AlertViewTypeStopPlay) {
+            [self stopRtmp];
+        } else if (type == AlertViewTypeSendParents) {
+            [self startRtmp];
+            [self groupSendMassage];
+        } else {
+            [self clearLog];
+            [self.navigationController popViewControllerAnimated:NO];
+        }
+        
+    }]];
+    
+    [alert addAction:[UIAlertAction actionWithTitle:@"否" style:UIAlertActionStyleCancel handler:^(UIAlertAction *action) {
+        if (type == AlertViewTypeSendParents) {
+            [self startRtmp];
+        }
+        
+    }]];
+    alert.view.subviews.lastObject.transform = CGAffineTransformMakeRotation(M_PI_2);
+    
+    [self presentViewController:alert animated:YES completion:nil];
+//    [self performSelector:@selector(changeAlertVC) withObject:nil afterDelay:0.001];
+}
+
+
+- (void)changeAlertVC {
+    UIWindow *window = [[UIApplication sharedApplication].windows firstObject];
+    UIView *view = window.subviews.lastObject.subviews.lastObject;
+    
+    view.transform = CGAffineTransformMakeRotation(M_PI_2);
+//    view.subviews.lastObject.transform = CGAffineTransformMakeRotation(-M_PI_2);
+}
+
+#pragma mark -
 
 /**********************rotation btn********************/
 
@@ -754,8 +1033,8 @@ static NSString *cellID = @"cellId";
 
 -(void)rotation_icon:(float)n {
     [UIView animateWithDuration:0.55 animations:^{
-
-//        self.classView.transform = CGAffineTransformMakeRotation(-n*M_PI/180.0);
+        
+        //        self.classView.transform = CGAffineTransformMakeRotation(-n*M_PI/180.0);
         
         self.torchButton.transform = CGAffineTransformMakeRotation(-n*M_PI/180.0);
         self.playBtn.transform = CGAffineTransformMakeRotation(-n*M_PI/180.0);
@@ -763,16 +1042,16 @@ static NSString *cellID = @"cellId";
         self.traformCameraBtn.transform = CGAffineTransformMakeRotation(-n*M_PI/180.0);
         self.beautyBtn.transform = CGAffineTransformMakeRotation(-n*M_PI/180.0);
         
-//        CGRect frame = _classView.frame;
-//        if (_deviceOrientation == UIDeviceOrientationPortrait) {
-//            frame = CGRectMake(8, WIDTH - 55 -208, 120, 200);
-//        } else {
-//            frame = CGRectMake(8, WIDTH - 55 -128, 200, 120);
-//
-//        }
-//        _classView.frame = frame;
+        //        CGRect frame = _classView.frame;
+        //        if (_deviceOrientation == UIDeviceOrientationPortrait) {
+        //            frame = CGRectMake(8, WIDTH - 55 -208, 120, 200);
+        //        } else {
+        //            frame = CGRectMake(8, WIDTH - 55 -128, 200, 120);
+        //
+        //        }
+        //        _classView.frame = frame;
         
-
+        
     }];
 }
 
@@ -801,7 +1080,7 @@ static NSString *cellID = @"cellId";
                                                }
                                            }];
     }
-
+    
 }
 
 #pragma mark - 更具设备旋转方向设置旋转角度
@@ -820,12 +1099,12 @@ static NSString *cellID = @"cellId";
             break;
         case UIDeviceOrientationLandscapeLeft:      // Device oriented horizontally, home button on the right
             [[UIApplication sharedApplication] setStatusBarOrientation:UIInterfaceOrientationLandscapeRight animated:YES];
-
+            
             [self  rotation_icon:90.0*3];
             break;
         case UIDeviceOrientationLandscapeRight:      // Device oriented horizontally, home button on the left
             [[UIApplication sharedApplication] setStatusBarOrientation:UIInterfaceOrientationLandscapeLeft animated:YES];
-
+            
             [self  rotation_icon:90.0];
             break;
         default:
@@ -833,273 +1112,48 @@ static NSString *cellID = @"cellId";
     }
 }
 
-
-
-/****************webSocket*****************/
-
-///--------------------------------------
-#pragma mark - Actions web socket
-///--------------------------------------
-
-- (void)reconnectWebSocket {//创建webSocket
-    
-    _webSocket.delegate = nil;
-    [_webSocket close];
-    
-//    _webSocket = [[SRWebSocket alloc] initWithURL:[NSURL URLWithString:@"ws://baihongyu1234567.xicp.io/ssm/websocket"]];
-    _webSocket = [[SRWebSocket alloc] initWithURL:[NSURL URLWithString:@"ws://live.sch.supadata.cn:9080/ssm/websocket"]];
-    _webSocket.delegate = self;
-    
-    [_webSocket open];
-}
-
-- (void)closeWebSocket {//关闭webSocket
-    [self sendMessage:MessageTypeClose messageString:@"WebSocket closed"];
-    [_webSocket close];
-    _webSocket = nil;
-
-}
-
-//- (void)sendPing:(id)sender;
-//{
-//    [_webSocket sendPing:nil];
-//}
-
-///--------------------------------------
-#pragma mark - SRWebSocketDelegate
-///--------------------------------------
-
-
-- (void)webSocketDidOpen:(SRWebSocket *)webSocket {
-    NSLog(@"Websocket Connected");
-//    self.title = @"Connected!";
-    NSLog(@"Websocket Connected");
-    [self sendMessage:MessageTypeOpen messageString:@"Websocket Connected"];
-}
-
-- (void)webSocket:(SRWebSocket *)webSocket didFailWithError:(NSError *)error {
-    NSLog(@":( Websocket Failed With Error %@", error);
-    
-    _webSocket = nil;
-}
-
-- (void)webSocket:(SRWebSocket *)webSocket didReceiveMessageWithString:(nonnull NSString *)string {
-    NSLog(@"Received \"%@\"", string);
-    if (messageArr.count == 0) {
-        messageArr = nil;
-        messageArr = [NSMutableArray arrayWithCapacity:0];
-        [messageArr addObject:[self dictionaryWithJsonString:string]];
-    } else {
-    
-        [messageArr addObject:[self dictionaryWithJsonString:string]];
-    }
-    
-    commentView.messageArray = messageArr;
-    [commentView.messageTable reloadData];
-
-}
-
-- (void)webSocket:(SRWebSocket *)webSocket didCloseWithCode:(NSInteger)code reason:(NSString *)reason wasClean:(BOOL)wasClean {
-    NSLog(@"WebSocket closed");
-
-    _webSocket = nil;
-    
-    
-}
-
-- (void)webSocket:(SRWebSocket *)webSocket didReceivePong:(NSData *)pongPayload {//每次发送一次心跳包时，服务器返回的消息
-    
-    NSLog(@"WebSocket received pong");
-}
-
-
-#pragma mark - sendMessage
-- (void)sendMessage:(MessageType)type messageString:(NSString *)messageStr {
-    /*
-     "message": {
-     "type": 1,(1建立连接第一次发，2发消息，3关闭连接发)
-     "userType": 1,(1老师，3家长)
-     "classId": 43432,(老师必传)
-     "parentId": 123,(家长必传)
-     "teacherId": 321,
-     "livePeopel": 321,
-     "content": "fsdjkgdaga"
-     "userName": "李家长",
-     "userPic": "http://aservice.139jy.cn/webshare/static/ucenter/user/64066/2100.jpg",
-     "videoId":
-     },
-     
-     
-     */
-    NSString *userId = [UserData getUser].userID;
-    NSString *userNickName = [NSString safeString:[UserData getUser].nickName];
-    
-    NSError *error;
-    
-    NSData *jsonData = [NSJSONSerialization dataWithJSONObject:@{@"message":@{@"type":[NSNumber numberWithInteger:type],
-                                                                 @"userType":@"1",
-                                                                 @"classId":classId,
-                                                                 @"parentId":@"",
-                                                                 @"teacherId":self.userId,
-                                                                 @"livePeopel":@"",
-                                                                 @"content":messageStr,
-                                                                 @"userName":userNickName,
-                                                                 @"userPic":@"",
-                                                                 @"videoId":cameraDataId}} options:NSJSONWritingPrettyPrinted error:&error];
-    
-    NSString *jsonString = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
-    
-    BOOL success = [_webSocket sendString:jsonString error:nil];
-    if (messageType == MessageTypeSendMessage) {
-        [messageArr addObject:@{@"type":[NSNumber numberWithInteger:type],
-                               @"userType":@"1",
-                               @"classId":classId,
-                               @"parentId":@"",
-                               @"teacherId":self.userId,
-                               @"livePeopel":@"",
-                               @"content":messageStr,
-                               @"userName":userNickName,
-                               @"userPic":@"",
-                               @"videoId":cameraDataId,
-                                @"isTeacher":[NSNumber numberWithBool:YES]}];
-
-    }
-    
-}
-
-#pragma mark- jsonString To dictionary
-
-- (NSDictionary *)dictionaryWithJsonString:(NSString *)jsonString {
-    if (jsonString == nil) {
-        return nil;
-    }
-    
-    NSData *jsonData = [jsonString dataUsingEncoding:NSUTF8StringEncoding];
-    NSError *err;
-    NSDictionary *dic = [NSJSONSerialization JSONObjectWithData:jsonData
-                                                        options:NSJSONReadingMutableContainers
-                                                          error:&err];
-    if(err)
-    {
-        NSLog(@"json解析失败：%@",err);
-        return nil;
-    }
-    return dic;
-}
-
-- (void)createMessageView {
-
-    commentView = [[NSBundle mainBundle] loadNibNamed:@"CommentMessageView" owner:self options:nil].lastObject;
-    commentView.messageArray = messageArr;
-    commentView.hidden = YES;
-    commentView.frame = CGRectMake(0, 0, 280, 0);
-    @WeakObj(inputView)
-    @WeakObj(self)
-    commentView.sendMessage = ^(BOOL selected){
-        
-        if (selected) {
-            [inputViewWeak.textView resignFirstResponder];
-            inputViewWeak.hidden = YES;
-        } else {
-            
-            inputViewWeak.hidden = NO;
-            inputViewWeak.frame = CGRectMake(0, 0, SCREEN_HEIGHT, 42);
-
-            [inputViewWeak.textView becomeFirstResponder];
-//            [selfWeak.view becomeFirstResponder];
-
-        }
-        
-        NSInteger windowCount = [[[UIApplication sharedApplication] windows] count];
-        if (windowCount <=2) {
-            return ;
-        }
-//        [selfWeak performSelector:@selector(changeOration) withObject:nil afterDelay:0];
-        [selfWeak changeOration];
-    };
-    [self.view addSubview:commentView];
- 
-    
-}
-
-- (void)showCommentMessageView {
-    
-    [UIView animateWithDuration:0.1 animations:^{
-        commentView.frame = CGRectMake(0, 0, HEIGHT_6_ZSCALE(222), SCREEN_WIDTH);
-        commentView.hidden = NO;
-        CGRect frame = CGRectMake(0,SCREEN_WIDTH/2-42, SCREEN_HEIGHT, 42);
-        inputView.frame = frame;
-    }];
-
-}
-
-- (void)changeOration {
-    NSInteger windowCount = [[[UIApplication sharedApplication] windows] count];
-
-    UIWindow *keyboardWindow = [[[UIApplication sharedApplication] windows]  lastObject];
-    UIWindow *textWindow = [[[UIApplication sharedApplication] windows] objectAtIndex:windowCount-2];
-    
-    keyboardWindow.transform = CGAffineTransformMakeRotation(M_PI_2);
-    keyboardWindow.bounds = CGRectMake(0, -60,SCREEN_HEIGHT, 200);
-    
-    textWindow.transform = CGAffineTransformMakeRotation(M_PI_2);
-    textWindow.bounds = CGRectMake(0, -60,SCREEN_HEIGHT, 200);
-
-
-    [UIView animateWithDuration:0.01  animations:^{
-        [UIView setAnimationBeginsFromCurrentState:YES];
-        inputView.hidden = NO;
-        
-    }];
-}
-
-// 根据键盘状态，调整_mainView的位置
-- (void) changeContentViewPoint:(NSNotification *)notification {
-    NSDictionary *userInfo = [notification userInfo];
-    NSValue *value = [userInfo objectForKey:UIKeyboardFrameEndUserInfoKey];
-    CGFloat keyBoardEndY = value.CGRectValue.origin.y;  // 得到键盘弹出后的键盘视图所在y坐标
-    
-    
-    keyBoardHeight = keyBoardEndY;
-    // 添加移动动画，使视图跟随键盘移动
-}
-
-
-#pragma mark - 创建输入评论的消息
-
-- (void)createInputView {
-    inputView = [[NSBundle mainBundle] loadNibNamed:@"InputView" owner:self options:nil].lastObject;
-    inputView.frame = CGRectMake(0, 0, SCREEN_HEIGHT, 42);
-    inputView.hidden = YES;
-    inputView.delegate = self;
-
-    inputView.sendMessage = ^(NSString *message) {
-    
-    
-    };
-    
-    [self.view addSubview:inputView];
-    
-}
-
-- (void)inputViewTextChanged:(NSInteger)lineNum {
-    
-    CGRect frame = inputView.frame;
-    NSInteger number = lineNum==0?1:lineNum;
-    frame.size.height = 12+15+15*number;
-    inputView.frame = CGRectMake(0, SCREEN_WIDTH/2-frame.size.height, SCREEN_HEIGHT, frame.size.height);
-
-}
-
--(BOOL)shouldAutorotate {
+- (BOOL)prefersStatusBarHidden {
     return YES;
 }
 
--(UIInterfaceOrientationMask)supportedInterfaceOrientations {
-    return UIInterfaceOrientationMaskLandscape;
+/*******************deal push****************/
+//使用AFN框架来检测网络状态的改变
+-(void)AFNReachability {
+    //1.创建网络监听管理者
+    manager = [AFNetworkReachabilityManager sharedManager];
+    
+    //2.监听网络状态的改变
+    /*
+     AFNetworkReachabilityStatusUnknown          = 未知
+     AFNetworkReachabilityStatusNotReachable     = 没有网络
+     AFNetworkReachabilityStatusReachableViaWWAN = 3G
+     AFNetworkReachabilityStatusReachableViaWiFi = WIFI
+     */
+    @WeakObj(self)
+    [manager setReachabilityStatusChangeBlock:^(AFNetworkReachabilityStatus status) {
+        switch (status) {
+            case AFNetworkReachabilityStatusUnknown:
+                NSLog(@"未知");
+                break;
+            case AFNetworkReachabilityStatusNotReachable:
+                NSLog(@"没有网络");
+                [Progress progressShowcontent:@"当前网络不可用，请检查" currView:selfWeak.view];
+                break;
+            case AFNetworkReachabilityStatusReachableViaWWAN:
+                NSLog(@"3G");
+                [Progress progressShowcontent:@"您当前使用的是4G网络，直播时建议使用WiFi" currView:selfWeak.view];
+                break;
+            case AFNetworkReachabilityStatusReachableViaWiFi:
+                NSLog(@"WIFI");
+                [Progress progressShowcontent:@"当前是在WiFi环境下，您可以放心使用" currView:selfWeak.view];
+                break;
+                
+            default:
+                break;
+        }
+    }];
+    
 }
-
-
 
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];

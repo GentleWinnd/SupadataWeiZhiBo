@@ -109,10 +109,9 @@
                                                 <rect key="frame" x="335" y="22" width="23" height="23"/>
                                             </imageView>
                                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="rdK-MQ-lyE">
-                                                <rect key="frame" x="320" y="4" width="50" height="44"/>
+                                                <rect key="frame" x="320" y="0.0" width="50" height="48"/>
                                                 <constraints>
                                                     <constraint firstAttribute="width" constant="50" id="UcC-7z-BgG"/>
-                                                    <constraint firstAttribute="height" constant="44" id="nd3-MO-L9R"/>
                                                 </constraints>
                                                 <fontDescription key="fontDescription" type="system" pointSize="1"/>
                                                 <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="0.0" maxY="-2"/>
@@ -130,6 +129,7 @@
                                             <constraint firstItem="9qo-Wf-p7U" firstAttribute="top" secondItem="r0i-NQ-0fD" secondAttribute="bottom" constant="3" id="CJO-9w-Wrb"/>
                                             <constraint firstItem="JXt-Mp-8sW" firstAttribute="top" secondItem="jxl-9c-QvT" secondAttribute="top" id="HoE-0b-rx3"/>
                                             <constraint firstItem="9qo-Wf-p7U" firstAttribute="leading" secondItem="hQN-Z0-AYe" secondAttribute="leading" id="NdQ-Rh-TbF"/>
+                                            <constraint firstItem="rdK-MQ-lyE" firstAttribute="top" secondItem="hQN-Z0-AYe" secondAttribute="top" id="PK5-NW-x1M"/>
                                             <constraint firstItem="hMH-KT-L3A" firstAttribute="height" secondItem="N5O-VC-ecw" secondAttribute="height" id="Pzp-40-rNy"/>
                                             <constraint firstAttribute="height" constant="98" id="Q7I-FI-no2"/>
                                             <constraint firstAttribute="trailing" secondItem="JQG-QQ-CXD" secondAttribute="trailing" id="QXP-wa-bvq"/>
@@ -235,6 +235,7 @@
                         </constraints>
                     </view>
                     <connections>
+                        <outlet property="backBtn" destination="fab-JY-Rn8" id="uST-RJ-mYk"/>
                         <outlet property="backImageView" destination="Q5g-Ru-jSB" id="TMX-4t-u0c"/>
                         <outlet property="backView" destination="NOS-vB-xRS" id="cFo-Pz-QJk"/>
                         <outlet property="backViewHeight" destination="3vI-Bz-6Zz" id="vq8-4i-6jv"/>

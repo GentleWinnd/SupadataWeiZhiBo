@@ -24,7 +24,7 @@
 @end
 
 
-@interface HeEducationH5ViewController ()<UIWebViewDelegate,JSObjcDelegate>
+@interface HeEducationH5ViewController ()<UIWebViewDelegate,UINavigationControllerDelegate,JSObjcDelegate>
 {
     UIWebView *webView;
     NSString *CSchoolId;
@@ -48,6 +48,7 @@
     self.view.backgroundColor = [UIColor whiteColor];
     self.navigationController.delegate = self;
     self.title = @"微直播";
+    [Progress progressShowcontent:@"登陆成功"];
 
     [self initWebView];
     [self customPlayBtn];
@@ -79,7 +80,7 @@
 - (void)customPlayBtn {
 
     UIButton *playBtn = [UIButton buttonWithType:UIButtonTypeCustom];
-    playBtn.frame = CGRectMake(SCREEN_WIDTH - 18 - 95, 30+60, 95, 33);
+    playBtn.frame = CGRectMake(SCREEN_WIDTH - 18 - 95, 30+60, 97, 40);
     [playBtn setImage:[UIImage imageNamed:@"zhibo"] forState:UIControlStateNormal];
     [playBtn addTarget:self action:@selector(playAction:) forControlEvents:UIControlEventTouchUpInside];
     playBtn.hidden = YES;
@@ -158,9 +159,7 @@
     UIStoryboard *board = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
     
     if (classesArray.count >0) {
-        AppDelegate * app = [UIApplication sharedApplication].delegate;
-        app.shouldChangeOrientation = YES;
-
+    
         ViewController *VC = [board instantiateViewControllerWithIdentifier:@"ViewController"];
         VC.userClassInfo = classesArray;
         VC.userId = self.userId;
@@ -169,11 +168,8 @@
         VC.schoolId = CSchoolId;
         VC.schoolName = CSchoolName;
         self.navigationController.navigationBarHidden = YES;
-//        [self.navigationController pushViewController:VC animated:YES];
+        [self.navigationController pushViewController:VC animated:YES];
         
-        UINavigationController * nav = [[UINavigationController alloc] initWithRootViewController:VC];
-        
-        [self.navigationController presentViewController:nav animated:YES completion:nil];
     }
 }
 
@@ -211,9 +207,10 @@
 
     self.jsContext = [webView valueForKeyPath:@"documentView.webView.mainFrame.javaScriptContext"];
     self.jsContext[@"Supadata"] = self;//给js 注册对象，
+    @WeakObj(loadProgress)
     self.jsContext.exceptionHandler = ^(JSContext *context, JSValue *exceptionValue) {
         context.exception = exceptionValue;
-        [loadProgress hiddenProgress];
+        [loadProgressWeak hiddenProgress];
         NSLog(@"异常信息：%@", exceptionValue);
     };
     
@@ -259,7 +256,6 @@
 - (void)createReloadView {
     ReloadView *reloadView = [[NSBundle mainBundle] loadNibNamed:@"ReloadView" owner:nil options:nil].firstObject;
     reloadView.frame = CGRectMake(0, 0, SCREEN_WIDTH,SCREEN_HEIGHT);
-//    reloadView.center = CGPointMake(SCREEN_WIDTH/2, SCREEN_HEIGHT/2 -32);
     reloadView.reloadView = ^(){
         if (webView) {
             [webView loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"http://live.sch.supadata.cn/ssm//resource/html/teacher/?user=%@#/tab/camera",self.userId]]]];
@@ -271,16 +267,16 @@
 }
 
 /****************************/
-//- (void)navigationController:(UINavigationController *)navigationController
-//      willShowViewController:(UIViewController *)viewController
-//                    animated:(BOOL)animated {
-////    
-////    if (viewController != self) {
-////        [self rotateVC:M_PI_2];
-////    } else {
-////        [self rotateVC:-M_PI_2];
-////    }
-//}
+- (void)navigationController:(UINavigationController *)navigationController
+      willShowViewController:(UIViewController *)viewController
+                    animated:(BOOL)animated {
+    
+    if (viewController != self) {
+        [self rotateVC:M_PI_2];
+    } else {
+        [self rotateVC:-M_PI_2];
+    }
+}
 
 - (void)rotateVC:(CGFloat)angle {
     CGSize screenSize = [UIScreen mainScreen].bounds.size;
@@ -367,8 +363,8 @@
 
 - (void)setBackBtn {
     UIButton *buttom = [UIButton buttonWithType:UIButtonTypeCustom];
-    buttom.frame = CGRectMake(0, 0, 60, 26);
-    buttom.imageEdgeInsets = UIEdgeInsetsMake(0, -38, 0, 0);
+    buttom.frame = CGRectMake(0, 0, 10, 23);
+//    buttom.imageEdgeInsets = UIEdgeInsetsMake(0, -, 0, 0);
     [buttom setImage:[UIImage imageNamed:@"back"] forState:UIControlStateNormal];
     [buttom addTarget:self action:@selector(backBtnAction:) forControlEvents:UIControlEventTouchUpInside];
     

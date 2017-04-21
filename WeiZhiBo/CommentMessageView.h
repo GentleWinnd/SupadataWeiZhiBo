@@ -9,10 +9,12 @@
 #import <UIKit/UIKit.h>
 
 @interface CommentMessageView : UIView
-@property (strong, nonatomic) IBOutlet UITableView *messageTable;
 @property (strong, nonatomic) IBOutlet UIButton *sendMssageBtn;
 
 @property (strong, nonatomic) NSArray *messageArray;
 
 @property (copy, nonatomic) void(^sendMessage)(BOOL selected);
+
+
+- (void)reloadMessageTable;
 @end
