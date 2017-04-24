@@ -34,7 +34,7 @@
     NSArray *classesArray;
     MBProgressManager *loadProgress;
     NSURLConnection *theConnection;
-
+    WKWebViewConfiguration *config;
 }
 
 @property (nonatomic, strong) JSContext *jsContext;
@@ -138,25 +138,17 @@
 #pragma mark - 初始化webview
 
 - (void)initWKWebView {
-     WKWebViewConfiguration *config = [[WKWebViewConfiguration alloc] init];
-    // 设置偏好设置
-    config.preferences = [[WKPreferences alloc] init];
-    // 默认为0
-    config.preferences.minimumFontSize = 10;
-    // 默认认为YES
-    config.preferences.javaScriptEnabled = YES;
-    // 在iOS上默认为NO，表示不能自动通过窗口打开
-    config.preferences.javaScriptCanOpenWindowsAutomatically = NO;
-    // web内容处理池，由于没有属性可以设置，也没有方法可以调用，不用手动创建
-    config.processPool = [[WKProcessPool alloc] init];
-    
-    // 通过JS与webview内容交互
-    config.userContentController = [[WKUserContentController alloc] init];
-    
-    // 注入JS对象名称AppModel，当JS通过AppModel来调用时，
-    // 我们可以在WKScriptMessageHandler代理中接收到
-    [config.userContentController addScriptMessageHandler:self name:@"Supadata"];
-    
+     config = [[WKWebViewConfiguration alloc] init];
+//    // 设置偏好设置
+//    config.preferences = [[WKPreferences alloc] init];
+//    // 默认为0
+//    config.preferences.minimumFontSize = 10;
+//    // 默认认为YES
+//    config.preferences.javaScriptEnabled = YES;
+//    // 在iOS上默认为NO，表示不能自动通过窗口打开
+//    config.preferences.javaScriptCanOpenWindowsAutomatically = NO;
+//    // web内容处理池，由于没有属性可以设置，也没有方法可以调用，不用手动创建
+//    config.processPool = [[WKProcessPool alloc] init];
     
     //    window.webkit.messageHandlers.Supadata.postMessage({body:'schoolId'})
     
@@ -164,39 +156,42 @@
 
     [self.view addSubview:webView];
     
-//    [webView mas_makeConstraints:^(MASConstraintMaker *make) {
-//        make.left.equalTo(self.view);
-//        make.right.equalTo(self.view);
-//        make.top.equalTo(self.view);
-//        make.bottom.equalTo(self.view);
-//    }];
-    
     webView.UIDelegate = self;
     webView.navigationDelegate = self;
     
-    NSURL *repURL = [NSURL URLWithString:[NSString stringWithFormat:@"http://live.sch.supadata.cn/ssm//resource/html/teacher/?user=%@#/tab/camera",self.userId]];
+      NSURL *repURL = [NSURL URLWithString:[NSString stringWithFormat:@"http://wangjunwei.uicp.io/ssm/resource/html/teacher/?user=%@#/tab/camera",self.self.userId]];
+//    NSURL *repURL = [NSURL URLWithString:[NSString stringWithFormat:@"http://live.sch.supadata.cn/ssm//resource/html/teacher/?user=%@#/tab/camera",self.userId]];
     NSURLRequest *request = [NSURLRequest requestWithURL:repURL cachePolicy:NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:3];
     [webView loadRequest: request];
+    // 通过JS与webview内容交互
+    WKUserContentController *userCC = config.userContentController;
+    // 注入JS对象名称AppModel，当JS通过AppModel来调用时，
+    // 我们可以在WKScriptMessageHandler代理中接收到
+    [userCC addScriptMessageHandler:self name:@"Supadata"];
+
     
-    if (theConnection) {
-        [theConnection cancel];
-        //        SAFE_RELEASE(theConnection);
-        NSLog(@"safe release connection");
-    }
-    theConnection= [[NSURLConnection alloc] initWithRequest:request delegate:self startImmediately:YES];
+   
+//    if (theConnection) {
+//        [theConnection cancel];
+//        //        SAFE_RELEASE(theConnection);
+//        NSLog(@"safe release connection");
+//    }
+//    theConnection= [[NSURLConnection alloc] initWithRequest:request delegate:self startImmediately:YES];
 
 }
 
 #pragma mark - WKNavigationDelegate
 // 页面开始加载时调用
 - (void)webView:(WKWebView *)webView didStartProvisionalNavigation:(WKNavigation *)navigation{
+    
+
     loadProgress = [[MBProgressManager alloc] init];
     [loadProgress loadingWithTitleProgress:@"加载中..."];
     UIView *reloadView = [self.view viewWithTag:112];
     if (reloadView) {
         [reloadView removeFromSuperview];
     }
-
+   
 }
 // 当内容开始返回时调用
 - (void)webView:(WKWebView *)webView didCommitNavigation:(WKNavigation *)navigation{
@@ -209,24 +204,24 @@
 }
 // 页面加载失败时调用
 - (void)webView:(WKWebView *)webView didFailProvisionalNavigation:(WKNavigation *)navigation{
-    
+    [self createReloadView];
 }
 // 接收到服务器跳转请求之后调用
 - (void)webView:(WKWebView *)webView didReceiveServerRedirectForProvisionalNavigation:(WKNavigation *)navigation{
     
 }
 // 在收到响应后，决定是否跳转
-- (void)webView:(WKWebView *)webView decidePolicyForNavigationResponse:(WKNavigationResponse *)navigationResponse decisionHandler:(void (^)(WKNavigationResponsePolicy))decisionHandler{
-    
-    NSLog(@"%@",navigationResponse.response.URL.absoluteString);
-    //允许跳转
-    decisionHandler(WKNavigationResponsePolicyAllow);
-    //不允许跳转
-    //decisionHandler(WKNavigationResponsePolicyCancel);
-}
+//- (void)webView:(WKWebView *)webView decidePolicyForNavigationResponse:(WKNavigationResponse *)navigationResponse decisionHandler:(void (^)(WKNavigationResponsePolicy))decisionHandler{
+//    
+//    NSLog(@"%@",navigationResponse.response.URL.absoluteString);
+//    //允许跳转
+//    decisionHandler(WKNavigationResponsePolicyAllow);
+//    //不允许跳转
+//    //decisionHandler(WKNavigationResponsePolicyCancel);
+//}
 // 在发送请求之前，决定是否跳转
 - (void)webView:(WKWebView *)webView decidePolicyForNavigationAction:(WKNavigationAction *)navigationAction decisionHandler:(void (^)(WKNavigationActionPolicy))decisionHandler{
-    
+   
     NSLog(@"%@",navigationAction.request.URL.absoluteString);
     //允许跳转
     decisionHandler(WKNavigationActionPolicyAllow);
@@ -237,6 +232,8 @@
 #pragma mark - WKScriptMessageHandler
 - (void)userContentController:(WKUserContentController *)userContentController
       didReceiveScriptMessage:(WKScriptMessage *)message {
+    
+    
     if ([message.name isEqualToString:@"Supadata"]) {
         // 打印所传过来的参数，只支持NSNumber, NSString, NSDate, NSArray,
         // NSDictionary, and NSNull类型

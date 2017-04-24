@@ -13,6 +13,7 @@
 
 @property (strong, nonatomic) UIWindow *window;
 @property (strong, nonatomic) UIViewController *MainVC;
+@property (nonatomic, strong) NSString *apptoken;
 
 @property (readonly, strong) NSPersistentContainer *persistentContainer;
 

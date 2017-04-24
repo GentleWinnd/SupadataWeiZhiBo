@@ -9,6 +9,7 @@
 #import "AppDelegate.h"
 #import "LogInViewController.h"
 #import "AppLogMgr.h"
+#import "HeEducationH5ViewController.h"
 
 @interface AppDelegate ()
 
@@ -19,6 +20,7 @@
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     // Override point for customization after application launch.
+    
     self.window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
     LogInViewController *logView = [[LogInViewController alloc] init];
     _MainVC = logView;
@@ -53,22 +55,19 @@
     /*
      URL Schemes?appToken=xxxx
      URL Schemes+?+appToken=xxxx
+     URL Schemes?appToken=
      */
-    if ([urlStr hasPrefix:@"AgriculturalOfHeBei://"]) {
-//        NSLog(@"TestAppDemo1 request params: %@", urlStr);
-        urlStr = [urlStr stringByReplacingOccurrencesOfString:@"AgriculturalOfHeBei://" withString:@""];
-        NSArray *paramArray = [urlStr componentsSeparatedByString:@"&"];
-        NSLog(@"paramArray: %@", paramArray);
+    if ([urlStr hasPrefix:@"weizhiboofsupadata://"]) {
+
+        NSArray *paramArray = [urlStr componentsSeparatedByString:@"appToken="];
+        NSLog(@"=====%@",paramArray);
+        _apptoken = [NSString safeString:paramArray.lastObject];
         
-        NSMutableDictionary *paramsDic = [[NSMutableDictionary alloc] initWithCapacity:0];
-        for (int i = 0; i < paramArray.count; i++) {
-            NSString *str = paramArray[i];
-            NSArray *keyArray = [str componentsSeparatedByString:@"="];
-            NSString *key = keyArray[0];
-            NSString *value = keyArray[1];
-            [paramsDic setObject:value forKey:key];
-            NSLog(@"key:%@ ==== value:%@", key, value);
-        }
+        HeEducationH5ViewController *h5View = [[HeEducationH5ViewController alloc] init];
+        h5View.appToken = _apptoken;
+        _MainVC = h5View;
+        self.window.rootViewController = _MainVC;
+        [self.window makeKeyAndVisible];
         
     }
     return NO;
