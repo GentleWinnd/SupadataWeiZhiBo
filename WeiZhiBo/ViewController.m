@@ -42,8 +42,6 @@
 @property (strong, nonatomic) IBOutlet UIView *backView;
 @property (strong, nonatomic) IBOutlet UISlider *beautySlider;
 
-@property (strong, nonatomic) IBOutlet UILabel *logPlayId;
-
 @property (strong, nonatomic) IBOutlet UIButton *beautyBtn;
 
 @property (strong, nonatomic) IBOutlet UIView *cameraView;
@@ -55,21 +53,15 @@
 
 /*************contentView**********/
 @property (strong, nonatomic) ContentView *CView;
-@property (strong, nonatomic) IBOutlet UIView *inputView;
 
-@property (strong, nonatomic) IBOutlet NSLayoutConstraint *inputViewBottomSpace;
 @property (strong, nonatomic) IBOutlet UIButton *backBtn;
+@property (strong, nonatomic) IBOutlet UIButton *maskingBtn;
 
+@property (strong, nonatomic) IBOutlet UIButton *sendCommentBtn;
+@property (strong, nonatomic) IBOutlet UIButton *playCommentBtn;
 
 /************bttomView*********/
-@property (strong, nonatomic) IBOutlet NSLayoutConstraint *bottomViewHeight;
-@property (strong, nonatomic) IBOutlet NSLayoutConstraint *bottomViewSpace;
-@property (strong, nonatomic) IBOutlet UIButton *unfoldBtn;
-@property (strong, nonatomic) IBOutlet UIView *bottomView;
-@property (strong, nonatomic) IBOutlet UIImageView *foldImageView;
 
-
-@property (strong, nonatomic) IBOutlet UIView *classBackView;
 @property (strong, nonatomic) IBOutlet UIButton *classBtn;
 @property (strong, nonatomic) IBOutlet UIButton *playBtn;
 @property (strong, nonatomic) IBOutlet UIButton *traformCameraBtn;
@@ -129,7 +121,6 @@ static NSString *cellID = @"cellId";
     [self AFNReachability];
     [self createInputView];
     [self createMessageView];
-    [self.view bringSubviewToFront:self.backBtn];
 }
 
 
@@ -155,7 +146,8 @@ static NSString *cellID = @"cellId";
 
 - (void)setShowItem {
     
-    //    self.logPlayId.transform = CGAffineTransformMakeRotation(M_PI_2);
+    self.sendCommentBtn.transform = CGAffineTransformMakeRotation(M_PI_2);
+    self.playCommentBtn.transform = CGAffineTransformMakeRotation( M_PI_2);
     self.backView.transform = CGAffineTransformMakeRotation(- M_PI_2);
     self.backViewWidth.constant = SCREEN_WIDTH;
     self.backViewHeight.constant = SCREEN_HEIGHT;
@@ -174,8 +166,8 @@ static NSString *cellID = @"cellId";
 
 - (void)createContentView {
     self.CView = [[NSBundle mainBundle] loadNibNamed:@"ContentView" owner:self options:nil].lastObject;
-    self.CView.frame = CGRectMake(SCREEN_WIDTH-60, 50, 120, 30);
-    self.CView.transform = CGAffineTransformMakeRotation(M_PI_2);http://www.cocoachina.com/ios/20150918/13449.html
+    self.CView.frame = CGRectMake(SCREEN_WIDTH-48, 50, 120, 30);
+    self.CView.transform = CGAffineTransformMakeRotation(M_PI_2);
     
     [self.backView addSubview:self.CView];
 }
@@ -194,8 +186,24 @@ static NSString *cellID = @"cellId";
 }
 - (IBAction)unfoldBtnClick:(UIButton *)sender {//显示或收起底部按钮栏
     sender.selected = !sender.selected;
-    [self showBottomView:sender.selected];
 }
+
+#pragma mark - comment
+- (IBAction)playCommenAction:(UIButton *)sender {
+    if (sender.tag == 123) {//显示评论
+        sender.selected = !sender.selected;
+        [self showCommentMessageView:sender.selected];
+    } else if(sender.tag == 321){//发送评论
+        if (_playCommentBtn.selected) {
+            [self showInputView];
+        } else {
+            [Progress progressShowcontent:@"打开评论才可以发表评论" currView:self.view];
+        }
+    } else {//显示蒙版
+//        [self showClassInfoTable:NO];
+    }
+}
+
 
 #pragma mark - action
 
@@ -286,7 +294,6 @@ static NSString *cellID = @"cellId";
         sender.selected = !sender.selected;
 
     } else {//选择班级
-        sender.selected = !sender.selected;
         if (_playBtn.selected) {
             [Progress progressShowcontent:@"直播过程中不可选择班级" currView:self.view];
         } else{
@@ -324,27 +331,27 @@ static NSString *cellID = @"cellId";
     [self.model.session startRtmpSessionWithURL:rtmpUrl];
     [[UIApplication sharedApplication] setIdleTimerDisabled:YES];
   
-    self.isBacking = NO;
     [manager startMonitoring];//开启网络监听
-    [self showBottomView:NO];//隐藏侧边栏
-    [self showCommentMessageView:YES];
     [self reconnectWebSocket];
     [self.CView hiddenDoingView:NO];
-    _playBtn.selected = YES;
     
+    self.isBacking = NO;
+    _playBtn.selected = YES;
     return YES;
 }
 
 - (void)stopRtmp {
     self.isBacking = YES;
+    self.playBtn.selected = NO;
     BOOL result = [self.model back];
     
     [self stopTimer];
     [self closeWebSocket];//关闭socket
-    [self showBottomView:YES];
-    [self showCommentMessageView:NO];
     [self.CView hiddenDoingView:YES];
-    _playBtn.selected = NO;
+    [messageArr removeAllObjects];
+    commentView.messageArray = messageArr;
+    [commentView reloadMessageTable];
+
     
     [manager stopMonitoring];
     [messageArr removeAllObjects];
@@ -514,7 +521,7 @@ static NSString *cellID = @"cellId";
         [progressM hiddenProgress];
         if ([reponseObject[@"status"] intValue] == 1) {
             _pushUrl = [NSString safeString:reponseObject[@"data"][@"cameraPushUrl"]];
-            _logPlayId.text = [NSString safeString:reponseObject[@"data"][@"cameraPlayUrl"]];
+//            _logPlayId.text = [NSString safeString:reponseObject[@"data"][@"cameraPlayUrl"]];
             cameraDataId = [NSString safeString:reponseObject[@"data"][@"id"]];
 //            [self startRtmp];
         } else {
@@ -635,61 +642,24 @@ static NSString *cellID = @"cellId";
     
     CGRect frame = _classView.frame;
     if (show) {
-//        if (_deviceOrientation == UIDeviceOrientationPortrait ||_deviceOrientation == UIDeviceOrientationUnknown) {
-//            frame = CGRectMake(8, WIDTH - 55 -208, 120, 200);
-//        } else {
-//            frame = CGRectMake(8, WIDTH - 55 -128, 200, 120);
-//
-//        }
         
         CGFloat height = 36 + WIDTH_6_ZSCALE(45)*5;
-        
         frame = CGRectMake(0, 0,WIDTH_6_ZSCALE(350) , HEIGHT_6_ZSCALE(height));
         [_classView.classNameTab reloadData];
 
     } else {
         frame = CGRectMake(0, 0, 400, 0);
-
     }
+    
+    _maskingBtn.hidden = !show;
     _classView.hidden = !show;
     
     [UIView animateWithDuration:0.01 animations:^{
         _classView.frame = frame;
         _classView.center = CGPointMake(SCREEN_HEIGHT/2, SCREEN_WIDTH/2);
-        self.classBackView.backgroundColor = _classView.hidden?MAIN_WHITE:MAIN_LIGHTBLUE_BTN_SELECTED;
 
     }];
 }
-
-#pragma mark - show classInfo table
-- (void)showBottomView:(BOOL) show {
-    
-    if (self.classView.hidden == NO) {
-        [Progress progressShowcontent:@"请选择班级！！！" currView:self.view];
-        return;
-    }
-    CGRect frame = self.bottomView.frame;
-    
-    if (show) {
-//        if (_deviceOrientation == UIDeviceOrientationPortrait ||_deviceOrientation == UIDeviceOrientationUnknown) {
-//            frame = CGRectMake(8, WIDTH - 55 -208, 120, 200);
-//        } else {
-//            frame = CGRectMake(8, WIDTH - 55 -128, 200, 120);
-//            
-//        }
-        frame = CGRectMake(0, SCREEN_HEIGHT - 98, SCREEN_WIDTH , 98);
-        self.foldImageView.image = [UIImage imageNamed:@"shouqi"];
-    } else {
-       frame = CGRectMake(0, SCREEN_HEIGHT - 48, SCREEN_WIDTH, 48);
-        self.foldImageView.image = [UIImage imageNamed:@"zhankai"];
-    }
-    
-    [UIView animateWithDuration:0.001 animations:^{
-        _bottomView.frame = frame;
-    }];
-    
-}
-
 
 /****************webSocket*****************/
 
@@ -742,7 +712,7 @@ static NSString *cellID = @"cellId";
     
 //    }
     NSDictionary *messageInfos = [NSDictionary safeDictionary:[self dictionaryWithJsonString:string]];
-    MessageSocketType type = [NSString safeNumber:messageInfos[@"flag"]].integerValue;
+    MessageSocketType type = [NSString safeNumber:messageInfos[@"type"]].integerValue;
     if (type == MessageSocketTypeDefualtMessage) {
         [messageArr addObject:messageInfos];
         commentView.messageArray = messageArr;
@@ -841,23 +811,13 @@ static NSString *cellID = @"cellId";
     commentView.messageArray = messageArr;
     commentView.hidden = YES;
     commentView.frame = CGRectMake(0, 0, 280, 0);
-    @WeakObj(inputView)
-    @WeakObj(self)
     commentView.sendMessage = ^(BOOL selected){
-        
-        inputViewWeak.hidden = NO;
-        inputViewWeak.frame = CGRectMake(0, SCREEN_WIDTH, SCREEN_HEIGHT, 42);
-        [inputViewWeak.textView becomeFirstResponder];
-
-        [selfWeak changeOration];
-        [selfWeak addKeyBoardBackView];
-
+       
     };
     [self.view insertSubview:commentView belowSubview:inputView];
 }
 
 - (void)showCommentMessageView:(BOOL)show {
-    _backBtn.hidden = show;
     [UIView animateWithDuration:0.1 animations:^{
         commentView.frame = CGRectMake(0, 0, HEIGHT_6_ZSCALE(222), SCREEN_WIDTH);
         commentView.hidden = !show;
@@ -946,6 +906,19 @@ static NSString *cellID = @"cellId";
     
     inputView.frame = CGRectMake(0, SCREEN_WIDTH-keyBoardHeight-textMessgeHeight, SCREEN_HEIGHT, textMessgeHeight);
 }
+
+#pragma mark - showInputView
+
+- (void)showInputView {
+    
+    inputView.hidden = NO;
+    inputView.frame = CGRectMake(0, SCREEN_WIDTH, SCREEN_HEIGHT, 42);
+    [inputView.textView becomeFirstResponder];
+    
+    [self changeOration];
+    [self addKeyBoardBackView];
+}
+
 
 #pragma mark - 添加键盘的backView
 

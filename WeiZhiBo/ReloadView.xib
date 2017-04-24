@@ -5,7 +5,6 @@
     </device>
     <dependencies>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="12086"/>
-        <capability name="Aspect ratio constraints" minToolsVersion="5.1"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
@@ -15,22 +14,17 @@
             <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
-                <imageView contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="reload.png" translatesAutoresizingMaskIntoConstraints="NO" id="MS4-Uu-ymp">
-                    <rect key="frame" x="107.5" y="280" width="160" height="67"/>
-                    <constraints>
-                        <constraint firstAttribute="width" secondItem="MS4-Uu-ymp" secondAttribute="height" multiplier="125:52" id="G2V-F7-Eb0"/>
-                        <constraint firstAttribute="width" constant="160" id="Z12-o6-K2E"/>
-                        <constraint firstAttribute="width" secondItem="MS4-Uu-ymp" secondAttribute="height" multiplier="125:52" id="rbb-Db-cCN"/>
-                    </constraints>
+                <imageView contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="jaizaishibai.png" translatesAutoresizingMaskIntoConstraints="NO" id="MS4-Uu-ymp">
+                    <rect key="frame" x="140.5" y="252" width="95" height="123"/>
                 </imageView>
                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="加载失败了！点击重新加载！！！" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="6E7-st-ak8">
-                    <rect key="frame" x="80.5" y="359" width="214.5" height="17"/>
+                    <rect key="frame" x="80.5" y="387" width="214.5" height="17"/>
                     <fontDescription key="fontDescription" type="system" pointSize="14"/>
                     <color key="textColor" red="0.50196081400000003" green="0.50196081400000003" blue="0.50196081400000003" alpha="1" colorSpace="calibratedRGB"/>
                     <nil key="highlightedColor"/>
                 </label>
                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="FXK-Q7-hdH">
-                    <rect key="frame" x="107.5" y="260" width="160" height="136"/>
+                    <rect key="frame" x="80.5" y="374" width="214.5" height="30"/>
                     <state key="normal">
                         <color key="titleColor" red="0.50196081400000003" green="0.50196081400000003" blue="0.50196081400000003" alpha="0.0" colorSpace="calibratedRGB"/>
                     </state>
@@ -40,19 +34,21 @@
                 </button>
             </subviews>
             <constraints>
+                <constraint firstItem="6E7-st-ak8" firstAttribute="leading" secondItem="FXK-Q7-hdH" secondAttribute="leading" id="Bko-gQ-m2l"/>
+                <constraint firstItem="6E7-st-ak8" firstAttribute="trailing" secondItem="FXK-Q7-hdH" secondAttribute="trailing" id="LRr-ku-41L"/>
                 <constraint firstItem="MS4-Uu-ymp" firstAttribute="centerY" secondItem="iN0-l3-epB" secondAttribute="centerY" constant="-20" id="Mve-dq-1ku"/>
                 <constraint firstItem="6E7-st-ak8" firstAttribute="centerX" secondItem="iN0-l3-epB" secondAttribute="centerX" id="Nf2-0D-ok4"/>
+                <constraint firstItem="6E7-st-ak8" firstAttribute="bottom" secondItem="FXK-Q7-hdH" secondAttribute="bottom" id="U8z-Z2-4Yu"/>
                 <constraint firstItem="6E7-st-ak8" firstAttribute="top" secondItem="MS4-Uu-ymp" secondAttribute="bottom" constant="12" id="euI-82-12S"/>
                 <constraint firstItem="MS4-Uu-ymp" firstAttribute="centerX" secondItem="iN0-l3-epB" secondAttribute="centerX" id="g0h-1X-bte"/>
-                <constraint firstItem="FXK-Q7-hdH" firstAttribute="leading" secondItem="MS4-Uu-ymp" secondAttribute="leading" id="pth-7i-N8z"/>
-                <constraint firstItem="FXK-Q7-hdH" firstAttribute="top" secondItem="MS4-Uu-ymp" secondAttribute="top" constant="-20" id="rlt-Ac-dsl"/>
-                <constraint firstItem="6E7-st-ak8" firstAttribute="bottom" secondItem="FXK-Q7-hdH" secondAttribute="bottom" constant="-20" id="tSD-z7-SGD"/>
-                <constraint firstItem="FXK-Q7-hdH" firstAttribute="trailing" secondItem="MS4-Uu-ymp" secondAttribute="trailing" id="wEl-CR-SYV"/>
             </constraints>
+            <connections>
+                <outlet property="loadImageView" destination="MS4-Uu-ymp" id="H7r-RO-DeE"/>
+            </connections>
             <point key="canvasLocation" x="74.5" y="119.5"/>
         </view>
     </objects>
     <resources>
-        <image name="reload.png" width="244" height="156"/>
+        <image name="jaizaishibai.png" width="95" height="123"/>
     </resources>
 </document>

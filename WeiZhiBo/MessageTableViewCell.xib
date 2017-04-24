@@ -18,14 +18,14 @@
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
                     <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="laoshi.png" translatesAutoresizingMaskIntoConstraints="NO" id="MT1-cz-AHJ">
-                        <rect key="frame" x="8" y="7.5" width="16" height="11"/>
+                        <rect key="frame" x="10" y="7.5" width="16" height="11"/>
                         <constraints>
                             <constraint firstAttribute="width" constant="16" id="0y8-52-wKD"/>
                             <constraint firstAttribute="height" constant="11" id="guU-se-PP0"/>
                         </constraints>
                     </imageView>
                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="暂无数据" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="TCF-LV-gKy">
-                        <rect key="frame" x="29" y="6" width="283" height="14.5"/>
+                        <rect key="frame" x="31" y="6" width="281" height="14.5"/>
                         <fontDescription key="fontDescription" type="system" pointSize="12"/>
                         <color key="textColor" red="0.0078431372549019607" green="0.73333333333333328" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                         <nil key="highlightedColor"/>
@@ -34,9 +34,9 @@
                 <constraints>
                     <constraint firstAttribute="bottom" secondItem="TCF-LV-gKy" secondAttribute="bottom" constant="5" id="88s-rJ-Zgn"/>
                     <constraint firstItem="TCF-LV-gKy" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="top" constant="6" id="DEV-JS-p7I"/>
+                    <constraint firstItem="MT1-cz-AHJ" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="top" constant="7.5" id="GG6-gy-T5J"/>
                     <constraint firstItem="TCF-LV-gKy" firstAttribute="leading" secondItem="MT1-cz-AHJ" secondAttribute="trailing" constant="5" id="GMZ-a3-ZEL"/>
-                    <constraint firstItem="MT1-cz-AHJ" firstAttribute="centerY" secondItem="H2p-sc-9uM" secondAttribute="centerY" id="SRL-Os-O0z"/>
-                    <constraint firstItem="MT1-cz-AHJ" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" constant="8" id="XrY-Zy-MLh"/>
+                    <constraint firstItem="MT1-cz-AHJ" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" constant="10" id="XrY-Zy-MLh"/>
                     <constraint firstAttribute="trailing" secondItem="TCF-LV-gKy" secondAttribute="trailing" constant="8" id="oDm-1f-TGV"/>
                 </constraints>
             </tableViewCellContentView>

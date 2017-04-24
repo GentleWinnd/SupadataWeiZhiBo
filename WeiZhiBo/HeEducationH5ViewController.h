@@ -15,4 +15,8 @@
 
 @property (nonatomic, strong) NSString *accessToken;
 @property (nonatomic, strong) NSString *openId;
+
+@property (nonatomic, assign) BOOL loadFromThird;
+@property (nonatomic, strong) NSString *appToken;
+
 @end

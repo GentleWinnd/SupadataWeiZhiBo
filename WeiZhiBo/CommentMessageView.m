@@ -38,19 +38,16 @@ static NSString *CellIdParents = @"cellIdOfParents";
 }
 
 - (void)reloadMessageTable {
-    if (self.messageArray.count>_contentArr.count) {
-        [_contentArr removeAllObjects];
-        [_contentArr addObjectsFromArray:self.messageArray];
-    } else {
-        return;
-    }
+    [_contentArr removeAllObjects];
+    [_contentArr addObjectsFromArray:self.messageArray];
     
-    if (_contentArr.count == 1) {
+    if (_contentArr.count == 1 || _contentArr.count == 0) {
         [_messageTable reloadData];
     } else {
         [_messageTable insertRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:self.contentArr.count-1 inSection:0]] withRowAnimation:UITableViewRowAnimationAutomatic];
+        [_messageTable scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:self.contentArr.count-1 inSection:0] atScrollPosition:UITableViewScrollPositionBottom animated:NO];
     }
-    [_messageTable scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:self.contentArr.count-1 inSection:0] atScrollPosition:UITableViewScrollPositionBottom animated:NO];
+  
 }
 
 - (void)creatMessageTable {

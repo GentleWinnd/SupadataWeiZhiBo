@@ -165,8 +165,6 @@
    }];
 }
 
-
-
 - (void)loginByHeBaby:(NSDictionary *) parameter {
     
     
@@ -174,20 +172,9 @@
         [_progressM hiddenProgress];
         if ([responseObject[@"status"] intValue] == 1) {//登陆成功
 
-            HeEducationH5ViewController *heView = [[HeEducationH5ViewController alloc] init];
-            heView.userClassInfo = [NSArray safeArray:responseObject[@"data"][@"school"]];
-            heView.userId = responseObject[@"data"][@"user"][@"uId"];
-            heView.accessToken = self.accessToken;
-            heView.openId = self.openId;
-            
-            User *user = [[User alloc] init];
-            user.userName = self.accountField.text;
-            user.userPass = self.passwordField.text;
-            user.userID = [NSString stringWithFormat:@"%@",heView.userId];
-            user.nickName = [NSString stringWithFormat:@"%@",responseObject[@"data"][@"user"][@"uNickName"]];
-            [UserData storeUserData:user];
+            [Progress progressShowcontent:@"登录成功" currView:self.view];
 
-            [self restoreRootViewController:heView];
+            [self performSelector:@selector(showMainView:) withObject:responseObject afterDelay:0.3];
             
         } else {
             [Progress progressShowcontent:@"账户或密码错误，请检查"];
@@ -201,8 +188,23 @@
 }
 
 
-- (void)saveUserData {
+#pragma mark - show mainView
 
+- (void)showMainView:(NSDictionary *)responseObject {
+    
+    HeEducationH5ViewController *heView = [[HeEducationH5ViewController alloc] init];
+    heView.userClassInfo = [NSArray safeArray:responseObject[@"data"][@"school"]];
+    heView.userId = responseObject[@"data"][@"user"][@"uId"];
+    heView.accessToken = self.accessToken;
+    heView.openId = self.openId;
+    
+    User *user = [[User alloc] init];
+    user.userName = self.accountField.text;
+    user.userPass = self.passwordField.text;
+    user.userID = [NSString stringWithFormat:@"%@",heView.userId];
+    user.nickName = [NSString stringWithFormat:@"%@",responseObject[@"data"][@"user"][@"uNickName"]];
+    [UserData storeUserData:user];
+    [self restoreRootViewController:heView];
 
 }
 

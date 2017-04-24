@@ -37,6 +37,12 @@
                                   success:(void(^)(id reponseObject))success
                                   failure:(void(^)(NSError *error))failure;
 
+#pragma mark - get login tohen by third app
+
++ (void)getAppLoginTokenByThirdAppWithParameters:(id)parameters
+                                         success:(void(^)(id reponseObject))success
+                                         failure:(void(^)(NSError *error))failure;
+
 //获取观看人数接口
 + (void)getWatchingNumberWithParameters:(id)parameters
                                 success:(void(^)(id reponseObject))success
