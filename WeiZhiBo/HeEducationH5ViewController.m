@@ -31,6 +31,8 @@
     NSString *CSchoolName;
     NSArray *classesArray;
     MBProgressManager *loadProgress;
+    NSURLConnection *theConnection;
+
 }
 
 @property (nonatomic, strong) JSContext *jsContext;
@@ -48,7 +50,7 @@
     self.view.backgroundColor = [UIColor whiteColor];
     self.navigationController.delegate = self;
     self.title = @"微直播";
-    [Progress progressShowcontent:@"登陆成功"];
+    [Progress progressShowcontent:@"登录成功" currView:self.view];
 
     [self initWebView];
     [self customPlayBtn];
@@ -179,11 +181,23 @@
     CGRect frame = self.view.bounds;
     webView = [[UIWebView alloc] initWithFrame:frame];
     webView.delegate = self;
-//    [webView loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:@"http://live.sch.supadata.cn/ssm//resource/html/teacher/?user=630584331#/tab/camera"]]];
-//    [webView loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"http://wangjunwei.uicp.io/ssm/resource/html/teacher/?user=%@#/tab/camera",self.phoneNUM]]]];
-    [webView loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"http://live.sch.supadata.cn/ssm//resource/html/teacher/?user=%@#/tab/camera",self.userId]]]];
-   
     [self.view addSubview:webView];
+
+//    [webView loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"http://wangjunwei.uicp.io/ssm/resource/html/teacher/?user=%@#/tab/camera",self.phoneNUM]]]];
+
+    NSURL *repURL = [NSURL URLWithString:[NSString stringWithFormat:@"http://live.sch.supadata.cn/ssm//resource/html/teacher/?user=%@#/tab/camera",self.userId]];
+    NSURLRequest *request = [NSURLRequest requestWithURL:repURL cachePolicy:NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:3];
+    [webView loadRequest: request];
+   
+    
+    
+    if (theConnection) {
+        [theConnection cancel];
+        //        SAFE_RELEASE(theConnection);
+        NSLog(@"safe release connection");
+    }
+    theConnection= [[NSURLConnection alloc] initWithRequest:request delegate:self startImmediately:YES];
+
 
 }
 
@@ -222,6 +236,54 @@
     [self createReloadView];
     
 }
+
+- (void)connection:(NSURLConnection *)connection didReceiveResponse:(NSURLResponse *)response {
+    if (theConnection) {
+        //        SAFE_RELEASE(theConnection);
+        NSLog(@"safe release connection");
+    }
+    
+    if ([response isKindOfClass:[NSHTTPURLResponse class]]){
+        
+        NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse*)response;
+        if ((([httpResponse statusCode]/100) == 2)){
+            NSLog(@"connection ok");
+        }
+        else{
+            NSError *error = [NSError errorWithDomain:@"HTTP" code:[httpResponse statusCode] userInfo:nil];
+            if ([error code] == 404){
+                NSLog(@"404");
+                //                [self openNextLink];
+            }
+        }
+    }
+}
+
+- (void)connection:(NSURLConnection *)connection didFailWithError:(NSError *)error {
+    
+    if (theConnection) {
+        //        SAFE_RELEASE(theConnection);
+        NSLog(@"safe release connection");
+    }
+    //    if (loadNotFinishCode == NSURLErrorCancelled)  {
+    //        return;
+    //    }
+    if (error.code == 22) //The operation couldn’t be completed. Invalid argument
+        //        [self openNextLink];
+        NSLog(@"22");
+    else if (error.code == -1001) //The request timed out.  webview code -999的时候会收到－1001，这里可以做一些超时时候所需要做的事情，一些提示什么的
+        //        [self openNextLink];
+        NSLog(@"-1001");
+    else if (error.code == -1005) //The network connection was lost.
+        //        [self openNextLink];
+        NSLog(@"-1005");
+    else if (error.code == -1009){ //The Internet connection appears to be offline
+        //do nothing
+        NSLog(@"-1009");
+    }
+}
+
+
 
 
 #pragma mark - js回调函数

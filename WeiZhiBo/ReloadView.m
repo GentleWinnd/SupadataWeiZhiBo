@@ -17,11 +17,38 @@
     // Drawing code
 }
 */
+
+
 - (IBAction)reloadbtn:(UIButton *)sender {
     
     if (_reloadView) {
         self.reloadView();
     }
+}
+
+
+- (void)setLoadState:(LoadFailStatu)loadState {
+
+    self.loadImageView.image = [UIImage imageNamed:[self getLoadImgaeStr:loadState]];
+}
+
+- (NSString *)getLoadImgaeStr:(LoadFailStatu)loadState {
+    NSString *str = nil;
+    switch (loadState) {
+        case LoadFailStatuNet:
+            str = @"";
+            break;
+        case LoadFailStatuData:
+            str = @"";
+            break;
+        case LoadFailStatuNoData:
+            str = @"";
+            break;
+
+        default:
+            break;
+    }
+    return str;
 }
 
 @end
