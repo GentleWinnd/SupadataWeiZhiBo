@@ -9,7 +9,6 @@
 
 #import "AFNetworkReachabilityManager.h"
 #import "HeEducationH5ViewController.h"
-#import <JavaScriptCore/JavaScriptCore.h>
 #import <MediaPlayer/MediaPlayer.h>
 
 #import "LogInViewController.h"
@@ -19,25 +18,19 @@
 #import "User.h"
 #import <WebKit/WebKit.h>
 
-@protocol JSObjcDelegate <JSExport>//设置代理方法暴露给JS
 
-- (void)getSchoolId:(NSString *)schoolId;
-
-@end
-
-
-@interface HeEducationH5ViewController ()<WKNavigationDelegate,WKUIDelegate,WKScriptMessageHandler,UINavigationControllerDelegate,JSObjcDelegate>
+@interface HeEducationH5ViewController ()<WKNavigationDelegate,WKUIDelegate,WKScriptMessageHandler, UINavigationControllerDelegate>
 {
-    WKWebView *webView;
+    WKWebView *WWebView;
     NSString *CSchoolId;
     NSString *CSchoolName;
     NSArray *classesArray;
     MBProgressManager *loadProgress;
     NSURLConnection *theConnection;
-    WKWebViewConfiguration *config;
 }
+@property (assign, nonatomic) NSUInteger loadCount;
 
-@property (nonatomic, strong) JSContext *jsContext;
+
 
 @end
 
@@ -138,52 +131,43 @@
 #pragma mark - 初始化webview
 
 - (void)initWKWebView {
-     config = [[WKWebViewConfiguration alloc] init];
-//    // 设置偏好设置
-//    config.preferences = [[WKPreferences alloc] init];
-//    // 默认为0
-//    config.preferences.minimumFontSize = 10;
-//    // 默认认为YES
-//    config.preferences.javaScriptEnabled = YES;
-//    // 在iOS上默认为NO，表示不能自动通过窗口打开
-//    config.preferences.javaScriptCanOpenWindowsAutomatically = NO;
-//    // web内容处理池，由于没有属性可以设置，也没有方法可以调用，不用手动创建
-//    config.processPool = [[WKProcessPool alloc] init];
     
+    UIView *VView = [[UIView alloc] initWithFrame:CGRectMake(0, 60, SCREEN_WIDTH, SCREEN_HEIGHT-60)];
+    VView.backgroundColor = [UIColor greenColor];
+    [self.view addSubview:VView];
+    WKWebViewConfiguration *config = [[WKWebViewConfiguration alloc] init];
+     config.userContentController = [[WKUserContentController alloc] init];
     //    window.webkit.messageHandlers.Supadata.postMessage({body:'schoolId'})
-    
-     webView = [[WKWebView alloc] initWithFrame:self.view.bounds configuration:config];
 
-    [self.view addSubview:webView];
+     WWebView = [[WKWebView alloc] initWithFrame:CGRectMake(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT-60) configuration:config];
+    [VView addSubview:WWebView];
     
-    webView.UIDelegate = self;
-    webView.navigationDelegate = self;
+    WWebView.UIDelegate = self;
+    WWebView.navigationDelegate = self;
     
-      NSURL *repURL = [NSURL URLWithString:[NSString stringWithFormat:@"http://wangjunwei.uicp.io/ssm/resource/html/teacher/?user=%@#/tab/camera",self.self.userId]];
-//    NSURL *repURL = [NSURL URLWithString:[NSString stringWithFormat:@"http://live.sch.supadata.cn/ssm//resource/html/teacher/?user=%@#/tab/camera",self.userId]];
+//      NSURL *repURL = [NSURL URLWithString:[NSString stringWithFormat:@"http://wangjunwei.uicp.io/ssm/resource/html/teacher/?user=%@#/tab/camera",self.self.userId]];
+    NSURL *repURL = [NSURL URLWithString:[NSString stringWithFormat:@"http://live.sch.supadata.cn:9080/ssm/resource/html/teacher/?user=%@#/tab/camera",self.userId]];
     NSURLRequest *request = [NSURLRequest requestWithURL:repURL cachePolicy:NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:3];
-    [webView loadRequest: request];
+    [WWebView loadRequest: request];
     // 通过JS与webview内容交互
     WKUserContentController *userCC = config.userContentController;
     // 注入JS对象名称AppModel，当JS通过AppModel来调用时，
     // 我们可以在WKScriptMessageHandler代理中接收到
     [userCC addScriptMessageHandler:self name:@"Supadata"];
 
-    
-   
-//    if (theConnection) {
-//        [theConnection cancel];
-//        //        SAFE_RELEASE(theConnection);
-//        NSLog(@"safe release connection");
-//    }
-//    theConnection= [[NSURLConnection alloc] initWithRequest:request delegate:self startImmediately:YES];
+    if (theConnection) {
+        [theConnection cancel];
+        //        SAFE_RELEASE(theConnection);
+        NSLog(@"safe release connection");
+    }
+    theConnection= [[NSURLConnection alloc] initWithRequest:request delegate:self startImmediately:YES];
 
+    [WWebView addObserver:self forKeyPath:@"estimatedProgress" options:NSKeyValueObservingOptionNew context:nil];
 }
 
 #pragma mark - WKNavigationDelegate
 // 页面开始加载时调用
 - (void)webView:(WKWebView *)webView didStartProvisionalNavigation:(WKNavigation *)navigation{
-    
 
     loadProgress = [[MBProgressManager alloc] init];
     [loadProgress loadingWithTitleProgress:@"加载中..."];
@@ -191,7 +175,7 @@
     if (reloadView) {
         [reloadView removeFromSuperview];
     }
-   
+    self.loadCount ++;
 }
 // 当内容开始返回时调用
 - (void)webView:(WKWebView *)webView didCommitNavigation:(WKNavigation *)navigation{
@@ -200,11 +184,19 @@
 // 页面加载完成之后调用
 - (void)webView:(WKWebView *)webView didFinishNavigation:(WKNavigation *)navigation{
     [loadProgress hiddenProgress];
-    
+    [self performSelector:@selector(setWebViewContent) withObject:nil afterDelay:1.0];
+     self.loadCount --;
+}
+
+- (void)setWebViewContent {
+    [WWebView.scrollView setContentOffset:CGPointMake(0, 0)];
+
+
 }
 // 页面加载失败时调用
 - (void)webView:(WKWebView *)webView didFailProvisionalNavigation:(WKNavigation *)navigation{
     [self createReloadView];
+     self.loadCount --;
 }
 // 接收到服务器跳转请求之后调用
 - (void)webView:(WKWebView *)webView didReceiveServerRedirectForProvisionalNavigation:(WKNavigation *)navigation{
@@ -220,13 +212,53 @@
 //    //decisionHandler(WKNavigationResponsePolicyCancel);
 //}
 // 在发送请求之前，决定是否跳转
-- (void)webView:(WKWebView *)webView decidePolicyForNavigationAction:(WKNavigationAction *)navigationAction decisionHandler:(void (^)(WKNavigationActionPolicy))decisionHandler{
-   
-    NSLog(@"%@",navigationAction.request.URL.absoluteString);
-    //允许跳转
-    decisionHandler(WKNavigationActionPolicyAllow);
-    //不允许跳转
-    //decisionHandler(WKNavigationActionPolicyCancel);
+//- (void)webView:(WKWebView *)webView decidePolicyForNavigationAction:(WKNavigationAction *)navigationAction decisionHandler:(void (^)(WKNavigationActionPolicy))decisionHandler{
+//   
+//    NSLog(@"%@",navigationAction.request.URL.absoluteString);
+//    //允许跳转
+//    decisionHandler(WKNavigationActionPolicyAllow);
+//    //不允许跳转
+//    //decisionHandler(WKNavigationActionPolicyCancel);
+//}
+
+// 计算wkWebView进度条
+- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context {
+//    if (object == self.wkWebView && [keyPath isEqualToString:@"estimatedProgress"]) {
+//        CGFloat newprogress = [[change objectForKey:NSKeyValueChangeNewKey] doubleValue];
+//        if (newprogress == 1) {
+//            self.progressView.hidden = YES;
+//            [self.progressView setProgress:0 animated:NO];
+//        }else {
+//            self.progressView.hidden = NO;
+//            [self.progressView setProgress:newprogress animated:YES];
+//        }
+//    }
+}
+
+// 记得取消监听
+- (void)dealloc {
+    if (IOS8x) {
+        [WWebView removeObserver:self forKeyPath:@"estimatedProgress"];
+    }
+}
+
+#pragma mark - webView代理
+
+// 计算webView进度条
+- (void)setLoadCount:(NSUInteger)loadCount {
+//    _loadCount = loadCount;
+//    if (loadCount == 0) {
+//        self.progressView.hidden = YES;
+//        [self.progressView setProgress:0 animated:NO];
+//    }else {
+//        self.progressView.hidden = NO;
+//        CGFloat oldP = self.progressView.progress;
+//        CGFloat newP = (1.0 - oldP) / (loadCount + 1) + oldP;
+//        if (newP > 0.95) {
+//            newP = 0.95;
+//        }
+//        [self.progressView setProgress:newP animated:YES];
+//    }
 }
 
 #pragma mark - WKScriptMessageHandler
@@ -339,8 +371,8 @@
     ReloadView *reloadView = [[NSBundle mainBundle] loadNibNamed:@"ReloadView" owner:nil options:nil].firstObject;
     reloadView.frame = CGRectMake(0, 0, SCREEN_WIDTH,SCREEN_HEIGHT);
     reloadView.reloadView = ^(){
-        if (webView) {
-            [webView loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"http://live.sch.supadata.cn/ssm//resource/html/teacher/?user=%@#/tab/camera",self.userId]]]];
+        if (WWebView) {
+            [WWebView loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"http://live.sch.supadata.cn/ssm//resource/html/teacher/?user=%@#/tab/camera",self.userId]]]];
         }
     };
     reloadView.tag = 112;
@@ -423,8 +455,8 @@
 - (void)backBtnAction:(UIButton *)sender {
     
     
-    if ([webView canGoBack]) {
-        [webView goBack];
+    if ([WWebView canGoBack]) {
+        [WWebView goBack];
         
     }else{
         [self.view resignFirstResponder];

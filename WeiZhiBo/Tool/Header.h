@@ -30,6 +30,7 @@
 
 #define StrongObj(o) autoreleasepool{} __strong typeof(o) o = o##Weak;
 
+#define IOS8x ([[UIDevice currentDevice].systemVersion floatValue] >= 8.0)
 
 
 
