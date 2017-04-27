@@ -10,6 +10,7 @@
 #import "LogInViewController.h"
 #import "AppLogMgr.h"
 #import "HeEducationH5ViewController.h"
+#import "RealReachability.h"
 
 @interface AppDelegate ()
 
@@ -20,15 +21,67 @@
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     // Override point for customization after application launch.
-    
+
     self.window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
     LogInViewController *logView = [[LogInViewController alloc] init];
     _MainVC = logView;
     self.window.rootViewController = _MainVC;
     [self.window makeKeyAndVisible];
 
+    [GLobalRealReachability startNotifier];
+
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(networkChanged:)
+                                                 name:kRealReachabilityChangedNotification
+                                               object:nil];
+
     return YES;
 }
+
+
+- (void)networkChanged:(NSNotification *)notification {
+    RealReachability *reachability = (RealReachability *)notification.object;
+    ReachabilityStatus status = [reachability currentReachabilityStatus];
+    ReachabilityStatus previousStatus = [reachability previousReachabilityStatus];
+    NSLog(@"networkChanged, currentStatus:%@, previousStatus:%@", @(status), @(previousStatus));
+    
+    if (status == RealStatusNotReachable) {
+        [Progress progressShowcontent:@"当前网络不可用😭😭😭" currView:self.window];
+    }
+    
+    if (status == RealStatusViaWiFi) {
+        [Progress progressShowcontent:@"主人🤓🤓🤓，当前WIFI环境" currView:self.window];
+    }
+    
+    if (status == RealStatusViaWWAN) {
+//        [Progress progressShowcontent:@"主人😲😲😲，您正在使用流量" currView:self.window];
+
+    }
+    
+    WWANAccessType accessType = [GLobalRealReachability currentWWANtype];
+    
+    if (status == RealStatusViaWWAN)
+    {
+        if (accessType == WWANType2G)
+        {
+            [Progress progressShowcontent:@"主人😢😢😢，当前2G网络" currView:self.window];
+        }
+        else if (accessType == WWANType3G)
+        {
+            [Progress progressShowcontent:@"主人😓😓😓，当前3G网络" currView:self.window];
+        }
+        else if (accessType == WWANType4G)
+        {
+            [Progress progressShowcontent:@"主人🤠🤠🤠，当前4G网络" currView:self.window];
+        }
+        else
+        {
+            [Progress progressShowcontent:@"当前未知移动数据网络😲😲😲" currView:self.window];
+
+        }
+    }
+}
+
 
 - (void)applicationWillResignActive:(UIApplication *)application {
     // Sent when the application is about to move from active to inactive state. This can occur for certain types of temporary interruptions (such as an incoming phone call or SMS message) or when the user quits the application and it begins the transition to the background state.
@@ -53,19 +106,22 @@
 - (BOOL)application:(UIApplication *)application openURL:(NSURL *)url sourceApplication:(NSString *)sourceApplication annotation:(id)annotation {
     NSString *urlStr = [url absoluteString];
     /*
-     URL Schemes?appToken=xxxx
-     URL Schemes+?+appToken=xxxx
      URL Schemes?appToken=
      */
-    if ([urlStr hasPrefix:@"weizhiboofsupadata://"]) {
+    if ([urlStr hasPrefix:@"WeiZhiBoOfSupadata://"]) {
 
         NSArray *paramArray = [urlStr componentsSeparatedByString:@"appToken="];
         NSLog(@"=====%@",paramArray);
         _apptoken = [NSString safeString:paramArray.lastObject];
+//        _apptoken = @"7w8LY3VQYxS95ZCYjBiMVUdK1X9xtoJbcTCjbESqKeJtLLmb40C8rY/KM/Zb HBUufCjDdljBi0NJjOuR9dTodlCL/Sn+RCkTQKMtdaQQFY0si0l0uEJCc4Jx 3Ahs/3GIIIkkmpOfEbPsL65w45h1xMFSBwoClxPDMA4J9HvkVhgXckHQ5mN9 G5fJUCyXU3YiwBU+E6Lvw4IYqVmGSlwUNfyWTToUMNao61ja556IsOnae89O /WB2ihIsVB/SP2fzhaQEwk91ggfa38ZsqG96pKH+0/mqfugmCXCmbU3K90TK jz5wXXz1u/iMEk9QiqgouUtcoueghTB27+CunUjX0NHhkhFO56q2Tir8GHKm ZiR+HQhH3BCp8NGKyTjIXnR1DyErFHIVTHWY84UhZRJIUjDfolEaU1GvaqVo ZmmEI0kMpjNMuq/7JoP60RELgX31Az9Z+KV8kdt44YcbX0m2XVJFfRP5zgtS nZLF4QMCjhXRERVX2CVNbNTZ3zo4bGPlGGdlucCRgjOKt2W6KiOR/wXEB9UO PuZeVzaoNS2jD8E7dQ8PAZw9FVFgItXP3vCWvmULF7NYBZ4aWGPlPvBxwWZh dz8BUYq+NE0CqkU6p7FLlVgYyb+FJ9YgS1Nm5Cdy4vckZzgHBu7P6fsG2Yi+ wJVpFxdjSHIScGFOtcKtWSS/qAD8nlpwRw==";
         
         HeEducationH5ViewController *h5View = [[HeEducationH5ViewController alloc] init];
         h5View.appToken = _apptoken;
+//        UINavigationController *navVC = [[UINavigationController alloc] initWithRootViewController:h5View];
+//    navVC.navigationBarHidden = YES;
+//        navVC.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;
         _MainVC = h5View;
+
         self.window.rootViewController = _MainVC;
         [self.window makeKeyAndVisible];
         
@@ -128,6 +184,19 @@
         NSLog(@"Unresolved error %@, %@", error, error.userInfo);
         abort();
     }
+}
+
+
+- (UIInterfaceOrientationMask)application:(UIApplication *)application supportedInterfaceOrientationsForWindow:(UIWindow *)window {
+    
+    if (self.shouldChangeOrientation == YES) {
+        return UIInterfaceOrientationMaskLandscape;
+    }
+    else
+    {
+        return UIInterfaceOrientationMaskPortrait;
+    }
+    //    return UIInterfaceOrientationMaskAll;
 }
 
 

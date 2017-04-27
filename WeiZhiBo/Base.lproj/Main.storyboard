@@ -27,19 +27,19 @@
                                 <gestureRecognizers/>
                             </view>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="NOS-vB-xRS">
-                                <rect key="frame" x="3" y="19" width="370" height="630"/>
+                                <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                                 <subviews>
                                     <imageView contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="masking_top.png" translatesAutoresizingMaskIntoConstraints="NO" id="R7U-c3-4Td">
-                                        <rect key="frame" x="280" y="0.0" width="90" height="630"/>
+                                        <rect key="frame" x="285" y="0.0" width="90" height="667"/>
                                     </imageView>
                                     <imageView contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="masking_bottom.png" translatesAutoresizingMaskIntoConstraints="NO" id="7gY-Jg-qmU">
-                                        <rect key="frame" x="0.0" y="0.0" width="90" height="630"/>
+                                        <rect key="frame" x="0.0" y="0.0" width="90" height="667"/>
                                     </imageView>
                                     <imageView contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="masking_right.png" translatesAutoresizingMaskIntoConstraints="NO" id="FUD-BL-yhT">
-                                        <rect key="frame" x="0.0" y="560" width="370" height="70"/>
+                                        <rect key="frame" x="0.0" y="597" width="375" height="70"/>
                                     </imageView>
                                     <imageView hidden="YES" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="pause_publish.jpg" translatesAutoresizingMaskIntoConstraints="NO" id="Q5g-Ru-jSB">
-                                        <rect key="frame" x="0.0" y="0.0" width="370" height="630"/>
+                                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                                     </imageView>
                                     <button hidden="YES" opaque="NO" tag="11" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="kOD-Ga-LKx">
                                         <rect key="frame" x="14" y="10" width="40" height="40"/>
@@ -75,8 +75,8 @@
                                             <action selector="changeSlider:" destination="BYZ-38-t0r" eventType="valueChanged" id="Re8-Kq-UcX"/>
                                         </connections>
                                     </slider>
-                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="N5O-VC-ecw">
-                                        <rect key="frame" x="87.5" y="570" width="45" height="45"/>
+                                    <button hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="N5O-VC-ecw">
+                                        <rect key="frame" x="90" y="607" width="45" height="45"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="16"/>
                                         <state key="normal" image="class.png">
                                             <color key="titleColor" red="0.0" green="0.47843137250000001" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
@@ -88,8 +88,8 @@
                                             <action selector="btnClickAction:" destination="BYZ-38-t0r" eventType="touchUpInside" id="qTp-ug-qlL"/>
                                         </connections>
                                     </button>
-                                    <button opaque="NO" tag="1" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="hMH-KT-L3A">
-                                        <rect key="frame" x="162.5" y="570" width="45" height="45"/>
+                                    <button hidden="YES" opaque="NO" tag="1" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="hMH-KT-L3A">
+                                        <rect key="frame" x="165" y="607" width="45" height="45"/>
                                         <state key="normal" image="play_n.png"/>
                                         <state key="selected" image="play_s.png">
                                             <color key="titleColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
@@ -98,8 +98,8 @@
                                             <action selector="btnClickAction:" destination="BYZ-38-t0r" eventType="touchUpInside" id="Zzs-AZ-0vD"/>
                                         </connections>
                                     </button>
-                                    <button opaque="NO" tag="2" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Tc8-WL-3bp">
-                                        <rect key="frame" x="237.5" y="570" width="45" height="45"/>
+                                    <button hidden="YES" opaque="NO" tag="2" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Tc8-WL-3bp">
+                                        <rect key="frame" x="240" y="607" width="45" height="45"/>
                                         <state key="normal" image="camera_back.png"/>
                                         <state key="selected" image="camera_front.png">
                                             <color key="titleColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
@@ -108,8 +108,8 @@
                                             <action selector="btnClickAction:" destination="BYZ-38-t0r" eventType="touchUpInside" id="Ukg-fU-V01"/>
                                         </connections>
                                     </button>
-                                    <button opaque="NO" tag="123" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Sk9-q7-8ZZ">
-                                        <rect key="frame" x="298" y="442" width="50" height="33"/>
+                                    <button hidden="YES" opaque="NO" tag="123" contentMode="scaleToFill" selected="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Sk9-q7-8ZZ">
+                                        <rect key="frame" x="307" y="479" width="50" height="33"/>
                                         <constraints>
                                             <constraint firstAttribute="height" constant="33" id="DRH-yO-1b2"/>
                                             <constraint firstAttribute="width" constant="50" id="cyS-91-Ziq"/>
@@ -120,15 +120,15 @@
                                             <action selector="playCommenAction:" destination="BYZ-38-t0r" eventType="touchUpInside" id="Baj-w0-xBN"/>
                                         </connections>
                                     </button>
-                                    <button opaque="NO" tag="321" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="F1L-Uj-XXy">
-                                        <rect key="frame" x="298" y="497" width="50" height="33"/>
+                                    <button hidden="YES" opaque="NO" tag="321" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="F1L-Uj-XXy">
+                                        <rect key="frame" x="307" y="534" width="50" height="33"/>
                                         <state key="normal" image="send_comment.png"/>
                                         <connections>
                                             <action selector="playCommenAction:" destination="BYZ-38-t0r" eventType="touchUpInside" id="1gt-bc-CW9"/>
                                         </connections>
                                     </button>
-                                    <button opaque="NO" tag="13" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="fab-JY-Rn8">
-                                        <rect key="frame" x="317" y="584" width="38" height="38"/>
+                                    <button hidden="YES" opaque="NO" tag="13" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="fab-JY-Rn8">
+                                        <rect key="frame" x="329" y="621" width="38" height="38"/>
                                         <constraints>
                                             <constraint firstAttribute="height" constant="38" id="TS8-do-ykT"/>
                                             <constraint firstAttribute="width" constant="38" id="xZP-cv-htp"/>
@@ -139,7 +139,7 @@
                                         </connections>
                                     </button>
                                     <button hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="3w2-f8-0bm" userLabel="maskingBtn">
-                                        <rect key="frame" x="0.0" y="0.0" width="370" height="630"/>
+                                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                                         <color key="backgroundColor" red="0.0" green="0.0" blue="0.0" alpha="0.099181292808219176" colorSpace="calibratedRGB"/>
                                         <connections>
                                             <action selector="playCommenAction:" destination="BYZ-38-t0r" eventType="touchUpInside" id="x8W-PL-nwN"/>
@@ -151,7 +151,6 @@
                                 <constraints>
                                     <constraint firstAttribute="trailing" secondItem="Q5g-Ru-jSB" secondAttribute="trailing" id="0xI-1l-g2Q"/>
                                     <constraint firstItem="kOD-Ga-LKx" firstAttribute="top" secondItem="NOS-vB-xRS" secondAttribute="top" constant="10" id="362-8X-2hq"/>
-                                    <constraint firstAttribute="height" constant="630" id="3vI-Bz-6Zz"/>
                                     <constraint firstAttribute="bottom" secondItem="Q5g-Ru-jSB" secondAttribute="bottom" id="57b-bX-oXJ"/>
                                     <constraint firstItem="kOD-Ga-LKx" firstAttribute="leading" secondItem="NOS-vB-xRS" secondAttribute="leading" constant="14" id="5i6-0u-eeB"/>
                                     <constraint firstAttribute="bottom" secondItem="hMH-KT-L3A" secondAttribute="bottom" constant="15" id="AnU-ez-io7"/>
@@ -170,17 +169,17 @@
                                     <constraint firstItem="hMH-KT-L3A" firstAttribute="centerY" secondItem="N5O-VC-ecw" secondAttribute="centerY" id="V1x-no-xa3"/>
                                     <constraint firstItem="OYG-Gt-R2M" firstAttribute="centerX" secondItem="TqS-Mv-MFZ" secondAttribute="centerX" id="VYQ-K3-ozQ"/>
                                     <constraint firstItem="TqS-Mv-MFZ" firstAttribute="centerY" secondItem="kOD-Ga-LKx" secondAttribute="centerY" id="WBk-vT-zik"/>
-                                    <constraint firstAttribute="trailing" secondItem="F1L-Uj-XXy" secondAttribute="trailing" constant="22" id="Wch-38-w4v"/>
+                                    <constraint firstAttribute="trailing" secondItem="F1L-Uj-XXy" secondAttribute="trailing" constant="18" id="Wch-38-w4v"/>
                                     <constraint firstAttribute="bottom" secondItem="7gY-Jg-qmU" secondAttribute="bottom" id="XfP-v2-7Qe"/>
                                     <constraint firstItem="F1L-Uj-XXy" firstAttribute="width" secondItem="Sk9-q7-8ZZ" secondAttribute="width" id="Zis-VH-S3f"/>
                                     <constraint firstItem="F1L-Uj-XXy" firstAttribute="height" secondItem="Sk9-q7-8ZZ" secondAttribute="height" id="a46-9X-zh1"/>
                                     <constraint firstAttribute="bottom" secondItem="3w2-f8-0bm" secondAttribute="bottom" id="bbL-TP-rxk"/>
-                                    <constraint firstAttribute="trailing" secondItem="Sk9-q7-8ZZ" secondAttribute="trailing" constant="22" id="bpi-AM-1Hg"/>
+                                    <constraint firstAttribute="trailing" secondItem="Sk9-q7-8ZZ" secondAttribute="trailing" constant="18" id="bpi-AM-1Hg"/>
                                     <constraint firstItem="Q5g-Ru-jSB" firstAttribute="leading" secondItem="NOS-vB-xRS" secondAttribute="leading" id="cou-c7-qro"/>
-                                    <constraint firstAttribute="trailing" secondItem="fab-JY-Rn8" secondAttribute="trailing" constant="15" id="dUK-TY-fAa"/>
+                                    <constraint firstAttribute="trailing" secondItem="fab-JY-Rn8" secondAttribute="trailing" constant="8" id="dUK-TY-fAa"/>
                                     <constraint firstItem="7gY-Jg-qmU" firstAttribute="leading" secondItem="NOS-vB-xRS" secondAttribute="leading" id="dem-GM-Sih"/>
                                     <constraint firstAttribute="bottom" secondItem="fab-JY-Rn8" secondAttribute="bottom" constant="8" id="eAl-sj-e3K"/>
-                                    <constraint firstAttribute="width" constant="370" id="fKF-5b-kOa"/>
+                                    <constraint firstAttribute="width" constant="375" id="fsr-L6-RH0"/>
                                     <constraint firstItem="F1L-Uj-XXy" firstAttribute="top" secondItem="Sk9-q7-8ZZ" secondAttribute="bottom" constant="22" id="gTT-X9-os9"/>
                                     <constraint firstItem="TqS-Mv-MFZ" firstAttribute="leading" secondItem="kOD-Ga-LKx" secondAttribute="trailing" constant="22" id="h5Q-Q2-Vum"/>
                                     <constraint firstItem="3w2-f8-0bm" firstAttribute="leading" secondItem="NOS-vB-xRS" secondAttribute="leading" id="hmL-U0-oP5"/>
@@ -189,6 +188,7 @@
                                     <constraint firstItem="3w2-f8-0bm" firstAttribute="top" secondItem="NOS-vB-xRS" secondAttribute="top" id="ldZ-87-0Yk"/>
                                     <constraint firstItem="TqS-Mv-MFZ" firstAttribute="width" secondItem="TqS-Mv-MFZ" secondAttribute="height" multiplier="1:1" id="r9R-9b-Vqu"/>
                                     <constraint firstAttribute="trailing" secondItem="FUD-BL-yhT" secondAttribute="trailing" id="t9c-aj-Jrr"/>
+                                    <constraint firstAttribute="height" constant="667" id="v7Q-ug-4o2"/>
                                     <constraint firstItem="Tc8-WL-3bp" firstAttribute="leading" secondItem="hMH-KT-L3A" secondAttribute="trailing" constant="30" id="vMF-Ux-Vor"/>
                                 </constraints>
                                 <connections>
@@ -200,6 +200,8 @@
                         </subviews>
                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
+                            <constraint firstItem="MNx-Pk-r1m" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="7OU-J9-fLa"/>
+                            <constraint firstItem="MNx-Pk-r1m" firstAttribute="centerY" secondItem="8bC-Xf-vdC" secondAttribute="centerY" id="Ii0-qh-5dL"/>
                             <constraint firstItem="MNx-Pk-r1m" firstAttribute="top" secondItem="8bC-Xf-vdC" secondAttribute="top" id="SJM-Wi-v8S"/>
                             <constraint firstItem="NOS-vB-xRS" firstAttribute="centerY" secondItem="8bC-Xf-vdC" secondAttribute="centerY" id="T0V-nF-P45"/>
                             <constraint firstItem="wfy-db-euE" firstAttribute="top" secondItem="MNx-Pk-r1m" secondAttribute="bottom" id="e2V-Nu-eXL"/>
@@ -212,8 +214,8 @@
                         <outlet property="backBtn" destination="fab-JY-Rn8" id="uST-RJ-mYk"/>
                         <outlet property="backImageView" destination="Q5g-Ru-jSB" id="TMX-4t-u0c"/>
                         <outlet property="backView" destination="NOS-vB-xRS" id="cFo-Pz-QJk"/>
-                        <outlet property="backViewHeight" destination="3vI-Bz-6Zz" id="vq8-4i-6jv"/>
-                        <outlet property="backViewWidth" destination="fKF-5b-kOa" id="PqF-YQ-CuB"/>
+                        <outlet property="backViewHeight" destination="v7Q-ug-4o2" id="RSz-ck-vga"/>
+                        <outlet property="backViewWidth" destination="fsr-L6-RH0" id="9fp-nu-7uV"/>
                         <outlet property="beautyBtn" destination="TqS-Mv-MFZ" id="o7v-5g-7b9"/>
                         <outlet property="beautySlider" destination="OYG-Gt-R2M" id="ZnW-WJ-2q1"/>
                         <outlet property="cameraView" destination="MNx-Pk-r1m" id="jLY-HF-kQs"/>

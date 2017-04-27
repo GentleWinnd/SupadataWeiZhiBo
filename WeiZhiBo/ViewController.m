@@ -14,7 +14,6 @@
 #import "SchoolNameView.h"
 #import "NSString+Extension.h"
 #import "ContentView.h"
-#import "AFNetworkReachabilityManager.h"
 
 #import "AppLogMgr.h"
 
@@ -30,6 +29,7 @@
 #import "CommentMessageView.h"
 #import "InputView.h"
 #import "DeviceDetailManager.h"
+#import "AppDelegate.h"
 
 
 @interface ViewController ()<VCSessionDelegate, SRWebSocketDelegate, InputViewDelegate>
@@ -69,6 +69,7 @@
 @property (strong, nonatomic) ClassNameView *classView;
 /********end******/
 
+@property (strong, nonatomic) UIActivityIndicatorView *iniIndicator;
 
 @property (assign, nonatomic) BOOL publish_switch;
 
@@ -82,11 +83,9 @@ static NSString *cellID = @"cellId";
     NSString *classId;
     NSString *className;
     NSString *cameraDataId;
-    CGFloat currentRotation;
     NSMutableDictionary *unfoldInfo;
     UIDeviceOrientation _deviceOrientation;
     CMMotionManager *motionManager;
-    AFNetworkReachabilityManager *manager;
     SRWebSocket *_webSocket;
     MessageType messageType;
     NSMutableArray *messageArr;
@@ -107,22 +106,20 @@ static NSString *cellID = @"cellId";
     
     [_webSocket close];
     _webSocket = nil;
-
 }
 
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view, typically from a nib.
-    [self setBaiDuSDK];
-    [self setShowItem];
-    [self createContentView];
-    [self createCLassNamePickerView];
-    [self initNeedData];
-    [self AFNReachability];
-    [self createInputView];
-    [self createMessageView];
-}
+    _iniIndicator = [[UIActivityIndicatorView alloc] initWithFrame:CGRectMake(0, 0, 66, 66)];
+    _iniIndicator.center = CGPointMake(SCREEN_WIDTH/2, SCREEN_HEIGHT/2);
+    _iniIndicator.activityIndicatorViewStyle = UIActivityIndicatorViewStyleWhiteLarge;
+    [self.view addSubview:_iniIndicator];
+    [_iniIndicator startAnimating];
+    self.backView.transform = CGAffineTransformMakeRotation(- M_PI_2);
 
+    [self setBaiDuSDK];
+}
 
 - (void)initNeedData {
     
@@ -136,7 +133,6 @@ static NSString *cellID = @"cellId";
     }
     
     textMessgeHeight = 42;
-    currentRotation = 0;
     messageArr = [NSMutableArray arrayWithCapacity:0];
     unfoldInfo = [NSMutableDictionary dictionaryWithCapacity:self.userClassInfo.count];
     
@@ -146,19 +142,29 @@ static NSString *cellID = @"cellId";
 
 - (void)setShowItem {
     
+    [self.iniIndicator stopAnimating];
+    self.iniIndicator.hidden = YES;
     self.sendCommentBtn.transform = CGAffineTransformMakeRotation(M_PI_2);
     self.playCommentBtn.transform = CGAffineTransformMakeRotation( M_PI_2);
-    self.backView.transform = CGAffineTransformMakeRotation(- M_PI_2);
-    self.backViewWidth.constant = SCREEN_WIDTH;
-    self.backViewHeight.constant = SCREEN_HEIGHT;
+//    _beautySlider.transform = CGAffineTransformMakeRotation(M_PI_2);
+
+    self.backViewWidth.constant = HEIGHT;
+    self.backViewHeight.constant = WIDTH;
     self.tapGesture.numberOfTapsRequired = 1;
     self.doubleTapGesture.numberOfTapsRequired = 2;
     self.tapGesture.enabled = NO;
+    
+    self.classBtn.hidden = NO;
+    self.playBtn.hidden = NO;
+    self.traformCameraBtn.hidden = NO;
+    self.backBtn.hidden = NO;
+    
     [self.tapGesture requireGestureRecognizerToFail:self.doubleTapGesture];
-    _beautySlider.transform = CGAffineTransformMakeRotation(M_PI_2);
     [_beautySlider setThumbImage:[UIImage imageNamed:@"heart"] forState:UIControlStateNormal];
     [self orientationChangedWithDeviceOrientation:UIDeviceOrientationLandscapeLeft];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(changeContentViewPoint:) name:UIKeyboardDidChangeFrameNotification object:nil];
+    //监听当键将要退出时
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillHide:) name:UIKeyboardWillHideNotification object:nil];
 
 }
 
@@ -166,16 +172,14 @@ static NSString *cellID = @"cellId";
 
 - (void)createContentView {
     self.CView = [[NSBundle mainBundle] loadNibNamed:@"ContentView" owner:self options:nil].lastObject;
-    self.CView.frame = CGRectMake(SCREEN_WIDTH-48, 50, 120, 30);
-    self.CView.transform = CGAffineTransformMakeRotation(M_PI_2);
+    self.CView.frame = CGRectMake(4, 26, 120, 30);
     
-    [self.backView addSubview:self.CView];
+    [self.view  addSubview:self.CView];
 }
 
 /*************************set baidu sdk**********************/
 
 - (void)setBaiDuSDK {
-//    _pushUrl = @"rtmp://push.bcelive.com/live/ftqhgk3ch6wtwcvexu";
     StreamingViewModel* vmodel = [[StreamingViewModel alloc] initWithPushUrl:_pushUrl];
     
     [vmodel setupSession:AVCaptureVideoOrientationLandscapeRight delegate:self];
@@ -200,7 +204,7 @@ static NSString *cellID = @"cellId";
             [Progress progressShowcontent:@"打开评论才可以发表评论" currView:self.view];
         }
     } else {//显示蒙版
-//        [self showClassInfoTable:NO];
+        [self showClassInfoTable:NO];
     }
 }
 
@@ -225,7 +229,12 @@ static NSString *cellID = @"cellId";
             [self alertViewMessage:@"正在直播，是否关闭？" alertType:AlertViewTypeQuitPlayView];
 
         } else {
-            [self.navigationController popViewControllerAnimated:NO];
+            AppDelegate * app = [UIApplication sharedApplication].delegate;
+            app.shouldChangeOrientation = NO;
+
+            [self.navigationController dismissViewControllerAnimated:YES completion:^{
+               
+            }];
         }
     }
 }
@@ -331,18 +340,25 @@ static NSString *cellID = @"cellId";
     [self.model.session startRtmpSessionWithURL:rtmpUrl];
     [[UIApplication sharedApplication] setIdleTimerDisabled:YES];
   
-    [manager startMonitoring];//开启网络监听
     [self reconnectWebSocket];
     [self.CView hiddenDoingView:NO];
+  
     
     self.isBacking = NO;
     _playBtn.selected = YES;
+    _sendCommentBtn.hidden = NO;
+    _playCommentBtn.hidden = NO;
+    _playCommentBtn.selected = NO;
+    [self playCommenAction:_playCommentBtn];
+
     return YES;
 }
 
 - (void)stopRtmp {
     self.isBacking = YES;
     self.playBtn.selected = NO;
+    _sendCommentBtn.hidden = YES;
+    _playCommentBtn.hidden = YES;
     BOOL result = [self.model back];
     
     [self stopTimer];
@@ -352,8 +368,6 @@ static NSString *cellID = @"cellId";
     commentView.messageArray = messageArr;
     [commentView reloadMessageTable];
 
-    
-    [manager stopMonitoring];
     [messageArr removeAllObjects];
     [[UIApplication sharedApplication] setIdleTimerDisabled:NO];
 }
@@ -423,7 +437,16 @@ static NSString *cellID = @"cellId";
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onAppDidEnterBackGround:) name:UIApplicationDidEnterBackgroundNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onAppWillEnterForeground:) name:UIApplicationWillEnterForegroundNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onAppDidBecomeActive:) name:UIApplicationDidBecomeActiveNotification object:nil];
+    
 //    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(statusBarOrientationChanged:) name:UIApplicationDidChangeStatusBarOrientationNotification object:nil];
+    
+    [self setShowItem];
+    [self createContentView];
+    [self createCLassNamePickerView];
+    [self initNeedData];
+    [self createInputView];
+    [self createMessageView];
+
 }
 
 
@@ -443,44 +466,23 @@ static NSString *cellID = @"cellId";
 }
 
 - (void)onAppDidEnterBackGround:(UIApplication*)app {
-/*
- if (_play_switch == YES) {
- if ([self isVODType:_playType]) {
- if (!_videoPause) {
- [_txLivePlayer pause];
- }
- }
- }
 
- */
     
 }
 
 - (void)onAppWillEnterForeground:(UIApplication*)app {
-//    if (_play_switch == YES) {
-//        if ([self isVODType:_playType]) {
-//            if (!_videoPause) {
-//                [_txLivePlayer resume];
-//            }
-//        }
-//    }
+ 
+
 }
 
 - (void)onAppDidBecomeActive:(UIApplication*)app {
-//    if (_play_switch == YES && _appIsInterrupt == YES) {
-//        if ([self isVODType:_playType]) {
-//            if (!_videoPause) {
-//                [_txLivePlayer resume];
-//            }
-//        }
-//        _appIsInterrupt = NO;
-//    }
+
+
 }
 
 
 #pragma mark - change beauty value
 - (IBAction)changeSlider:(UISlider *)sender {
-    
     [self.model.session setBeatyEffect:sender.value withSmooth:sender.value withPink:sender.value];
     
 }
@@ -516,7 +518,7 @@ static NSString *cellID = @"cellId";
                                 @"adminClassName":@"",@"cameraClassLocation":@""};
     
     MBProgressManager *progressM = [[MBProgressManager alloc] init];
-    [progressM loadingWithTitleProgress:@""];
+    [progressM loadingWithTitleProgress:@"正在获取班级信息..."];
     [WZBNetServiceAPI postRegisterPhoneMicroLiveWithParameters:parameter success:^(id reponseObject) {
         [progressM hiddenProgress];
         if ([reponseObject[@"status"] intValue] == 1) {
@@ -536,20 +538,27 @@ static NSString *cellID = @"cellId";
 }
 
 - (void)groupSendMassage {//发送消息通知家长
+    
+    if (className == nil || classId == nil) {
+        [Progress progressShowcontent:@"班级不存在" currView:self.view];
+        return;
+    }
    
     NSDictionary *parameter = @{@"access_token":self.accessToken,
                                 @"open_id":self.openId,
                                 @"flag":@"2",
                                 @"classId":classId,
-                                @"className":className};
+                                @"className":_schoolName,
+                                @"schoolId":_schoolId};
     [WZBNetServiceAPI getGroupSendMassageWithParameters:parameter success:^(id reponseObject) {
         if ([reponseObject[@"status"] intValue] == 1) {
-            [Progress progressShowcontent:@"已经通知家长了！！！" currView:self.view];
+            [Progress progressShowcontent:[NSString safeString:reponseObject[@"message"]] currView:self.view];
         } else {
-            [Progress progressShowcontent:@"通知家长失败了！！！" currView:self.view];
+            [Progress progressShowcontent:[NSString safeString:reponseObject[@"message"]] currView:self.view];
         }
     } failure:^(NSError *error) {
-         [Progress progressShowcontent:@"通知家长失败了！！！" currView:self.view];
+
+        [KTMErrorHint showNetError:error inView:self.view];
     }];
     
 }
@@ -643,7 +652,7 @@ static NSString *cellID = @"cellId";
     CGRect frame = _classView.frame;
     if (show) {
         
-        CGFloat height = 36 + WIDTH_6_ZSCALE(45)*5;
+        CGFloat height = 39 + HEIGHT_6_ZSCALE(45)*5;
         frame = CGRectMake(0, 0,WIDTH_6_ZSCALE(350) , HEIGHT_6_ZSCALE(height));
         [_classView.classNameTab reloadData];
 
@@ -656,7 +665,7 @@ static NSString *cellID = @"cellId";
     
     [UIView animateWithDuration:0.01 animations:^{
         _classView.frame = frame;
-        _classView.center = CGPointMake(SCREEN_HEIGHT/2, SCREEN_WIDTH/2);
+        _classView.center = CGPointMake(WIDTH/2, HEIGHT/2);
 
     }];
 }
@@ -673,7 +682,7 @@ static NSString *cellID = @"cellId";
     [_webSocket close];
     
 //    _webSocket = [[SRWebSocket alloc] initWithURL:[NSURL URLWithString:@"ws://baihongyu1234567.xicp.io/ssm/websocket"]];
-    _webSocket = [[SRWebSocket alloc] initWithURL:[NSURL URLWithString:@"ws://live.sch.supadata.cn:9080/ssm/websocket"]];
+    _webSocket = [[SRWebSocket alloc] initWithURL:[NSURL URLWithString:@"ws://live.sch.supadata.cn/ssm/websocket"]];
     _webSocket.delegate = self;
     
     [_webSocket open];
@@ -712,7 +721,7 @@ static NSString *cellID = @"cellId";
     
 //    }
     NSDictionary *messageInfos = [NSDictionary safeDictionary:[self dictionaryWithJsonString:string]];
-    MessageSocketType type = [NSString safeNumber:messageInfos[@"type"]].integerValue;
+    MessageSocketType type = [NSString safeNumber:messageInfos[@"flag"]].integerValue;
     if (type == MessageSocketTypeDefualtMessage) {
         [messageArr addObject:messageInfos];
         commentView.messageArray = messageArr;
@@ -819,52 +828,38 @@ static NSString *cellID = @"cellId";
 
 - (void)showCommentMessageView:(BOOL)show {
     [UIView animateWithDuration:0.1 animations:^{
-        commentView.frame = CGRectMake(0, 0, HEIGHT_6_ZSCALE(222), SCREEN_WIDTH);
+        commentView.frame = CGRectMake(0, 0, WIDTH_6_ZSCALE(222), SCREEN_HEIGHT);
         commentView.hidden = !show;
     }];
 
 }
 
-- (void)changeOration {
-    NSInteger windowCount = [[[UIApplication sharedApplication] windows] count];
-    if (windowCount < 2) {
-        return;
-    }
-    
-    UIWindow *keyboardWindow = [[[UIApplication sharedApplication] windows]  lastObject];
-    UIWindow *textWindow = [[[UIApplication sharedApplication] windows] objectAtIndex:windowCount-2];
-//    CGPoint point = keyboardWindow.frame.origin;
-    keyboardWindow.transform = CGAffineTransformMakeRotation(M_PI_2);
-    keyboardWindow.bounds = CGRectMake(0,0,SCREEN_HEIGHT, SCREEN_WIDTH);
-    
-    textWindow.transform = CGAffineTransformMakeRotation(M_PI_2);
-    textWindow.bounds = CGRectMake(0, 0,SCREEN_HEIGHT, SCREEN_WIDTH);
- 
-}
-
-
 - (void) changeContentViewPoint:(NSNotification *)notification {// 根据键盘状态，调整_mainView的位置
     NSDictionary *userInfo = [notification userInfo];
     NSValue *value = [userInfo objectForKey:UIKeyboardFrameEndUserInfoKey];
-    CGFloat keyBoardEndX = value.CGRectValue.size.width;
-    if (keyBoardEndX>200) {
-        return;
-    }
+    CGFloat keyBoardEndX = value.CGRectValue.size.height;
     
     NSString *device = [DeviceDetailManager getSystemDeviceModel];
     if ([device isEqualToString:@"iPad"]) {
 //        [self changeOration];
     }
-    CGRect frame = CGRectMake(0,SCREEN_WIDTH-keyBoardEndX-textMessgeHeight, SCREEN_HEIGHT, textMessgeHeight);
+    CGRect frame = CGRectMake(0,SCREEN_HEIGHT-keyBoardEndX-textMessgeHeight, SCREEN_WIDTH, textMessgeHeight);
     inputView.frame = frame;
     keyBoardHeight = keyBoardEndX;
     
-    [UIView animateWithDuration:0.01  animations:^{
+    [UIView animateWithDuration:0.001  animations:^{
         [UIView setAnimationBeginsFromCurrentState:YES];
         inputView.frame = frame;
     }];
 
     // 添加移动动画，使视图跟随键盘移动
+}
+- (void)keyboardWillHide:(NSNotification *)notification {
+
+    [self removeBackView];
+    inputView.hidden = YES;
+    inputView.frame = CGRectMake(0, SCREEN_WIDTH, SCREEN_WIDTH, 42);
+
 }
 
 /***************评论输入框***************/
@@ -872,7 +867,7 @@ static NSString *cellID = @"cellId";
 
 - (void)createInputView {
     inputView = [[NSBundle mainBundle] loadNibNamed:@"InputView" owner:self options:nil].lastObject;
-    inputView.frame = CGRectMake(0, 0, SCREEN_HEIGHT, 42);
+    inputView.frame = CGRectMake(0, 0, SCREEN_WIDTH, 42);
     inputView.hidden = YES;
     inputView.delegate = self;
     @WeakObj(self)
@@ -885,7 +880,8 @@ static NSString *cellID = @"cellId";
         [selfWeak removeBackView];
         inputViewWeak.hidden = YES;
         inputViewWeak.textView.text = @"";
-        inputViewWeak.frame = CGRectMake(0, SCREEN_WIDTH, SCREEN_HEIGHT, 42);
+        inputViewWeak.frame = CGRectMake(0, SCREEN_WIDTH, SCREEN_WIDTH, 42);
+        inputViewWeak.messageStr = @"";
         if (message.length<=0) {
             return ;
         }
@@ -904,7 +900,7 @@ static NSString *cellID = @"cellId";
     frame.size.height = 12+15+15*number;
     textMessgeHeight = frame.size.height;
     
-    inputView.frame = CGRectMake(0, SCREEN_WIDTH-keyBoardHeight-textMessgeHeight, SCREEN_HEIGHT, textMessgeHeight);
+    inputView.frame = CGRectMake(0, SCREEN_HEIGHT-keyBoardHeight-textMessgeHeight, SCREEN_WIDTH, textMessgeHeight);
 }
 
 #pragma mark - showInputView
@@ -912,10 +908,9 @@ static NSString *cellID = @"cellId";
 - (void)showInputView {
     
     inputView.hidden = NO;
-    inputView.frame = CGRectMake(0, SCREEN_WIDTH, SCREEN_HEIGHT, 42);
+    inputView.frame = CGRectMake(0, SCREEN_HEIGHT, SCREEN_WIDTH, 42);
     [inputView.textView becomeFirstResponder];
     
-    [self changeOration];
     [self addKeyBoardBackView];
 }
 
@@ -927,10 +922,10 @@ static NSString *cellID = @"cellId";
     if (view) {
         return;
     }
-    UIView *backViewKey = [[UIView alloc] initWithFrame:CGRectMake(0, 0, SCREEN_HEIGHT, SCREEN_WIDTH)];
+    UIView *backViewKey = [[UIView alloc] initWithFrame:CGRectMake(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT)];
     backViewKey.tag = 1234;
     backViewKey.backgroundColor = [UIColor clearColor];
-    UIView *MView = [[UIView alloc] initWithFrame:CGRectMake(0, SCREEN_WIDTH-keyBoardHeight, SCREEN_HEIGHT, keyBoardHeight)];
+    UIView *MView = [[UIView alloc] initWithFrame:CGRectMake(0, SCREEN_HEIGHT-keyBoardHeight, SCREEN_WIDTH, keyBoardHeight)];
     MView.backgroundColor = [UIColor whiteColor];
     [backViewKey addSubview:MView];
     
@@ -955,7 +950,7 @@ static NSString *cellID = @"cellId";
     [inputView.textView resignFirstResponder];
     inputView.hidden = YES;
     inputView.textView.text = @"";
-    inputView.frame = CGRectMake(0, SCREEN_WIDTH, SCREEN_HEIGHT, 42);
+    inputView.frame = CGRectMake(0, SCREEN_HEIGHT, SCREEN_WIDTH, 42);
 
 }
 
@@ -972,7 +967,10 @@ static NSString *cellID = @"cellId";
             [self groupSendMassage];
         } else {
             [self clearLog];
-            [self.navigationController popViewControllerAnimated:NO];
+            AppDelegate * app = [UIApplication sharedApplication].delegate;
+            app.shouldChangeOrientation = NO;
+            
+            [self dismissViewControllerAnimated:YES completion:nil];
         }
         
     }]];
@@ -983,20 +981,10 @@ static NSString *cellID = @"cellId";
         }
         
     }]];
-    alert.view.subviews.lastObject.transform = CGAffineTransformMakeRotation(M_PI_2);
     
     [self presentViewController:alert animated:YES completion:nil];
-//    [self performSelector:@selector(changeAlertVC) withObject:nil afterDelay:0.001];
 }
 
-
-- (void)changeAlertVC {
-    UIWindow *window = [[UIApplication sharedApplication].windows firstObject];
-    UIView *view = window.subviews.lastObject.subviews.lastObject;
-    
-    view.transform = CGAffineTransformMakeRotation(M_PI_2);
-//    view.subviews.lastObject.transform = CGAffineTransformMakeRotation(-M_PI_2);
-}
 
 #pragma mark -
 
@@ -1089,44 +1077,6 @@ static NSString *cellID = @"cellId";
     return YES;
 }
 
-/*******************deal push****************/
-//使用AFN框架来检测网络状态的改变
--(void)AFNReachability {
-    //1.创建网络监听管理者
-    manager = [AFNetworkReachabilityManager sharedManager];
-    
-    //2.监听网络状态的改变
-    /*
-     AFNetworkReachabilityStatusUnknown          = 未知
-     AFNetworkReachabilityStatusNotReachable     = 没有网络
-     AFNetworkReachabilityStatusReachableViaWWAN = 3G
-     AFNetworkReachabilityStatusReachableViaWiFi = WIFI
-     */
-    @WeakObj(self)
-    [manager setReachabilityStatusChangeBlock:^(AFNetworkReachabilityStatus status) {
-        switch (status) {
-            case AFNetworkReachabilityStatusUnknown:
-                NSLog(@"未知");
-                break;
-            case AFNetworkReachabilityStatusNotReachable:
-                NSLog(@"没有网络");
-                [Progress progressShowcontent:@"当前网络不可用，请检查" currView:selfWeak.view];
-                break;
-            case AFNetworkReachabilityStatusReachableViaWWAN:
-                NSLog(@"3G");
-                [Progress progressShowcontent:@"您当前使用的是4G网络，直播时建议使用WiFi" currView:selfWeak.view];
-                break;
-            case AFNetworkReachabilityStatusReachableViaWiFi:
-                NSLog(@"WIFI");
-                [Progress progressShowcontent:@"当前是在WiFi环境下，您可以放心使用" currView:selfWeak.view];
-                break;
-                
-            default:
-                break;
-        }
-    }];
-    
-}
 
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
@@ -1135,6 +1085,15 @@ static NSString *cellID = @"cellId";
 
 - (void)dealloc {
     [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
+
+-(BOOL)shouldAutorotate {
+    return YES;
+}
+
+-(UIInterfaceOrientationMask)supportedInterfaceOrientations {
+    _iniIndicator.center = CGPointMake(WIDTH/2, HEIGHT/2);
+    return UIInterfaceOrientationMaskLandscape;
 }
 
 
@@ -1178,7 +1137,7 @@ static NSString *CellIdOfClass = @"cellIdOfClass";
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
-    return WIDTH_6_ZSCALE(45);
+    return HEIGHT_6_ZSCALE(45);
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {

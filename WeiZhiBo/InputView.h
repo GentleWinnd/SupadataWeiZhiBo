@@ -21,5 +21,6 @@
 @property (copy, nonatomic) void(^sendMessage)(NSString *inputMessage);
 
 @property (strong, nonatomic) IBOutlet UITextView *textView;
+@property (nonatomic, copy) NSString *messageStr;
 
 @end

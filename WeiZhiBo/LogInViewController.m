@@ -8,6 +8,7 @@
 #import "HeEducationH5ViewController.h"
 #import "LogInViewController.h"
 #import "ViewController.h"
+#import "AppDelegate.h"
 #import "UserData.h"
 #import "User.h"
 
@@ -191,21 +192,44 @@
 #pragma mark - show mainView
 
 - (void)showMainView:(NSDictionary *)responseObject {
-    
-    HeEducationH5ViewController *heView = [[HeEducationH5ViewController alloc] init];
-    heView.userClassInfo = [NSArray safeArray:responseObject[@"data"][@"school"]];
-    heView.userId = responseObject[@"data"][@"user"][@"uId"];
-    heView.accessToken = self.accessToken;
-    heView.openId = self.openId;
-    
     User *user = [[User alloc] init];
     user.userName = self.accountField.text;
     user.userPass = self.passwordField.text;
-    user.userID = [NSString stringWithFormat:@"%@",heView.userId];
+    user.userID = [NSString stringWithFormat:@"%@",responseObject[@"data"][@"user"][@"uId"]];
     user.nickName = [NSString stringWithFormat:@"%@",responseObject[@"data"][@"user"][@"uNickName"]];
     [UserData storeUserData:user];
-    [self restoreRootViewController:heView];
 
+    BOOL isOnline = [NSString safeNumber:responseObject[@"data"][@"isonline"]].boolValue;
+    if (isOnline) {
+        HeEducationH5ViewController *heView = [[HeEducationH5ViewController alloc] init];
+        heView.userClassInfo = [NSArray safeArray:responseObject[@"data"][@"school"]];
+        heView.userId = responseObject[@"data"][@"user"][@"uId"];
+        heView.accessToken = self.accessToken;
+        heView.openId = self.openId;
+        
+       [self restoreRootViewController:heView];
+
+    } else {
+        
+        NSDictionary *schoolInfo = [NSArray  safeArray:responseObject[@"data"][@"school"]].firstObject;
+        AppDelegate *app = [UIApplication sharedApplication].delegate;
+        app.shouldChangeOrientation = YES;
+        UIStoryboard *board = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
+
+        ViewController *VC = [board instantiateViewControllerWithIdentifier:@"ViewController"];
+        VC.userClassInfo = [NSArray safeArray:schoolInfo[@"classes"]];
+        VC.userId = responseObject[@"data"][@"user"][@"uId"];
+        VC.accessToken = self.accessToken;
+        VC.openId = self.openId;
+        VC.schoolId = schoolInfo[@"schoolId"];
+        VC.schoolName = schoolInfo[@"schoolName"];
+        
+        UINavigationController * nav = [[UINavigationController alloc] initWithRootViewController:VC];
+        nav.navigationBarHidden = YES;
+        [self presentViewController:nav animated:NO completion:^{
+
+        }];
+    }
 }
 
 
@@ -213,15 +237,15 @@
 - (void)restoreRootViewController:(UIViewController *)rootViewController {
     typedef void (^Animation)(void);
 //    
-    UINavigationController *navVC = [[UINavigationController alloc] initWithRootViewController:rootViewController];
+//    UINavigationController *navVC = [[UINavigationController alloc] initWithRootViewController:rootViewController];
     
     UIWindow* window = [UIApplication sharedApplication].keyWindow;
 //    navVC.navigationBarHidden = YES;
-    navVC.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;
+//    navVC.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;
     Animation animation = ^{
         BOOL oldState = [UIView areAnimationsEnabled];
         [UIView setAnimationsEnabled:NO];
-        [UIApplication sharedApplication].keyWindow.rootViewController = navVC;
+        [UIApplication sharedApplication].keyWindow.rootViewController = rootViewController;
         [UIView setAnimationsEnabled:oldState];
     };
     

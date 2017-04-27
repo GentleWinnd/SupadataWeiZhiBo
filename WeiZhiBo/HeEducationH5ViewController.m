@@ -2,14 +2,11 @@
 //  HeEducationH5ViewController.m
 //  WeiZhiBo
 //
-//  Created by YH on 2017/3/29.
+//  Created by SUPADATA on 2017/4/26.
 //  Copyright © 2017年 YH. All rights reserved.
 //
 
-
-#import "AFNetworkReachabilityManager.h"
 #import "HeEducationH5ViewController.h"
-#import <JavaScriptCore/JavaScriptCore.h>
 #import <MediaPlayer/MediaPlayer.h>
 
 #import "LogInViewController.h"
@@ -18,26 +15,20 @@
 #import "UserData.h"
 #import "User.h"
 #import <WebKit/WebKit.h>
+#import "AppDelegate.h"
 
-@protocol JSObjcDelegate <JSExport>//设置代理方法暴露给JS
-
-- (void)getSchoolId:(NSString *)schoolId;
-
-@end
-
-
-@interface HeEducationH5ViewController ()<WKNavigationDelegate,WKUIDelegate,WKScriptMessageHandler,UINavigationControllerDelegate,JSObjcDelegate>
+@interface HeEducationH5ViewController ()<WKNavigationDelegate,WKUIDelegate,WKScriptMessageHandler, UINavigationControllerDelegate>
 {
-    WKWebView *webView;
+    WKWebView *WWebView;
     NSString *CSchoolId;
     NSString *CSchoolName;
     NSArray *classesArray;
     MBProgressManager *loadProgress;
     NSURLConnection *theConnection;
-    WKWebViewConfiguration *config;
 }
+@property (assign, nonatomic) NSUInteger loadCount;
 
-@property (nonatomic, strong) JSContext *jsContext;
+@property (strong, nonatomic) IBOutlet UIButton *backBtn;
 
 @end
 
@@ -56,20 +47,22 @@
         [self getAppTokenByThirdApp];
     } else {
         [self initWKWebView];
+        loadProgress = [[MBProgressManager alloc] init];
+        loadProgress.showView = self.view;
+        [loadProgress loadingWithTitleProgress:@"加载中..."];
     }
     
     [self customPlayBtn];
-    [self setBackBtn];
-//    [self AFNReachability];
+    //    [self AFNReachability];
     //开始播放
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(moviePlayerStart) name:@"" object:nil];
     
     //结束播放
-//    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(finishedPlay) name:MPMoviePlayerWillEnterFullscreenNotification object:nil];
+    //    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(finishedPlay) name:MPMoviePlayerWillEnterFullscreenNotification object:nil];
     
     //     [notificationCenter addObserver:self selector:@selector(moviePlayerLoadStateDidChange) name:MPMoviePlayerLoadStateDidChangeNotification object:nil];
     //    [self initDeviceOrientation];
-
+    
 }
 
 - (void)moviePlayerStart {
@@ -85,113 +78,90 @@
 
 #pragma mark - 通过APPtoken获取登录验证码
 - (void)getAppTokenByThirdApp {
-
+    loadProgress = [[MBProgressManager alloc] init];
+    [loadProgress loadingWithTitleProgress:@"加载中..."];
+    
     [WZBNetServiceAPI getAppLoginTokenByThirdAppWithParameters:@{@"appToken":self.appToken,
                                                                  @"flag":@"2"}
                                                        success:^(id reponseObject) {
-        if ([reponseObject[@"status"] integerValue] ==1) {
-            NSDictionary *logInfo = [NSDictionary safeDictionary:reponseObject[@"data"]];
-            self.accessToken = logInfo[@"uAccessToken"];
-            self.openId = logInfo[@"uOpenId"];
-            [self loginByHeBaby:@{@"access_token":logInfo[@"uAccessToken"],
-                                  @"open_id":logInfo[@"uOpenId"]}];
-
-        } else {
-            [Progress progressShowcontent:@"出现意外错误" currView:self.view];
-        }
-    } failure:^(NSError *error) {
-        [KTMErrorHint showNetError:error inView:self.view ];
-    }];
-    
-
-}
-- (void)loginByHeBaby:(NSDictionary *) parameter {
-    
-    
-    [WZBNetServiceAPI postLoginByHeBabyWithParameters:parameter success:^(id responseObject) {
-        if ([responseObject[@"status"] intValue] == 1) {//登陆成功
-            
-            NSDictionary *userInfo = [NSDictionary safeDictionary:responseObject[@"data"][@"user"]];
-            
-            self.userClassInfo = [NSArray safeArray:responseObject[@"data"][@"school"]];
-            self.userId = userInfo[@"uId"];
-            
-            [self initWKWebView];
-            User *user = [[User alloc] init];
-            user.userName = [NSString safeString:userInfo[@"uName"]];
-            user.userPass = [NSString safeString:userInfo[@"uPass"]];
-            user.userID = [NSString stringWithFormat:@"%@",self.userId];
-            user.nickName = [NSString safeString:userInfo[@"uNickName"]];
-            
-            [UserData storeUserData:user];
-
-        } else {
-            [Progress progressShowcontent:@"出现意外错误" currView:self.view];
-        }
-    } failure:^(NSError *error) {
-        [KTMErrorHint showNetError:error inView:self.view];
-        
-    }];
+                                                           if ([reponseObject[@"status"] integerValue] ==1) {
+                                                               NSDictionary *userInfo = [NSDictionary safeDictionary:reponseObject[@"data"][@"user"]];
+                                                               
+                                                               self.accessToken = [NSString safeString:userInfo[@"uAccessToken"]];
+                                                               self.openId = [NSString safeString:userInfo[@"uOpenId"]];
+                                                               
+                                                               self.userClassInfo = [NSArray safeArray:reponseObject[@"data"][@"school"]];
+                                                               self.userId = userInfo[@"uId"];
+                                                               
+                                                               [self initWKWebView];
+                                                               User *user = [UserData getUser];
+                                                               if (user == nil) {
+                                                                   user = [[User alloc] init];
+                                                               }
+                                                               user.userName = [NSString safeString:userInfo[@"uName"]];
+                                                               user.userPass = [NSString safeString:userInfo[@"uPass"]];
+                                                               user.userID = [NSString stringWithFormat:@"%@",self.userId];
+                                                               user.nickName = [NSString safeString:userInfo[@"uNickName"]];
+                                                               
+                                                               [UserData storeUserData:user];
+                                                           } else {
+                                                               [Progress progressShowcontent:@"出现意外错误" currView:self.view];
+                                                               [loadProgress hiddenProgress];
+                                                           }
+                                                       } failure:^(NSError *error) {
+                                                           [loadProgress hiddenProgress];
+                                                           [KTMErrorHint showNetError:error inView:self.view ];
+                                                       }];
     
 }
 
 #pragma mark - 初始化webview
 
 - (void)initWKWebView {
-     config = [[WKWebViewConfiguration alloc] init];
-//    // 设置偏好设置
-//    config.preferences = [[WKPreferences alloc] init];
-//    // 默认为0
-//    config.preferences.minimumFontSize = 10;
-//    // 默认认为YES
-//    config.preferences.javaScriptEnabled = YES;
-//    // 在iOS上默认为NO，表示不能自动通过窗口打开
-//    config.preferences.javaScriptCanOpenWindowsAutomatically = NO;
-//    // web内容处理池，由于没有属性可以设置，也没有方法可以调用，不用手动创建
-//    config.processPool = [[WKProcessPool alloc] init];
     
+    WKWebViewConfiguration *config = [[WKWebViewConfiguration alloc] init];
+    config.userContentController = [[WKUserContentController alloc] init];
     //    window.webkit.messageHandlers.Supadata.postMessage({body:'schoolId'})
     
-     webView = [[WKWebView alloc] initWithFrame:self.view.bounds configuration:config];
-
-    [self.view addSubview:webView];
+    NSString *jScript = @"var meta = document.createElement('meta'); meta.setAttribute('name', 'viewport'); meta.setAttribute('content', 'width=device-width'); document.getElementsByTagName('head')[0].appendChild(meta);";
     
-    webView.UIDelegate = self;
-    webView.navigationDelegate = self;
+    WKUserScript *wkUScript = [[WKUserScript alloc] initWithSource:jScript injectionTime:WKUserScriptInjectionTimeAtDocumentEnd forMainFrameOnly:YES];
+    [config.userContentController addUserScript:wkUScript];
+    WWebView = [[WKWebView alloc] initWithFrame:CGRectMake(0, 64, SCREEN_WIDTH, SCREEN_HEIGHT-64) configuration:config];
+    WWebView.UIDelegate = self;
+    WWebView.navigationDelegate = self;
+    [self.view addSubview:WWebView];
     
-      NSURL *repURL = [NSURL URLWithString:[NSString stringWithFormat:@"http://wangjunwei.uicp.io/ssm/resource/html/teacher/?user=%@#/tab/camera",self.self.userId]];
-//    NSURL *repURL = [NSURL URLWithString:[NSString stringWithFormat:@"http://live.sch.supadata.cn/ssm//resource/html/teacher/?user=%@#/tab/camera",self.userId]];
+    
+    NSURL *repURL = [NSURL URLWithString:[NSString stringWithFormat:@"%@resource/html/teacher/?user=%@#/tab/live",HOST_URL,self.userId]];
     NSURLRequest *request = [NSURLRequest requestWithURL:repURL cachePolicy:NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:3];
-    [webView loadRequest: request];
+    [WWebView loadRequest: request];
+    
     // 通过JS与webview内容交互
     WKUserContentController *userCC = config.userContentController;
     // 注入JS对象名称AppModel，当JS通过AppModel来调用时，
     // 我们可以在WKScriptMessageHandler代理中接收到
     [userCC addScriptMessageHandler:self name:@"Supadata"];
-
     
-   
-//    if (theConnection) {
-//        [theConnection cancel];
-//        //        SAFE_RELEASE(theConnection);
-//        NSLog(@"safe release connection");
-//    }
-//    theConnection= [[NSURLConnection alloc] initWithRequest:request delegate:self startImmediately:YES];
-
+    if (theConnection) {
+        [theConnection cancel];
+        //        SAFE_RELEASE(theConnection);
+        NSLog(@"safe release connection");
+    }
+    theConnection= [[NSURLConnection alloc] initWithRequest:request delegate:self startImmediately:YES];
+    
+    [WWebView addObserver:self forKeyPath:@"estimatedProgress" options:NSKeyValueObservingOptionNew context:nil];
 }
 
 #pragma mark - WKNavigationDelegate
 // 页面开始加载时调用
 - (void)webView:(WKWebView *)webView didStartProvisionalNavigation:(WKNavigation *)navigation{
     
-
-    loadProgress = [[MBProgressManager alloc] init];
-    [loadProgress loadingWithTitleProgress:@"加载中..."];
     UIView *reloadView = [self.view viewWithTag:112];
     if (reloadView) {
         [reloadView removeFromSuperview];
     }
-   
+    self.loadCount ++;
 }
 // 当内容开始返回时调用
 - (void)webView:(WKWebView *)webView didCommitNavigation:(WKNavigation *)navigation{
@@ -200,33 +170,61 @@
 // 页面加载完成之后调用
 - (void)webView:(WKWebView *)webView didFinishNavigation:(WKNavigation *)navigation{
     [loadProgress hiddenProgress];
+    [self performSelector:@selector(setWebViewContent) withObject:nil afterDelay:1.0];
+    self.loadCount --;
+}
+
+- (void)setWebViewContent {
+    
+    [WWebView.scrollView setContentOffset:CGPointMake(0, 0)];
+    //    WWebView.scrollView.scrollEnabled = NO;
     
 }
 // 页面加载失败时调用
 - (void)webView:(WKWebView *)webView didFailProvisionalNavigation:(WKNavigation *)navigation{
     [self createReloadView];
+    self.loadCount --;
 }
-// 接收到服务器跳转请求之后调用
-- (void)webView:(WKWebView *)webView didReceiveServerRedirectForProvisionalNavigation:(WKNavigation *)navigation{
-    
+
+
+// 计算wkWebView进度条
+- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context {
+    //    if (object == self.wkWebView && [keyPath isEqualToString:@"estimatedProgress"]) {
+    //        CGFloat newprogress = [[change objectForKey:NSKeyValueChangeNewKey] doubleValue];
+    //        if (newprogress == 1) {
+    //            self.progressView.hidden = YES;
+    //            [self.progressView setProgress:0 animated:NO];
+    //        }else {
+    //            self.progressView.hidden = NO;
+    //            [self.progressView setProgress:newprogress animated:YES];
+    //        }
+    //    }
 }
-// 在收到响应后，决定是否跳转
-//- (void)webView:(WKWebView *)webView decidePolicyForNavigationResponse:(WKNavigationResponse *)navigationResponse decisionHandler:(void (^)(WKNavigationResponsePolicy))decisionHandler{
-//    
-//    NSLog(@"%@",navigationResponse.response.URL.absoluteString);
-//    //允许跳转
-//    decisionHandler(WKNavigationResponsePolicyAllow);
-//    //不允许跳转
-//    //decisionHandler(WKNavigationResponsePolicyCancel);
-//}
-// 在发送请求之前，决定是否跳转
-- (void)webView:(WKWebView *)webView decidePolicyForNavigationAction:(WKNavigationAction *)navigationAction decisionHandler:(void (^)(WKNavigationActionPolicy))decisionHandler{
-   
-    NSLog(@"%@",navigationAction.request.URL.absoluteString);
-    //允许跳转
-    decisionHandler(WKNavigationActionPolicyAllow);
-    //不允许跳转
-    //decisionHandler(WKNavigationActionPolicyCancel);
+
+// 记得取消监听
+- (void)dealloc {
+    if (IOS8x) {
+        [WWebView removeObserver:self forKeyPath:@"estimatedProgress"];
+    }
+}
+
+#pragma mark - webView代理
+
+// 计算webView进度条
+- (void)setLoadCount:(NSUInteger)loadCount {
+    //    _loadCount = loadCount;
+    //    if (loadCount == 0) {
+    //        self.progressView.hidden = YES;
+    //        [self.progressView setProgress:0 animated:NO];
+    //    }else {
+    //        self.progressView.hidden = NO;
+    //        CGFloat oldP = self.progressView.progress;
+    //        CGFloat newP = (1.0 - oldP) / (loadCount + 1) + oldP;
+    //        if (newP > 0.95) {
+    //            newP = 0.95;
+    //        }
+    //        [self.progressView setProgress:newP animated:YES];
+    //    }
 }
 
 #pragma mark - WKScriptMessageHandler
@@ -283,19 +281,19 @@
         //        [self openNextLink];
         NSLog(@"-1001");
         [self loadFaild];
-
+        
     }
     else if (error.code == -1005) {//The network connection was lost.
         //        [self openNextLink];
         NSLog(@"-1005");
         [self loadFaild];
-
+        
     }
     else if (error.code == -1009){ //The Internet connection appears to be offline
         //do nothing
         NSLog(@"-1009");
         [self loadFaild];
-
+        
     }
 }
 
@@ -305,6 +303,7 @@
     if (schoolId) {
         UIButton *btn = (UIButton *)[self.view viewWithTag:110];
         btn.hidden = NO;
+        [self.view bringSubviewToFront:btn];
         CSchoolId = [NSString stringWithFormat:@"%@",schoolId];
         for (NSDictionary *schoolInfo in self.userClassInfo) {
             if ([[NSString stringWithFormat:@"%@",schoolInfo[@"schoolId"]] isEqualToString:CSchoolId]) {
@@ -316,13 +315,13 @@
                 return;
             }
         }
-
+        
     } else {
-    
+        
         [Progress progressShowcontent:@"未能获取学校" currView:self.view];
     }
-   
-//    NSLog(@"==== schollId=%@",schoolId);
+    
+    //    NSLog(@"==== schollId=%@",schoolId);
 }
 
 #pragma mark loadFaild
@@ -339,13 +338,58 @@
     ReloadView *reloadView = [[NSBundle mainBundle] loadNibNamed:@"ReloadView" owner:nil options:nil].firstObject;
     reloadView.frame = CGRectMake(0, 0, SCREEN_WIDTH,SCREEN_HEIGHT);
     reloadView.reloadView = ^(){
-        if (webView) {
-            [webView loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"http://live.sch.supadata.cn/ssm//resource/html/teacher/?user=%@#/tab/camera",self.userId]]]];
+        if (WWebView) {
+            [WWebView loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@resource/html/teacher/?user=%@#/tab/live",HOST_URL,self.userId]]]];
         }
     };
     reloadView.tag = 112;
     [self.view addSubview:reloadView];
+    
+}
 
+
+
+#pragma mark - 创建播放按钮
+
+- (void)customPlayBtn {
+    
+    UIButton *playBtn = [UIButton buttonWithType:UIButtonTypeCustom];
+    playBtn.frame = CGRectMake(SCREEN_WIDTH - 18 - 95, 30+60, 97, 40);
+    [playBtn setImage:[UIImage imageNamed:@"zhibo"] forState:UIControlStateNormal];
+    [playBtn addTarget:self action:@selector(playAction:) forControlEvents:UIControlEventTouchUpInside];
+    playBtn.hidden = YES;
+    playBtn.tag = 110;
+    [self.view addSubview:playBtn];
+    
+    UIPanGestureRecognizer *pan = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(doHandlePanAction:)];
+    [playBtn addGestureRecognizer:pan];
+    
+}
+#pragma mark- 直播按钮事件
+
+- (void)playAction:(UIButton *)sender {
+    UIStoryboard *board = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
+    
+    if (classesArray.count >0) {
+        
+        AppDelegate *app = [UIApplication sharedApplication].delegate;
+        app.shouldChangeOrientation = YES;
+        
+        ViewController *VC = [board instantiateViewControllerWithIdentifier:@"ViewController"];
+        VC.userClassInfo = classesArray;
+        VC.userId = self.userId;
+        VC.accessToken = self.accessToken;
+        VC.openId = self.openId;
+        VC.schoolId = CSchoolId;
+        VC.schoolName = CSchoolName;
+        
+        UINavigationController * nav = [[UINavigationController alloc] initWithRootViewController:VC];
+        nav.navigationBarHidden = YES;
+        [self presentViewController:nav animated:NO completion:^{
+            [self setWebViewContent];
+        }];
+        
+    }
 }
 
 #pragma mark - pangesturehandle
@@ -380,72 +424,6 @@
     
     return CGPointMake(X, Y);
 }
-
-#pragma mark- 直播按钮事件
-
-- (void)playAction:(UIButton *)sender {
-    UIStoryboard *board = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
-    
-    if (classesArray.count >0) {
-        
-        ViewController *VC = [board instantiateViewControllerWithIdentifier:@"ViewController"];
-        VC.userClassInfo = classesArray;
-        VC.userId = self.userId;
-        VC.accessToken = self.accessToken;
-        VC.openId = self.openId;
-        VC.schoolId = CSchoolId;
-        VC.schoolName = CSchoolName;
-        self.navigationController.navigationBarHidden = YES;
-        [self.navigationController pushViewController:VC animated:YES];
-        
-    }
-}
-
-#pragma mark - 创建播放按钮
-
-- (void)customPlayBtn {
-    
-    UIButton *playBtn = [UIButton buttonWithType:UIButtonTypeCustom];
-    playBtn.frame = CGRectMake(SCREEN_WIDTH - 18 - 95, 30+60, 97, 40);
-    [playBtn setImage:[UIImage imageNamed:@"zhibo"] forState:UIControlStateNormal];
-    [playBtn addTarget:self action:@selector(playAction:) forControlEvents:UIControlEventTouchUpInside];
-    playBtn.hidden = YES;
-    playBtn.tag = 110;
-    [self.view addSubview:playBtn];
-    
-    UIPanGestureRecognizer *pan = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(doHandlePanAction:)];
-    [playBtn addGestureRecognizer:pan];
-    
-}
-
-#pragma mark- 返回按钮事件
-
-- (void)backBtnAction:(UIButton *)sender {
-    
-    
-    if ([webView canGoBack]) {
-        [webView goBack];
-        
-    }else{
-        [self.view resignFirstResponder];
-        //        [self.navigationController popViewControllerAnimated:YES];
-        UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"温馨提示" message:@"是否要退出登录" preferredStyle:UIAlertControllerStyleAlert];
-        [alert addAction:[UIAlertAction actionWithTitle:@"确定" style:UIAlertActionStyleDestructive handler:^(UIAlertAction * _Nonnull action) {
-            LogInViewController *logView = [[LogInViewController alloc] init];
-            [self restoreRootViewController:logView];
-            
-        }]];
-        
-        [alert addAction:[UIAlertAction actionWithTitle:@"取消" style:UIAlertActionStyleCancel handler:^(UIAlertAction * _Nonnull action) {
-            
-        }]];
-        [self presentViewController:alert animated:YES completion:^{
-            
-        }];
-        
-    }
-}
-
 
 /****************************/
 - (void)navigationController:(UINavigationController *)navigationController
@@ -502,82 +480,38 @@
                     }];
 }
 
-
-//使用AFN框架来检测网络状态的改变
--(void)AFNReachability {
-    //1.创建网络监听管理者
-    AFNetworkReachabilityManager *manager = [AFNetworkReachabilityManager sharedManager];
+- (IBAction)backAction:(UIButton *)sender {
     
-    //2.监听网络状态的改变
-    /*
-     AFNetworkReachabilityStatusUnknown          = 未知
-     AFNetworkReachabilityStatusNotReachable     = 没有网络
-     AFNetworkReachabilityStatusReachableViaWWAN = 3G
-     AFNetworkReachabilityStatusReachableViaWiFi = WIFI
-     */
-    [manager setReachabilityStatusChangeBlock:^(AFNetworkReachabilityStatus status) {
-        switch (status) {
-            case AFNetworkReachabilityStatusUnknown:
-                NSLog(@"未知");
-                break;
-            case AFNetworkReachabilityStatusNotReachable:
-                NSLog(@"没有网络");
-                [Progress progressShowcontent:@"当前网络不可用，请检查" currView:self.view];
-                break;
-            case AFNetworkReachabilityStatusReachableViaWWAN:
-                NSLog(@"3G");
-                [Progress progressShowcontent:@"您当前使用的是4G网络，直播时建议使用WiFi" currView:self.view];
-                break;
-            case AFNetworkReachabilityStatusReachableViaWiFi:
-                NSLog(@"WIFI");
-                [Progress progressShowcontent:@"当前是在WiFi环境下，您可以放心使用" currView:self.view];
-                break;
-                
-            default:
-                break;
-        }
-    }];
     
-    //3.开始监听
-    [manager startMonitoring];
+    if ([WWebView canGoBack]) {
+        [WWebView goBack];
+        
+    }else{
+        [self.view resignFirstResponder];
+        //        [self.navigationController popViewControllerAnimated:YES];
+        UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"温馨提示" message:@"是否要退出登录" preferredStyle:UIAlertControllerStyleAlert];
+        [alert addAction:[UIAlertAction actionWithTitle:@"确定" style:UIAlertActionStyleDestructive handler:^(UIAlertAction * _Nonnull action) {
+            LogInViewController *logView = [[LogInViewController alloc] init];
+            [self restoreRootViewController:logView];
+            
+        }]];
+        
+        [alert addAction:[UIAlertAction actionWithTitle:@"取消" style:UIAlertActionStyleCancel handler:^(UIAlertAction * _Nonnull action) {
+            
+        }]];
+        [self presentViewController:alert animated:YES completion:^{
+            
+        }];
+        
+    }
+    
 }
 
-- (void)setBackBtn {
-    UIButton *buttom = [UIButton buttonWithType:UIButtonTypeCustom];
-    buttom.frame = CGRectMake(0, 0, 10, 23);
-//    buttom.imageEdgeInsets = UIEdgeInsetsMake(0, -, 0, 0);
-    [buttom setImage:[UIImage imageNamed:@"back"] forState:UIControlStateNormal];
-    [buttom addTarget:self action:@selector(backBtnAction:) forControlEvents:UIControlEventTouchUpInside];
-    
-    UIBarButtonItem  *back = [[UIBarButtonItem alloc] initWithCustomView:buttom];
-
-    self.navigationItem.leftBarButtonItem = back;
-}
 
 - (void)viewWillAppear:(BOOL)animated {
-    
     self.navigationController.navigationBarHidden = NO;
-
-}
-
-
-#pragma mark - WKUIDelegate
-// 创建一个新的WebView
-- (WKWebView *)webView:(WKWebView *)webView createWebViewWithConfiguration:(WKWebViewConfiguration *)configuration forNavigationAction:(WKNavigationAction *)navigationAction windowFeatures:(WKWindowFeatures *)windowFeatures{
-    return [[WKWebView alloc]init];
-}
-// 输入框
-- (void)webView:(WKWebView *)webView runJavaScriptTextInputPanelWithPrompt:(NSString *)prompt defaultText:(nullable NSString *)defaultText initiatedByFrame:(WKFrameInfo *)frame completionHandler:(void (^)(NSString * __nullable result))completionHandler{
-    completionHandler(@"http");
-}
-// 确认框
-- (void)webView:(WKWebView *)webView runJavaScriptConfirmPanelWithMessage:(NSString *)message initiatedByFrame:(WKFrameInfo *)frame completionHandler:(void (^)(BOOL result))completionHandler{
-    completionHandler(YES);
-}
-// 警告框
-- (void)webView:(WKWebView *)webView runJavaScriptAlertPanelWithMessage:(NSString *)message initiatedByFrame:(WKFrameInfo *)frame completionHandler:(void (^)(void))completionHandler{
-    NSLog(@"%@",message);
-    completionHandler();
+    //    [WWebView.scrollView setContentOffset:CGPointMake(0, -32)];
+    [self setWebViewContent];
 }
 
 - (void)didReceiveMemoryWarning {
@@ -586,13 +520,13 @@
 }
 
 /*
-#pragma mark - Navigation
-
-// In a storyboard-based application, you will often want to do a little preparation before navigation
-- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
-    // Get the new view controller using [segue destinationViewController].
-    // Pass the selected object to the new view controller.
-}
-*/
+ #pragma mark - Navigation
+ 
+ // In a storyboard-based application, you will often want to do a little preparation before navigation
+ - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
+ // Get the new view controller using [segue destinationViewController].
+ // Pass the selected object to the new view controller.
+ }
+ */
 
 @end

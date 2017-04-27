@@ -11,7 +11,6 @@
 
 @interface InputView()<UITextViewDelegate>
 
-@property (nonatomic, copy) NSString *messageStr;
 @property (strong, nonatomic) IBOutlet UIButton *senderBtn;
 
 @end

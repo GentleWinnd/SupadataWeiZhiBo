@@ -17,8 +17,8 @@
 #define APP_HEIGHT [[UIScreen mainScreen]applicationFrame].size.height
 
 //依照iPhone6屏幕比例缩放
-#define HEIGHT_6_ZSCALE(H) (SCREEN_HEIGHT/667)*H
-#define WIDTH_6_ZSCALE(W) (SCREEN_WIDTH/365)*W
+#define HEIGHT_6_ZSCALE(H) (SCREEN_HEIGHT/365)*H
+#define WIDTH_6_ZSCALE(W) (SCREEN_WIDTH/667)*W
 
 /**
  Generate weakOject
@@ -30,6 +30,7 @@
 
 #define StrongObj(o) autoreleasepool{} __strong typeof(o) o = o##Weak;
 
+#define IOS8x ([[UIDevice currentDevice].systemVersion floatValue] >= 8.0)
 
 
 
