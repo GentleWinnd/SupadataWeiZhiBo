@@ -398,7 +398,7 @@ static NSString *cellID = @"cellId";
     double rate = [self.model.session getCurrentUploadBandwidthKbps];
     rate = rate < 0.0?0.0:rate;
     self.CView.rateLabel.text = [NSString stringWithFormat:@"%.lf %@",rate,@"kb"];
-    if (seconds == 38) {
+    if (seconds == 90) {
         [self uploadZhiBoState:NO];
     }
     self.CView.redDotImage.hidden = !self.CView.redDotImage.hidden;
@@ -466,17 +466,14 @@ static NSString *cellID = @"cellId";
 }
 
 - (void)onAppDidEnterBackGround:(UIApplication*)app {
-
     
 }
 
 - (void)onAppWillEnterForeground:(UIApplication*)app {
  
-
 }
 
 - (void)onAppDidBecomeActive:(UIApplication*)app {
-
 
 }
 

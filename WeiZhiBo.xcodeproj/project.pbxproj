@@ -41,7 +41,6 @@
 		5857BAE31E9F1DC200339D60 /* hd.png in Resources */ = {isa = PBXBuildFile; fileRef = 5857BACB1E9F1DC200339D60 /* hd.png */; };
 		5857BAE41E9F1DC200339D60 /* line_gray.png in Resources */ = {isa = PBXBuildFile; fileRef = 5857BACC1E9F1DC200339D60 /* line_gray.png */; };
 		5857BAE51E9F1DC200339D60 /* line_orange.png in Resources */ = {isa = PBXBuildFile; fileRef = 5857BACD1E9F1DC200339D60 /* line_orange.png */; };
-		5857BAE61E9F1DC200339D60 /* logo.png in Resources */ = {isa = PBXBuildFile; fileRef = 5857BACE1E9F1DC200339D60 /* logo.png */; };
 		5857BAE91E9F1DC200339D60 /* pause_publish.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 5857BAD11E9F1DC200339D60 /* pause_publish.jpg */; };
 		5857BAEC1E9F1DC200339D60 /* sec_n.png in Resources */ = {isa = PBXBuildFile; fileRef = 5857BAD41E9F1DC200339D60 /* sec_n.png */; };
 		5857BAED1E9F1DC200339D60 /* sec_s.png in Resources */ = {isa = PBXBuildFile; fileRef = 5857BAD51E9F1DC200339D60 /* sec_s.png */; };
@@ -79,6 +78,8 @@
 		5874A5761EB1F8C40006824D /* PingFoundation.m in Sources */ = {isa = PBXBuildFile; fileRef = 5874A5681EB1F8C40006824D /* PingFoundation.m */; };
 		5874A5771EB1F8C40006824D /* PingHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 5874A56A1EB1F8C40006824D /* PingHelper.m */; };
 		5874A5781EB1F8C40006824D /* RealReachability.m in Sources */ = {isa = PBXBuildFile; fileRef = 5874A56C1EB1F8C40006824D /* RealReachability.m */; };
+		588548481EB2DE5800CEC625 /* logoText.png in Resources */ = {isa = PBXBuildFile; fileRef = 588548471EB2DE5800CEC625 /* logoText.png */; };
+		5885484B1EB2EBE300CEC625 /* APPDeviceInfoManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 5885484A1EB2EBE300CEC625 /* APPDeviceInfoManager.m */; };
 		588735E81EA7340B00ADA1DA /* InputView.m in Sources */ = {isa = PBXBuildFile; fileRef = 588735E71EA7340B00ADA1DA /* InputView.m */; };
 		588735EA1EA7341900ADA1DA /* InputView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 588735E91EA7341900ADA1DA /* InputView.xib */; };
 		588BC0471EA99EA100524C2A /* GTMBase64.m in Sources */ = {isa = PBXBuildFile; fileRef = 588BC0411EA99EA100524C2A /* GTMBase64.m */; };
@@ -298,7 +299,6 @@
 		5857BACB1E9F1DC200339D60 /* hd.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = hd.png; sourceTree = "<group>"; };
 		5857BACC1E9F1DC200339D60 /* line_gray.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = line_gray.png; sourceTree = "<group>"; };
 		5857BACD1E9F1DC200339D60 /* line_orange.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = line_orange.png; sourceTree = "<group>"; };
-		5857BACE1E9F1DC200339D60 /* logo.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = logo.png; sourceTree = "<group>"; };
 		5857BAD11E9F1DC200339D60 /* pause_publish.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = pause_publish.jpg; sourceTree = "<group>"; };
 		5857BAD41E9F1DC200339D60 /* sec_n.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = sec_n.png; sourceTree = "<group>"; };
 		5857BAD51E9F1DC200339D60 /* sec_s.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = sec_s.png; sourceTree = "<group>"; };
@@ -361,6 +361,9 @@
 		5874A56A1EB1F8C40006824D /* PingHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PingHelper.m; sourceTree = "<group>"; };
 		5874A56B1EB1F8C40006824D /* RealReachability.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RealReachability.h; sourceTree = "<group>"; };
 		5874A56C1EB1F8C40006824D /* RealReachability.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RealReachability.m; sourceTree = "<group>"; };
+		588548471EB2DE5800CEC625 /* logoText.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = logoText.png; sourceTree = "<group>"; };
+		588548491EB2EBE300CEC625 /* APPDeviceInfoManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = APPDeviceInfoManager.h; sourceTree = "<group>"; };
+		5885484A1EB2EBE300CEC625 /* APPDeviceInfoManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = APPDeviceInfoManager.m; sourceTree = "<group>"; };
 		588735E61EA7340B00ADA1DA /* InputView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = InputView.h; sourceTree = "<group>"; };
 		588735E71EA7340B00ADA1DA /* InputView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = InputView.m; sourceTree = "<group>"; };
 		588735E91EA7341900ADA1DA /* InputView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = InputView.xib; sourceTree = "<group>"; };
@@ -685,6 +688,7 @@
 		5857BAC51E9F1DC200339D60 /* WeizhiboIcon */ = {
 			isa = PBXGroup;
 			children = (
+				588548471EB2DE5800CEC625 /* logoText.png */,
 				58A431251EAD96050022ED4F /* logo@2x.png */,
 				58A431261EAD96050022ED4F /* logo@3x.png */,
 				58A431211EAD942C0022ED4F /* backall@2x.png */,
@@ -693,7 +697,6 @@
 				5857BACB1E9F1DC200339D60 /* hd.png */,
 				5857BACC1E9F1DC200339D60 /* line_gray.png */,
 				5857BACD1E9F1DC200339D60 /* line_orange.png */,
-				5857BACE1E9F1DC200339D60 /* logo.png */,
 				5857BAD11E9F1DC200339D60 /* pause_publish.jpg */,
 				5857BAD41E9F1DC200339D60 /* sec_n.png */,
 				5857BAD51E9F1DC200339D60 /* sec_s.png */,
@@ -858,6 +861,8 @@
 				589584F51E84CD8200E4FAB7 /* EnumHeader.h */,
 				581682DD1E839629003F669F /* Header.h */,
 				58529D0F1EAF50BE00670C50 /* APIHeader.h */,
+				588548491EB2EBE300CEC625 /* APPDeviceInfoManager.h */,
+				5885484A1EB2EBE300CEC625 /* APPDeviceInfoManager.m */,
 				581682D91E83927B003F669F /* NetService */,
 			);
 			path = Tool;
@@ -1446,6 +1451,7 @@
 				58CDBD2F1EA4AA2800C9FE30 /* shouqi@3x.png in Resources */,
 				58CDBD3F1EA4C36B00C9FE30 /* backGround@3x.png in Resources */,
 				58A431451EAD9BED0022ED4F /* jiazai4@2x.png in Resources */,
+				588548481EB2DE5800CEC625 /* logoText.png in Resources */,
 				58A4313E1EAD9BED0022ED4F /* jinrumeiwang@3x.png in Resources */,
 				58A431641EADA8850022ED4F /* comment_n@2x.png in Resources */,
 				5857BAE31E9F1DC200339D60 /* hd.png in Resources */,
@@ -1460,7 +1466,6 @@
 				58CDBD2D1EA4AA2800C9FE30 /* quxiao@3x.png in Resources */,
 				58A4313D1EAD9BED0022ED4F /* jinrumeiwang@2x.png in Resources */,
 				589C58261E9B1FBA007D0EBB /* eyeclosed.png in Resources */,
-				5857BAE61E9F1DC200339D60 /* logo.png in Resources */,
 				580BB3BB1EA0B336008BFDB3 /* back.png in Resources */,
 				58A431441EAD9BED0022ED4F /* jiazai3@3x.png in Resources */,
 				58A431731EADA8850022ED4F /* send_comment@2x.png in Resources */,
@@ -1556,6 +1561,7 @@
 				581683321E83A079003F669F /* AFAutoPurgingImageCache.m in Sources */,
 				58CDBCDC1EA4631800C9FE30 /* SRHash.m in Sources */,
 				5816832F1E83A079003F669F /* AFURLRequestSerialization.m in Sources */,
+				5885484B1EB2EBE300CEC625 /* APPDeviceInfoManager.m in Sources */,
 				5874A56E1EB1F8C40006824D /* FSMEngine.m in Sources */,
 				585EF4FD1E817E1300EC879F /* LogInViewController.m in Sources */,
 				588BC0471EA99EA100524C2A /* GTMBase64.m in Sources */,

@@ -21,11 +21,9 @@
 	<key>CFBundleURLTypes</key>
 	<array>
 		<dict>
-			<key>CFBundleURLName</key>
-			<string>com.AgriculturalCollege.Student</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
-				<string>WeiZhiBoOfSupadata</string>
+				<string>jsLinkageHebaobei002</string>
 			</array>
 		</dict>
 	</array>
