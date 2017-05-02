@@ -1337,7 +1337,7 @@
 					585EF4571E816EF600EC879F = {
 						CreatedOnToolsVersion = 8.2;
 						DevelopmentTeam = 45EEG7H946;
-						ProvisioningStyle = Automatic;
+						ProvisioningStyle = Manual;
 					};
 					585EF4731E816EF600EC879F = {
 						CreatedOnToolsVersion = 8.2;
@@ -1762,8 +1762,8 @@
 				OTHER_LIBTOOLFLAGS = "-all_load -ObjC XCTest -framework";
 				PRODUCT_BUNDLE_IDENTIFIER = com.supadata.WeiZhiBo;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "";
-				PROVISIONING_PROFILE_SPECIFIER = "";
+				PROVISIONING_PROFILE = "26a75634-89f7-4b4a-8b0c-77f820f6dfaa";
+				PROVISIONING_PROFILE_SPECIFIER = WeiZhiBoForHeBaobei;
 				TARGETED_DEVICE_FAMILY = 1;
 				VALID_ARCHS = "arm64 armv7";
 			};
@@ -1791,8 +1791,8 @@
 				OTHER_LIBTOOLFLAGS = "-all_load -ObjC XCTest -framework";
 				PRODUCT_BUNDLE_IDENTIFIER = com.supadata.WeiZhiBo;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "";
-				PROVISIONING_PROFILE_SPECIFIER = "";
+				PROVISIONING_PROFILE = "26a75634-89f7-4b4a-8b0c-77f820f6dfaa";
+				PROVISIONING_PROFILE_SPECIFIER = WeiZhiBoForHeBaobei;
 				TARGETED_DEVICE_FAMILY = 1;
 				VALID_ARCHS = "arm64 armv7";
 			};

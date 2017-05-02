@@ -350,6 +350,7 @@ static NSString *cellID = @"cellId";
     _playCommentBtn.hidden = NO;
     _playCommentBtn.selected = NO;
     [self playCommenAction:_playCommentBtn];
+    [self uploadZhiBoState:NO];
 
     return YES;
 }
