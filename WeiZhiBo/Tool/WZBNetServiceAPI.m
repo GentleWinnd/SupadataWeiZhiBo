@@ -128,9 +128,12 @@
                                     success:(void(^)(id reponseObject))success
                                     failure:(void(^)(NSError *error))failure {
     
-    NSString *urlStr = [NSString stringWithFormat:@"rootSchool/liveNotice?id=%@&flag=%@&calssId=%@&sumTime=%@&userId=%@",parameters[@"id"],parameters[@"flag"],parameters[@"classid"],parameters[@"sumTime"],parameters[@"userId"]];
+    NSString *urlStr = [NSString stringWithFormat:@"rootSchool/liveNotice?id=%@&flag=%@&calssId=%@&sumTime=%@&userId=%@&liveTitle=%@",parameters[@"id"],parameters[@"flag"],parameters[@"classId"],parameters[@"sumTime"],parameters[@"userId"],parameters[@"liveTitle"]];
     NSString *URLString = [NSString stringWithFormat:@"%@%@", HOST_URL, urlStr];
-    [KTMWebService CMGetWithURL:URLString parameters:nil sucess:^(id responseObject) {
+    NSString *URL = [URLString stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+//    NSString *URLString = [NSString stringWithFormat:@"%@%@", HOST_URL,@"rootSchool/liveNotice"];
+
+    [KTMWebService CMGetWithURL:URL parameters:nil sucess:^(id responseObject) {
         if (success) {
             success(responseObject);
         }

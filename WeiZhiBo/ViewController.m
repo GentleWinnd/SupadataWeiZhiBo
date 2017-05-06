@@ -91,6 +91,7 @@ static NSString *cellID = @"cellId";
     NSMutableArray *messageArr;
     CGFloat keyBoardHeight;
     CGFloat textMessgeHeight;
+    NSString *playTitle;
 
 
     CommentMessageView *commentView;
@@ -128,8 +129,11 @@ static NSString *cellID = @"cellId";
         className = [NSString safeString:classInfo[@"className"]];
         classId = [NSString safeNumber:classInfo[@"classId"]];
         _CView.classLabel.text = [NSString stringWithFormat:@"%@-%@",_schoolName,className];
-
+        playTitle = [NSString stringWithFormat:@"%@的直播",[UserData getUser].nickName];
+        
         [self getPushInfo];
+    } else {
+        [self alertViewShowSelectedCLass];
     }
     
     textMessgeHeight = 42;
@@ -152,7 +156,7 @@ static NSString *cellID = @"cellId";
     self.backViewHeight.constant = WIDTH;
     self.tapGesture.numberOfTapsRequired = 1;
     self.doubleTapGesture.numberOfTapsRequired = 2;
-    self.tapGesture.enabled = NO;
+//    self.tapGesture.enabled = YES;
     
     self.classBtn.hidden = NO;
     self.playBtn.hidden = NO;
@@ -196,7 +200,7 @@ static NSString *cellID = @"cellId";
 - (IBAction)playCommenAction:(UIButton *)sender {
     if (sender.tag == 123) {//显示评论
         sender.selected = !sender.selected;
-        [self showCommentMessageView:sender.selected];
+        [self showCommentMessageView:sender.selected showMessage:YES];
     } else if(sender.tag == 321){//发送评论
         if (_playCommentBtn.selected) {
             [self showInputView];
@@ -348,8 +352,9 @@ static NSString *cellID = @"cellId";
     _playBtn.selected = YES;
     _sendCommentBtn.hidden = NO;
     _playCommentBtn.hidden = NO;
-    _playCommentBtn.selected = NO;
-    [self playCommenAction:_playCommentBtn];
+    _playCommentBtn.selected = YES;
+    
+    [self showCommentMessageView:YES showMessage:NO];
     [self uploadZhiBoState:NO];
 
     return YES;
@@ -548,6 +553,8 @@ static NSString *cellID = @"cellId";
                                 @"classId":classId,
                                 @"className":_schoolName,
                                 @"schoolId":_schoolId};
+    
+    
     [WZBNetServiceAPI getGroupSendMassageWithParameters:parameter success:^(id reponseObject) {
         if ([reponseObject[@"status"] intValue] == 1) {
             [Progress progressShowcontent:[NSString safeString:reponseObject[@"message"]] currView:self.view];
@@ -568,11 +575,16 @@ static NSString *cellID = @"cellId";
     if (cameraDataId == nil || classId == nil) {
         return;
     }
+    
+    if (playTitle.length == 0) {
+        playTitle = [NSString stringWithFormat:@"%@的直播",[UserData getUser].nickName];
+    }
     NSDictionary *parameter = @{@"id":cameraDataId,
                                 @"flag":stop?@"2":@"1",
                                 @"classId":classId,
                                 @"sumTime":stop?[NSNumber numberWithInt:seconds]:@"",
-                                @"userId":self.userId};
+                                @"userId":self.userId,
+                                @"liveTitle":[NSString stringWithFormat:@"%@",playTitle]};
     [WZBNetServiceAPI postZhiBoStateMessageWithParameters:parameter success:^(id reponseObject) {
         if ([reponseObject[@"state"] intValue] == 1) {
             NSLog(@"send zhibo state success!!!!!");
@@ -615,7 +627,7 @@ static NSString *cellID = @"cellId";
     _classView.getClassInfo = ^(BOOL success, NSDictionary *userInfo){
         
         if (success) {
-            
+            playTitle = _classView.title;
             if ([[NSString safeNumber:userInfo[@"classId"]] isEqualToString:classId]) {
                 [selfWeak showClassInfoTable:NO];
 
@@ -649,10 +661,15 @@ static NSString *cellID = @"cellId";
     
     CGRect frame = _classView.frame;
     if (show) {
-        
-        CGFloat height = 39 + HEIGHT_6_ZSCALE(45)*5;
-        frame = CGRectMake(0, 0,WIDTH_6_ZSCALE(350) , HEIGHT_6_ZSCALE(height));
+//        CGFloat height = 39 + HEIGHT_6_ZSCALE(36)*5;
+        frame = CGRectMake(0, 0,SCREEN_WIDTH - WIDTH_6_ZSCALE(266) ,SCREEN_HEIGHT - HEIGHT_6_ZSCALE(74));
         [_classView.classNameTab reloadData];
+        if (playTitle.length == 0) {
+            _classView.proTitle = [NSString stringWithFormat:@"%@的直播",[UserData getUser].nickName];
+        } else {
+            _classView.proTitle = playTitle;
+
+        }
 
     } else {
         frame = CGRectMake(0, 0, 400, 0);
@@ -802,8 +819,7 @@ static NSString *cellID = @"cellId";
     NSDictionary *dic = [NSJSONSerialization JSONObjectWithData:jsonData
                                                         options:NSJSONReadingMutableContainers
                                                           error:&err];
-    if(err)
-    {
+    if(err) {
         NSLog(@"json解析失败：%@",err);
         return nil;
     }
@@ -824,12 +840,24 @@ static NSString *cellID = @"cellId";
     [self.view insertSubview:commentView belowSubview:inputView];
 }
 
-- (void)showCommentMessageView:(BOOL)show {
+- (void)showCommentMessageView:(BOOL)show showMessage:(BOOL)showM {
     [UIView animateWithDuration:0.1 animations:^{
         commentView.frame = CGRectMake(0, 0, WIDTH_6_ZSCALE(222), SCREEN_HEIGHT);
         commentView.hidden = !show;
     }];
-
+    
+    if (showM) {
+        if (show) {
+            if (messageArr.count>0) {
+                [Progress progressShowcontent:@"打开评论详情" currView:self.view];
+            } else {
+                [Progress progressShowcontent:@"暂无评论详情" currView:self.view];
+            }
+        } else {
+            [Progress progressShowcontent:@"关闭评论详情" currView:self.view];
+        }
+ 
+    }
 }
 
 - (void) changeContentViewPoint:(NSNotification *)notification {// 根据键盘状态，调整_mainView的位置
@@ -984,6 +1012,32 @@ static NSString *cellID = @"cellId";
 }
 
 
+- (void)alertViewShowSelectedCLass {
+    
+    UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"温馨提示" message:@"请先选择班级再开始直播" preferredStyle:UIAlertControllerStyleAlert];
+//    NSMutableAttributedString *hogan = [[NSMutableAttributedString alloc] initWithString:@"heihei"];
+//    [hogan addAttribute:NSFontAttributeName value:[UIFont systemFontOfSize:50] range:NSMakeRange(0, [[hogan string] length])];
+//    [hogan addAttribute:NSForegroundColorAttributeName value:[UIColor redColor] range:NSMakeRange(0, [[hogan string] length])];
+//    [alert setValue:hogan forKey:@"attributedTitle"];
+    
+    //修改按钮的颜色，同上可以使用同样的方法修改内容，样式
+    // 添加按钮
+    UIAlertAction *defualt = [UIAlertAction actionWithTitle:@"知道了" style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
+        
+    }];
+    [alert addAction:defualt];
+    UIAlertAction *cacnel = [UIAlertAction actionWithTitle:@"不再提示" style:UIAlertActionStyleCancel handler:^(UIAlertAction *action) {
+        
+    }];
+    [alert addAction:cacnel];
+    [defualt setValue:[UIColor redColor] forKey:@"_titleTextColor"];
+
+    [cacnel setValue:[UIColor lightGrayColor] forKey:@"_titleTextColor"];
+
+    [self presentViewController:alert animated:YES completion:nil];
+}
+
+
 #pragma mark -
 
 /**********************rotation btn********************/
@@ -1102,8 +1156,12 @@ static NSString *cellID = @"cellId";
 
 #import "ClassNameTableViewCell.h"
 
-@interface ClassNameView()<UITableViewDelegate, UITableViewDataSource>
+@interface ClassNameView()<UITableViewDelegate, UITableViewDataSource, UITextFieldDelegate>
 @property (strong, nonatomic) IBOutlet UIView *classInfoView;
+@property (strong, nonatomic) IBOutlet UITextField *classTitleTextFeild;
+@property (strong, nonatomic) IBOutlet UIButton *cancleBtn;
+@property (strong, nonatomic) IBOutlet UIButton *confirmBtn;
+@property (strong, nonatomic) NSIndexPath *selectedIndexPath;
 
 @end
 static NSString *CellIdOfClass = @"cellIdOfClass";
@@ -1112,8 +1170,21 @@ static NSString *CellIdOfClass = @"cellIdOfClass";
 
 - (void)awakeFromNib {
     [super awakeFromNib];
+    _classTitleTextFeild.delegate = self;
+    [_classTitleTextFeild setValue:[UIColor whiteColor]
+              forKeyPath:@"_placeholderLabel.textColor"];
     [self customCLassNameTableView];
     
+}
+
+- (BOOL)textFieldShouldReturn:(UITextField *)textField {
+    [textField resignFirstResponder];
+    return YES;
+}
+
+- (void)setProTitle:(NSString *)proTitle {
+    _classTitleTextFeild.placeholder = proTitle;
+    _title = proTitle;
 }
 
 - (void)customCLassNameTableView {
@@ -1135,7 +1206,7 @@ static NSString *CellIdOfClass = @"cellIdOfClass";
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
-    return HEIGHT_6_ZSCALE(45);
+    return HEIGHT_6_ZSCALE(36);
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -1148,8 +1219,18 @@ static NSString *CellIdOfClass = @"cellIdOfClass";
         
     } else {
         cell.classNameLabel.text = classN;
-        
     }
+    
+    if (indexPath.row == 0 && _selectedIndexPath == nil) {
+        cell.classNameLabel.textColor = MaIN_LIGHTBLUE_CLASSNAME;
+        _selectedIndexPath = indexPath;
+
+    } else if (indexPath.row == _selectedIndexPath.row) {
+            cell.classNameLabel.textColor = MaIN_LIGHTBLUE_CLASSNAME;
+            _selectedIndexPath = indexPath;
+    }
+    cell.selectedBackgroundView = [[UIView alloc] initWithFrame:cell.bounds];
+    cell.selectedBackgroundView.backgroundColor = [UIColor clearColor];
     return cell;
 }
 
@@ -1159,21 +1240,34 @@ static NSString *CellIdOfClass = @"cellIdOfClass";
     self.className = [NSString safeString:classInfo[@"className"]];
     self.classId = [NSString safeNumber:classInfo[@"classId"]];
     self.classInfo = [NSDictionary safeDictionary:classInfo];
-    if (self.getClassInfo) {
-        self.getClassInfo(YES,self.classInfo);
-    }
-
+    ClassNameTableViewCell *SCell = [tableView cellForRowAtIndexPath:_selectedIndexPath];
+    SCell.classNameLabel.textColor = [UIColor whiteColor];
+    _selectedIndexPath = indexPath;
+    ClassNameTableViewCell *cell = [tableView cellForRowAtIndexPath:indexPath];
+    cell.classNameLabel.textColor = MaIN_LIGHTBLUE_CLASSNAME;
+    
+//    if (self.getClassInfo) {
+//        self.getClassInfo(YES,self.classInfo);
+//    }
+//
 
 }
 
 
 #pragma mark - selectedCLass
 - (IBAction)cancelBtnAction:(UIButton *)sender {
-    
-    if (self.getClassInfo) {
-        self.getClassInfo(NO,self.classInfo);
+    if (sender.tag == 11) {//取消
+        if (self.getClassInfo) {
+            self.getClassInfo(NO,self.classInfo);
+        }
+  
+    } else {//确定
+        if (self.getClassInfo) {
+            self.getClassInfo(YES,self.classInfo);
+            self.title = self.proTitle;
+        }
     }
-
+ 
 }
 
 //#pragma mark - unfold or fold cell

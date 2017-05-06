@@ -7,6 +7,10 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		5809C34F1EB9D10100D5B196 /* classCancle@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 5809C34B1EB9D10100D5B196 /* classCancle@2x.png */; };
+		5809C3501EB9D10100D5B196 /* classCancle@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 5809C34C1EB9D10100D5B196 /* classCancle@3x.png */; };
+		5809C3511EB9D10100D5B196 /* classConfirm@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 5809C34D1EB9D10100D5B196 /* classConfirm@2x.png */; };
+		5809C3521EB9D10100D5B196 /* classConfirm@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 5809C34E1EB9D10100D5B196 /* classConfirm@3x.png */; };
 		580BB3BB1EA0B336008BFDB3 /* back.png in Resources */ = {isa = PBXBuildFile; fileRef = 580BB3BA1EA0B336008BFDB3 /* back.png */; };
 		581682DC1E8392AD003F669F /* WZBNetServiceAPI.m in Sources */ = {isa = PBXBuildFile; fileRef = 581682DB1E8392AD003F669F /* WZBNetServiceAPI.m */; };
 		5816832C1E83A079003F669F /* AFHTTPSessionManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 5816830B1E83A079003F669F /* AFHTTPSessionManager.m */; };
@@ -233,6 +237,10 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		5809C34B1EB9D10100D5B196 /* classCancle@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "classCancle@2x.png"; sourceTree = "<group>"; };
+		5809C34C1EB9D10100D5B196 /* classCancle@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "classCancle@3x.png"; sourceTree = "<group>"; };
+		5809C34D1EB9D10100D5B196 /* classConfirm@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "classConfirm@2x.png"; sourceTree = "<group>"; };
+		5809C34E1EB9D10100D5B196 /* classConfirm@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "classConfirm@3x.png"; sourceTree = "<group>"; };
 		580BB3BA1EA0B336008BFDB3 /* back.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = back.png; sourceTree = "<group>"; };
 		581682DA1E8392AD003F669F /* WZBNetServiceAPI.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WZBNetServiceAPI.h; sourceTree = "<group>"; };
 		581682DB1E8392AD003F669F /* WZBNetServiceAPI.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WZBNetServiceAPI.m; sourceTree = "<group>"; };
@@ -1088,6 +1096,10 @@
 				58A4314B1EADA8850022ED4F /* comment_icom */,
 				58A431291EAD9BED0022ED4F /* netIcon */,
 				586AD3711EADD4D000D4FDCA /* close_play@2x.png */,
+				5809C34B1EB9D10100D5B196 /* classCancle@2x.png */,
+				5809C34C1EB9D10100D5B196 /* classCancle@3x.png */,
+				5809C34D1EB9D10100D5B196 /* classConfirm@2x.png */,
+				5809C34E1EB9D10100D5B196 /* classConfirm@3x.png */,
 				586AD3721EADD4D000D4FDCA /* close_play@3x.png */,
 				58CDBD3C1EA4C36B00C9FE30 /* backGround@2x.png */,
 				58CDBD3D1EA4C36B00C9FE30 /* backGround@3x.png */,
@@ -1337,7 +1349,7 @@
 					585EF4571E816EF600EC879F = {
 						CreatedOnToolsVersion = 8.2;
 						DevelopmentTeam = 45EEG7H946;
-						ProvisioningStyle = Automatic;
+						ProvisioningStyle = Manual;
 					};
 					585EF4731E816EF600EC879F = {
 						CreatedOnToolsVersion = 8.2;
@@ -1395,6 +1407,7 @@
 				5857BAF41E9F1DC200339D60 /* tel_n@2x.png in Resources */,
 				58A431651EADA8850022ED4F /* comment_n@3x.png in Resources */,
 				588F8FD71EA5B457003486AE /* MessageTableViewCell.xib in Resources */,
+				5809C34F1EB9D10100D5B196 /* classCancle@2x.png in Resources */,
 				58CDBD351EA4AA2800C9FE30 /* zhankai@3x.png in Resources */,
 				58CDBD301EA4AA2800C9FE30 /* yidainzan@2x.png in Resources */,
 				5857BAEC1E9F1DC200339D60 /* sec_n.png in Resources */,
@@ -1412,6 +1425,7 @@
 				58A431621EADA8850022ED4F /* camera_front@2x.png in Resources */,
 				58A4316D1EADA8850022ED4F /* masking_top@3x.png in Resources */,
 				58A4313C1EAD9BED0022ED4F /* jaizaishibai@3x.png in Resources */,
+				5809C3511EB9D10100D5B196 /* classConfirm@2x.png in Resources */,
 				5857BAEF1E9F1DC200339D60 /* set_s.png in Resources */,
 				58A431691EADA8850022ED4F /* masking_bottom@3x.png in Resources */,
 				58CDBD2E1EA4AA2800C9FE30 /* shouqi@2x.png in Resources */,
@@ -1419,6 +1433,7 @@
 				58A431701EADA8850022ED4F /* play_s@2x.png in Resources */,
 				58A4316C1EADA8850022ED4F /* masking_top@2x.png in Resources */,
 				58A431241EAD942C0022ED4F /* backall@3x.png in Resources */,
+				5809C3521EB9D10100D5B196 /* classConfirm@3x.png in Resources */,
 				585EF46B1E816EF600EC879F /* Assets.xcassets in Resources */,
 				58A431461EAD9BED0022ED4F /* jiazai4@3x.png in Resources */,
 				58C87C001E8BB7EB00A917FD /* zhibo@2x.png in Resources */,
@@ -1453,6 +1468,7 @@
 				58A431451EAD9BED0022ED4F /* jiazai4@2x.png in Resources */,
 				588548481EB2DE5800CEC625 /* logoText.png in Resources */,
 				58A4313E1EAD9BED0022ED4F /* jinrumeiwang@3x.png in Resources */,
+				5809C3501EB9D10100D5B196 /* classCancle@3x.png in Resources */,
 				58A431641EADA8850022ED4F /* comment_n@2x.png in Resources */,
 				5857BAE31E9F1DC200339D60 /* hd.png in Resources */,
 				58FA06121E94D78400EFB656 /* ClassNameView.xib in Resources */,
@@ -1765,8 +1781,8 @@
 				OTHER_LIBTOOLFLAGS = "-all_load -ObjC XCTest -framework";
 				PRODUCT_BUNDLE_IDENTIFIER = com.supadata.WeiZhiBo;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "";
-				PROVISIONING_PROFILE_SPECIFIER = "";
+				PROVISIONING_PROFILE = "825f7464-615b-4c47-bb2b-735c46220c73";
+				PROVISIONING_PROFILE_SPECIFIER = WeiZhiBoForHeBaobeiForDeveloper;
 				TARGETED_DEVICE_FAMILY = 1;
 				VALID_ARCHS = "arm64 armv7";
 			};
@@ -1778,7 +1794,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CODE_SIGN_IDENTITY = "iPhone Distribution: Supadata (Beijing) Technology Co., Ltd. (45EEG7H946)";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
 				DEVELOPMENT_TEAM = 45EEG7H946;
 				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = (
@@ -1794,8 +1810,8 @@
 				OTHER_LIBTOOLFLAGS = "-all_load -ObjC XCTest -framework";
 				PRODUCT_BUNDLE_IDENTIFIER = com.supadata.WeiZhiBo;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "";
-				PROVISIONING_PROFILE_SPECIFIER = "";
+				PROVISIONING_PROFILE = "e8a73850-7411-4250-b997-a4db9b02632d";
+				PROVISIONING_PROFILE_SPECIFIER = WeiZhiBoForHeBaobeiForDistribution;
 				TARGETED_DEVICE_FAMILY = 1;
 				VALID_ARCHS = "arm64 armv7";
 			};

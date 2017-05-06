@@ -32,8 +32,8 @@
     hud.mode = MBProgressHUDModeText;
     hud.labelText = content;
     hud.labelColor = [UIColor whiteColor];
-    hud.labelFont = [UIFont boldSystemFontOfSize:15.0f];
-    hud.color = [UIColor colorWithRed:2/255.f green:33/255.f blue:52/255.f alpha:0.5];
+    hud.labelFont = [UIFont boldSystemFontOfSize:13.0f];
+    hud.color = [UIColor colorWithRed:2/255.f green:3/255.f blue:4/255.f alpha:0.5];
     hud.cornerRadius = 6;
     hud.margin = 10.f;
     hud.removeFromSuperViewOnHide = YES;
@@ -47,8 +47,8 @@
     hud.mode = MBProgressHUDModeText;
     hud.labelText = content;
     hud.labelColor = [UIColor whiteColor];
-    hud.labelFont = [UIFont boldSystemFontOfSize:15.0f];
-    hud.color = [UIColor colorWithRed:2/255.f green:33/255.f blue:52/255.f alpha:0.5];
+    hud.labelFont = [UIFont boldSystemFontOfSize:13.0f];
+    hud.color = [UIColor colorWithRed:2/255.f green:3/255.f blue:4/255.f alpha:0.5];
     hud.cornerRadius = 6;
     hud.margin = 10.f;
     hud.removeFromSuperViewOnHide = YES;

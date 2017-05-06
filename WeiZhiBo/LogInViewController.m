@@ -40,8 +40,6 @@
 }
 
 - (void)setTextFeild {
-//    _accountField.text = @"18360869634";
-//    _passwordField.text = @"abc123";
     User *user = [UserData getUser];
     _accountField.text = user.userName;
     _passwordField.text = user.userPass;
@@ -52,7 +50,6 @@
     [_passwordField addTarget:self action:@selector(passwordAction:) forControlEvents:UIControlEventEditingChanged];
 
     [self setShowData];
-
 }
 
 - (void)acountAction:(UITextField *)textfeild {
@@ -65,11 +62,9 @@
 
 - (void)textFieldDidEndEditing:(UITextField *)textField {
     [self setShowData];
-
 }
 
 - (void)textFieldDidBeginEditing:(UITextField *)textField {
-//    [self setShowData];
     
     UIImage *Orangeimage = [UIImage imageNamed:@"line_orange"];
     
@@ -95,7 +90,6 @@
     }
 }
 
-
 #pragma mark - showSetData
 
 - (void)setShowData {
@@ -118,12 +112,9 @@
     } else {
         _PLIne.image = Orangeimage;
         _PImageView.image = [UIImage imageNamed:@"sec_s"];
-    
     }
     
-    
     _loginBtn.selected = canLogin;
-    
 }
 
 

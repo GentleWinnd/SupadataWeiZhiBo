@@ -46,11 +46,11 @@
     NSLog(@"networkChanged, currentStatus:%@, previousStatus:%@", @(status), @(previousStatus));
     
     if (status == RealStatusNotReachable) {
-        [Progress progressShowcontent:@"当前网络不可用" currView:self.window];
+        [Progress progressShowcontent:@"当前网络不可用" ];
     }
     
     if (status == RealStatusViaWiFi) {
-        [Progress progressShowcontent:@"当前WIFI环境" currView:self.window];
+        [Progress progressShowcontent:@"当前WIFI环境"];
     }
     
     if (status == RealStatusViaWWAN) {
@@ -64,19 +64,19 @@
     {
         if (accessType == WWANType2G)
         {
-            [Progress progressShowcontent:@"当前2G网络" currView:self.window];
+            [Progress progressShowcontent:@"当前2G网络"];
         }
         else if (accessType == WWANType3G)
         {
-            [Progress progressShowcontent:@"当前3G网络" currView:self.window];
+            [Progress progressShowcontent:@"当前3G网络"];
         }
         else if (accessType == WWANType4G)
         {
-            [Progress progressShowcontent:@"当前4G网络" currView:self.window];
+            [Progress progressShowcontent:@"当前4G网络"];
         }
         else
         {
-            [Progress progressShowcontent:@"未知移动数据网络" currView:self.window];
+            [Progress progressShowcontent:@"未知移动数据网络"];
 
         }
     }
@@ -108,7 +108,7 @@
     /*
      URL Schemes?appToken=
      */
-    if ([urlStr hasPrefix:@"jsLinkageHebaobei002://"]) {
+    if ([urlStr hasPrefix:@"jsLinkageHebaobei002://"] || [urlStr hasPrefix:@"JSHeEducationAppOpenThirdAppReservedMethod3://"]) {
 
         NSArray *paramArray = [urlStr componentsSeparatedByString:@"appToken="];
         NSLog(@"=====%@",paramArray);

@@ -138,9 +138,9 @@
                                             <action selector="onToggleFlash:" destination="BYZ-38-t0r" eventType="touchUpInside" id="krj-m8-1Q3"/>
                                         </connections>
                                     </button>
-                                    <button hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="3w2-f8-0bm" userLabel="maskingBtn">
+                                    <button hidden="YES" opaque="NO" contentMode="scaleToFill" enabled="NO" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="3w2-f8-0bm" userLabel="maskingBtn">
                                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
-                                        <color key="backgroundColor" red="0.0" green="0.0" blue="0.0" alpha="0.099181292808219176" colorSpace="calibratedRGB"/>
+                                        <color key="backgroundColor" red="0.0" green="0.0" blue="0.0" alpha="0.20537243150684931" colorSpace="calibratedRGB"/>
                                         <connections>
                                             <action selector="playCommenAction:" destination="BYZ-38-t0r" eventType="touchUpInside" id="x8W-PL-nwN"/>
                                         </connections>

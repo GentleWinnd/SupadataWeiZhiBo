@@ -12,6 +12,7 @@
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="HeEducationH5ViewController">
             <connections>
                 <outlet property="backBtn" destination="ZQO-Rx-K2C" id="3FS-e9-Ysg"/>
+                <outlet property="backImage" destination="pnQ-83-yuV" id="x9i-sa-oSW"/>
                 <outlet property="view" destination="i5M-Pr-FkT" id="sfx-zR-JGt"/>
             </connections>
         </placeholder>

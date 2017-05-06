@@ -29,6 +29,7 @@
 #define MAIN_WHITE [@"#ffffff" toColor]
 #define MAIN_YELLOW_MESSAGE [@"#ffc600" toColor]
 #define MAIN_BLUE_MESSAGE [@"#02bbff" toColor]
+#define MaIN_LIGHTBLUE_CLASSNAME [@"#2396f3" toColor]
 
 
 

@@ -14,45 +14,84 @@
             <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
-                <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="backGround.png" translatesAutoresizingMaskIntoConstraints="NO" id="hmM-ac-ToU">
-                    <rect key="frame" x="0.0" y="36" width="375" height="631"/>
-                </imageView>
-                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="RV1-cx-4JM">
-                    <rect key="frame" x="347" y="2" width="28" height="28"/>
+                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="直播标题" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="d7U-HI-mv2">
+                    <rect key="frame" x="0.0" y="0.0" width="53.5" height="16"/>
+                    <fontDescription key="fontDescription" type="system" pointSize="13"/>
+                    <color key="textColor" red="0.13725490196078433" green="0.58823529411764708" blue="0.95294117647058818" alpha="1" colorSpace="calibratedRGB"/>
+                    <nil key="highlightedColor"/>
+                </label>
+                <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="为您的直播起一个响亮的名字吧" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="JoM-W9-gtP">
+                    <rect key="frame" x="59.5" y="16" width="315.5" height="30"/>
                     <constraints>
-                        <constraint firstAttribute="height" constant="28" id="2W9-90-EJE"/>
-                        <constraint firstAttribute="width" constant="28" id="SCD-xs-sei"/>
+                        <constraint firstAttribute="height" constant="30" id="gML-kU-7ra"/>
                     </constraints>
-                    <state key="normal" image="quxiao.png"/>
-                    <connections>
-                        <action selector="cancelBtnAction:" destination="iN0-l3-epB" eventType="touchUpInside" id="pNU-GY-fcz"/>
-                    </connections>
-                </button>
-                <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" style="plain" separatorStyle="none" rowHeight="44" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="U9D-te-VKl">
-                    <rect key="frame" x="0.0" y="36" width="375" height="631"/>
+                    <color key="textColor" red="0.9137254901960784" green="0.93333333333333335" blue="0.93333333333333335" alpha="1" colorSpace="calibratedRGB"/>
+                    <fontDescription key="fontDescription" type="system" pointSize="13"/>
+                    <textInputTraits key="textInputTraits" returnKeyType="done"/>
+                </textField>
+                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Dc7-C2-BZC">
+                    <rect key="frame" x="0.0" y="46" width="375" height="1"/>
+                    <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="1" id="6Ie-Ea-5VP"/>
+                    </constraints>
+                </view>
+                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="选择班级" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="TI5-cT-JEZ">
+                    <rect key="frame" x="0.0" y="57" width="53.5" height="16"/>
+                    <fontDescription key="fontDescription" type="system" pointSize="13"/>
+                    <color key="textColor" red="0.13725490196078433" green="0.58823529411764708" blue="0.95294117647058818" alpha="1" colorSpace="calibratedRGB"/>
+                    <nil key="highlightedColor"/>
+                </label>
+                <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" style="plain" separatorStyle="none" rowHeight="44" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="U9D-te-VKl">
+                    <rect key="frame" x="56.5" y="79" width="318.5" height="539"/>
                     <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                 </tableView>
+                <button opaque="NO" tag="11" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="vWR-53-nvK">
+                    <rect key="frame" x="147" y="626" width="100" height="33"/>
+                    <state key="normal" image="classCancle.png"/>
+                    <connections>
+                        <action selector="cancelBtnAction:" destination="iN0-l3-epB" eventType="touchUpInside" id="9IB-gG-vu6"/>
+                    </connections>
+                </button>
+                <button opaque="NO" tag="12" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="2Bv-aW-g16">
+                    <rect key="frame" x="272" y="626" width="100" height="33"/>
+                    <state key="normal" image="classConfirm.png"/>
+                    <connections>
+                        <action selector="cancelBtnAction:" destination="iN0-l3-epB" eventType="touchUpInside" id="ugh-qo-BTX"/>
+                    </connections>
+                </button>
             </subviews>
             <constraints>
-                <constraint firstItem="hmM-ac-ToU" firstAttribute="bottom" secondItem="U9D-te-VKl" secondAttribute="bottom" id="04H-va-7Im"/>
-                <constraint firstItem="U9D-te-VKl" firstAttribute="top" secondItem="RV1-cx-4JM" secondAttribute="bottom" constant="6" id="EgS-Ic-tQb"/>
-                <constraint firstAttribute="bottom" secondItem="U9D-te-VKl" secondAttribute="bottom" id="Egz-gA-3Y2"/>
-                <constraint firstItem="hmM-ac-ToU" firstAttribute="leading" secondItem="U9D-te-VKl" secondAttribute="leading" id="TWR-RF-2ZB"/>
-                <constraint firstItem="hmM-ac-ToU" firstAttribute="top" secondItem="U9D-te-VKl" secondAttribute="top" id="V60-fU-amR"/>
-                <constraint firstItem="U9D-te-VKl" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" id="a3h-nd-fCw"/>
+                <constraint firstAttribute="bottom" secondItem="2Bv-aW-g16" secondAttribute="bottom" constant="8" id="EUr-1w-5iU"/>
+                <constraint firstItem="JoM-W9-gtP" firstAttribute="leading" secondItem="d7U-HI-mv2" secondAttribute="trailing" constant="6" id="HAr-Ib-gzu"/>
+                <constraint firstItem="U9D-te-VKl" firstAttribute="leading" secondItem="TI5-cT-JEZ" secondAttribute="trailing" constant="3" id="MCI-Jd-h6Z"/>
+                <constraint firstItem="TI5-cT-JEZ" firstAttribute="top" secondItem="Dc7-C2-BZC" secondAttribute="bottom" constant="10" id="NuN-5K-BeK"/>
+                <constraint firstItem="2Bv-aW-g16" firstAttribute="top" secondItem="U9D-te-VKl" secondAttribute="bottom" constant="8" id="Ofg-kb-YJO"/>
+                <constraint firstAttribute="trailing" secondItem="JoM-W9-gtP" secondAttribute="trailing" id="Syq-gg-5Wk"/>
+                <constraint firstItem="Dc7-C2-BZC" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" id="V1O-DO-obU"/>
+                <constraint firstAttribute="trailing" secondItem="2Bv-aW-g16" secondAttribute="trailing" constant="3" id="WpZ-cD-l2t"/>
+                <constraint firstItem="d7U-HI-mv2" firstAttribute="top" secondItem="iN0-l3-epB" secondAttribute="top" id="Zru-hl-5ru"/>
                 <constraint firstAttribute="trailing" secondItem="U9D-te-VKl" secondAttribute="trailing" id="a6u-O6-Izd"/>
-                <constraint firstItem="RV1-cx-4JM" firstAttribute="top" secondItem="iN0-l3-epB" secondAttribute="top" constant="2" id="anh-Ge-RTM"/>
-                <constraint firstAttribute="trailing" secondItem="RV1-cx-4JM" secondAttribute="trailing" id="kVW-pt-mwv"/>
-                <constraint firstItem="hmM-ac-ToU" firstAttribute="trailing" secondItem="U9D-te-VKl" secondAttribute="trailing" id="xZi-CC-7Kv"/>
+                <constraint firstItem="JoM-W9-gtP" firstAttribute="top" secondItem="d7U-HI-mv2" secondAttribute="bottom" id="exs-Xp-4FW"/>
+                <constraint firstItem="U9D-te-VKl" firstAttribute="top" secondItem="TI5-cT-JEZ" secondAttribute="bottom" constant="6" id="f42-zl-REM"/>
+                <constraint firstItem="Dc7-C2-BZC" firstAttribute="top" secondItem="JoM-W9-gtP" secondAttribute="bottom" id="lFr-Zu-pkM"/>
+                <constraint firstAttribute="trailing" secondItem="Dc7-C2-BZC" secondAttribute="trailing" id="nRV-UB-LjW"/>
+                <constraint firstItem="2Bv-aW-g16" firstAttribute="centerY" secondItem="vWR-53-nvK" secondAttribute="centerY" id="rqD-va-2hk"/>
+                <constraint firstItem="TI5-cT-JEZ" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" id="t0e-Pq-Kaz"/>
+                <constraint firstItem="d7U-HI-mv2" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" id="vwY-8d-OiT"/>
+                <constraint firstItem="2Bv-aW-g16" firstAttribute="leading" secondItem="vWR-53-nvK" secondAttribute="trailing" constant="25" id="x3z-cV-YeE"/>
             </constraints>
             <connections>
+                <outlet property="cancleBtn" destination="vWR-53-nvK" id="Pdr-fo-wqk"/>
                 <outlet property="classNameTab" destination="U9D-te-VKl" id="QAG-dj-zTo"/>
+                <outlet property="classTitleTextFeild" destination="JoM-W9-gtP" id="t2M-mc-jXL"/>
+                <outlet property="confirmBtn" destination="2Bv-aW-g16" id="hsJ-a8-6Oz"/>
             </connections>
-            <point key="canvasLocation" x="33.5" y="53.5"/>
+            <point key="canvasLocation" x="-243.5" y="-79.5"/>
         </view>
     </objects>
     <resources>
-        <image name="backGround.png" width="350" height="227"/>
-        <image name="quxiao.png" width="21" height="21"/>
+        <image name="classCancle.png" width="100" height="33"/>
+        <image name="classConfirm.png" width="100" height="33"/>
     </resources>
 </document>

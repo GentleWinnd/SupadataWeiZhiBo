@@ -66,5 +66,8 @@ typedef NS_ENUM(NSInteger, MessageSocketType) {
 @property (strong, nonatomic) NSString *className;
 @property (strong, nonatomic) NSString *classId;
 @property (strong, nonatomic) NSDictionary *classInfo;
+@property (strong, nonatomic) NSString *proTitle;
+@property (strong, nonatomic) NSString *title;
+
 
 @end

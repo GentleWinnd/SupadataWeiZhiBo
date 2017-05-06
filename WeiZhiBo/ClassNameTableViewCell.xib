@@ -17,13 +17,13 @@
                 <rect key="frame" x="0.0" y="0.0" width="523" height="316"/>
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
-                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="暂无数据" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="uNM-Bi-KsV">
-                        <rect key="frame" x="231" y="149.5" width="61.5" height="18"/>
-                        <fontDescription key="fontDescription" type="system" pointSize="15"/>
-                        <color key="textColor" red="0.41568627450980389" green="0.46274509803921571" blue="0.50196078431372548" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="暂无数据" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="uNM-Bi-KsV">
+                        <rect key="frame" x="0.0" y="150" width="53.5" height="16"/>
+                        <fontDescription key="fontDescription" type="system" pointSize="13"/>
+                        <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                         <nil key="highlightedColor"/>
                     </label>
-                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="An7-Oe-sfO">
+                    <view hidden="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="An7-Oe-sfO">
                         <rect key="frame" x="0.0" y="314" width="523" height="1"/>
                         <color key="backgroundColor" red="0.88627450980392153" green="0.92156862745098034" blue="0.92156862745098034" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
@@ -34,8 +34,8 @@
                 <constraints>
                     <constraint firstAttribute="trailing" secondItem="An7-Oe-sfO" secondAttribute="trailing" id="5aD-ki-7a4"/>
                     <constraint firstAttribute="bottom" secondItem="An7-Oe-sfO" secondAttribute="bottom" id="65R-LP-vCD"/>
-                    <constraint firstItem="uNM-Bi-KsV" firstAttribute="centerX" secondItem="H2p-sc-9uM" secondAttribute="centerX" id="GTR-94-nc7"/>
                     <constraint firstItem="An7-Oe-sfO" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" id="KOU-WF-INy"/>
+                    <constraint firstItem="uNM-Bi-KsV" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" id="O4M-LM-v9I"/>
                     <constraint firstItem="uNM-Bi-KsV" firstAttribute="centerY" secondItem="H2p-sc-9uM" secondAttribute="centerY" id="ypP-UC-kvM"/>
                 </constraints>
             </tableViewCellContentView>
