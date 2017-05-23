@@ -10,7 +10,7 @@
 
 @implementation APPDeviceInfoManager
 
-- (void)get {
++ (void)get {
     NSDictionary *infoDictionary = [[NSBundle mainBundle] infoDictionary];
     CFShow((__bridge CFTypeRef)(infoDictionary));
     // app名称

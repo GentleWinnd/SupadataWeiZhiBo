@@ -37,7 +37,7 @@
 }
 
 - (NSUInteger)bitrate {
-    return [BitrateHelper bitrate:Resolution_480P];
+    return [BitrateHelper bitrate:Resolution_720P];
 }
 
 - (void)setupSession:(AVCaptureVideoOrientation)orientation delegate:(id<VCSessionDelegate>)delegate {
@@ -45,7 +45,7 @@
     configuration.cameraOrientation = orientation;
     configuration.videoSize = [self size];
     configuration.bitrate = [self bitrate];
-    configuration.fps = 20;
+    configuration.fps = 22;
     configuration.cameraDevice = VCCameraStateBack;
     configuration.continuousAutofocus = YES;
     configuration.continuousExposure = YES;
@@ -57,7 +57,6 @@
     self.session.aspectMode = VCAspectModeFill;
     self.session.beautyLevel = VCBeautyLevelWhiten;
     self.session.delegate = delegate;
-    [self.session setBeatyEffect:0.8 withSmooth:0.3 withPink:0.09];
 
 }
 

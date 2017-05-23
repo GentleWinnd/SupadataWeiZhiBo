@@ -16,7 +16,8 @@
 @property (nonatomic, strong) NSString *accessToken;
 @property (nonatomic, strong) NSString *openId;
 
-
 @property (nonatomic, strong) NSString *appToken;
+@property (nonatomic, assign) BOOL fromBack;
+
 
 @end

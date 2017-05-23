@@ -28,8 +28,9 @@
     self.window.rootViewController = _MainVC;
     [self.window makeKeyAndVisible];
 
-    [GLobalRealReachability startNotifier];
+//    [self AFNetNotificator];
 
+    [GLobalRealReachability startNotifier];
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(networkChanged:)
                                                  name:kRealReachabilityChangedNotification
@@ -38,8 +39,51 @@
     return YES;
 }
 
+- (void)AFNetNotificator {
+
+    AFNetworkReachabilityManager *manager = [AFNetworkReachabilityManager sharedManager];
+    
+    [manager setReachabilityStatusChangeBlock:^(AFNetworkReachabilityStatus status) {
+        if (self.startNteNotice == NO) {
+            return;
+        }
+
+        // 当网络状态改变时调用
+        switch (status) {
+            case AFNetworkReachabilityStatusUnknown:
+//                NSLog(@"未知网络");
+                [Progress progressShowcontent:@"当前网络不可用" ];
+
+                break;
+            case AFNetworkReachabilityStatusNotReachable:
+//                NSLog(@"没有网络");
+                [Progress progressShowcontent:@"当前网络不可用" ];
+
+                break;
+            case AFNetworkReachabilityStatusReachableViaWWAN:
+//                NSLog(@"手机自带网络");
+                [Progress progressShowcontent:@"当前使用移动数据" ];
+
+                break;
+            case AFNetworkReachabilityStatusReachableViaWiFi:
+//                NSLog(@"WIFI");
+                [Progress progressShowcontent:@"当前使用WiFi" ];
+
+                break;
+        }
+    }];
+    
+    //开始监控
+    [manager startMonitoring];
+}
+
 
 - (void)networkChanged:(NSNotification *)notification {
+    
+    if (self.startNteNotice == NO) {
+        return;
+    }
+    
     RealReachability *reachability = (RealReachability *)notification.object;
     ReachabilityStatus status = [reachability currentReachabilityStatus];
     ReachabilityStatus previousStatus = [reachability previousReachabilityStatus];
@@ -97,11 +141,15 @@
 
 - (void)applicationWillEnterForeground:(UIApplication *)application {
     // Called as part of the transition from the background to the active state; here you can undo many of the changes made on entering the background.
+    [[NSNotificationCenter defaultCenter] postNotificationName:@"activeFromBack" object:nil];
+    
 }
 
 
 - (void)applicationDidBecomeActive:(UIApplication *)application {
     // Restart any tasks that were paused (or not yet started) while the application was inactive. If the application was previously in the background, optionally refresh the user interface.
+    
+    
 }
 - (BOOL)application:(UIApplication *)application openURL:(NSURL *)url sourceApplication:(NSString *)sourceApplication annotation:(id)annotation {
     NSString *urlStr = [url absoluteString];
@@ -111,9 +159,8 @@
     if ([urlStr hasPrefix:@"jsLinkageHebaobei002://"] || [urlStr hasPrefix:@"JSHeEducationAppOpenThirdAppReservedMethod3://"]) {
 
         NSArray *paramArray = [urlStr componentsSeparatedByString:@"appToken="];
-        NSLog(@"=====%@",paramArray);
+//        NSLog(@"=====%@",paramArray);
         _apptoken = [NSString safeString:paramArray.lastObject];
-//        _apptoken = @"7w8LY3VQYxS95ZCYjBiMVUdK1X9xtoJbcTCjbESqKeJtLLmb40C8rY/KM/Zb HBUufCjDdljBi0NJjOuR9dTodlCL/Sn+RCkTQKMtdaQQFY0si0l0uEJCc4Jx 3Ahs/3GIIIkkmpOfEbPsL65w45h1xMFSBwoClxPDMA4J9HvkVhgXckHQ5mN9 G5fJUCyXU3YiwBU+E6Lvw4IYqVmGSlwUNfyWTToUMNao61ja556IsOnae89O /WB2ihIsVB/SP2fzhaQEwk91ggfa38ZsqG96pKH+0/mqfugmCXCmbU3K90TK jz5wXXz1u/iMEk9QiqgouUtcoueghTB27+CunUjX0NHhkhFO56q2Tir8GHKm ZiR+HQhH3BCp8NGKyTjIXnR1DyErFHIVTHWY84UhZRJIUjDfolEaU1GvaqVo ZmmEI0kMpjNMuq/7JoP60RELgX31Az9Z+KV8kdt44YcbX0m2XVJFfRP5zgtS nZLF4QMCjhXRERVX2CVNbNTZ3zo4bGPlGGdlucCRgjOKt2W6KiOR/wXEB9UO PuZeVzaoNS2jD8E7dQ8PAZw9FVFgItXP3vCWvmULF7NYBZ4aWGPlPvBxwWZh dz8BUYq+NE0CqkU6p7FLlVgYyb+FJ9YgS1Nm5Cdy4vckZzgHBu7P6fsG2Yi+ wJVpFxdjSHIScGFOtcKtWSS/qAD8nlpwRw==";
         
         HeEducationH5ViewController *h5View = [[HeEducationH5ViewController alloc] init];
         h5View.appToken = _apptoken;
@@ -190,7 +237,7 @@
 - (UIInterfaceOrientationMask)application:(UIApplication *)application supportedInterfaceOrientationsForWindow:(UIWindow *)window {
     
     if (self.shouldChangeOrientation == YES) {
-        return UIInterfaceOrientationMaskLandscape;
+        return UIInterfaceOrientationMaskLandscapeRight;
     }
     else
     {

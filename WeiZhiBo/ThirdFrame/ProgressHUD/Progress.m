@@ -33,7 +33,7 @@
     hud.labelText = content;
     hud.labelColor = [UIColor whiteColor];
     hud.labelFont = [UIFont boldSystemFontOfSize:13.0f];
-    hud.color = [UIColor colorWithRed:2/255.f green:3/255.f blue:4/255.f alpha:0.5];
+    hud.color = [UIColor colorWithRed:0.f green:0.f blue:0.f alpha:0.5];
     hud.cornerRadius = 6;
     hud.margin = 10.f;
     hud.removeFromSuperViewOnHide = YES;
@@ -48,7 +48,7 @@
     hud.labelText = content;
     hud.labelColor = [UIColor whiteColor];
     hud.labelFont = [UIFont boldSystemFontOfSize:13.0f];
-    hud.color = [UIColor colorWithRed:2/255.f green:3/255.f blue:4/255.f alpha:0.5];
+    hud.color = [UIColor colorWithRed:0.f green:0.f blue:0.f alpha:0.5];
     hud.cornerRadius = 6;
     hud.margin = 10.f;
     hud.removeFromSuperViewOnHide = YES;

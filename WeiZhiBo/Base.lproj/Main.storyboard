@@ -4,6 +4,7 @@
         <adaptation id="fullscreen"/>
     </device>
     <dependencies>
+        <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="12086"/>
         <capability name="Aspect ratio constraints" minToolsVersion="5.1"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
@@ -76,7 +77,7 @@
                                         </connections>
                                     </slider>
                                     <button hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="N5O-VC-ecw">
-                                        <rect key="frame" x="90" y="607" width="45" height="45"/>
+                                        <rect key="frame" x="42" y="607" width="45" height="45"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="16"/>
                                         <state key="normal" image="class.png">
                                             <color key="titleColor" red="0.0" green="0.47843137250000001" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
@@ -89,7 +90,7 @@
                                         </connections>
                                     </button>
                                     <button hidden="YES" opaque="NO" tag="1" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="hMH-KT-L3A">
-                                        <rect key="frame" x="165" y="607" width="45" height="45"/>
+                                        <rect key="frame" x="117" y="607" width="45" height="45"/>
                                         <state key="normal" image="play_n.png"/>
                                         <state key="selected" image="play_s.png">
                                             <color key="titleColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
@@ -99,7 +100,7 @@
                                         </connections>
                                     </button>
                                     <button hidden="YES" opaque="NO" tag="2" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Tc8-WL-3bp">
-                                        <rect key="frame" x="240" y="607" width="45" height="45"/>
+                                        <rect key="frame" x="216" y="607" width="45" height="45"/>
                                         <state key="normal" image="camera_back.png"/>
                                         <state key="selected" image="camera_front.png">
                                             <color key="titleColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
@@ -138,13 +139,6 @@
                                             <action selector="onToggleFlash:" destination="BYZ-38-t0r" eventType="touchUpInside" id="krj-m8-1Q3"/>
                                         </connections>
                                     </button>
-                                    <button hidden="YES" opaque="NO" contentMode="scaleToFill" enabled="NO" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="3w2-f8-0bm" userLabel="maskingBtn">
-                                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
-                                        <color key="backgroundColor" red="0.0" green="0.0" blue="0.0" alpha="0.20537243150684931" colorSpace="calibratedRGB"/>
-                                        <connections>
-                                            <action selector="playCommenAction:" destination="BYZ-38-t0r" eventType="touchUpInside" id="x8W-PL-nwN"/>
-                                        </connections>
-                                    </button>
                                 </subviews>
                                 <color key="backgroundColor" white="1" alpha="0.0" colorSpace="calibratedWhite"/>
                                 <gestureRecognizers/>
@@ -155,11 +149,10 @@
                                     <constraint firstItem="kOD-Ga-LKx" firstAttribute="leading" secondItem="NOS-vB-xRS" secondAttribute="leading" constant="14" id="5i6-0u-eeB"/>
                                     <constraint firstAttribute="bottom" secondItem="hMH-KT-L3A" secondAttribute="bottom" constant="15" id="AnU-ez-io7"/>
                                     <constraint firstItem="hMH-KT-L3A" firstAttribute="leading" secondItem="N5O-VC-ecw" secondAttribute="trailing" constant="30" id="Dk6-MD-7Cb"/>
-                                    <constraint firstAttribute="trailing" secondItem="3w2-f8-0bm" secondAttribute="trailing" id="DnS-uA-QKv"/>
                                     <constraint firstAttribute="trailing" secondItem="R7U-c3-4Td" secondAttribute="trailing" id="E3h-fY-usE"/>
                                     <constraint firstItem="7gY-Jg-qmU" firstAttribute="top" secondItem="NOS-vB-xRS" secondAttribute="top" id="Fmx-Dt-fPh"/>
                                     <constraint firstAttribute="bottom" secondItem="R7U-c3-4Td" secondAttribute="bottom" id="Fvb-Jz-9cU"/>
-                                    <constraint firstItem="hMH-KT-L3A" firstAttribute="centerX" secondItem="NOS-vB-xRS" secondAttribute="centerX" constant="0.5" id="Ih9-Hg-urU"/>
+                                    <constraint firstItem="hMH-KT-L3A" firstAttribute="centerX" secondItem="NOS-vB-xRS" secondAttribute="centerX" constant="-48" id="Ih9-Hg-urU"/>
                                     <constraint firstItem="TqS-Mv-MFZ" firstAttribute="top" secondItem="kOD-Ga-LKx" secondAttribute="top" id="JPs-Nz-BSR"/>
                                     <constraint firstAttribute="bottom" secondItem="FUD-BL-yhT" secondAttribute="bottom" id="KJ0-lr-agP"/>
                                     <constraint firstItem="Tc8-WL-3bp" firstAttribute="centerY" secondItem="N5O-VC-ecw" secondAttribute="centerY" id="N0S-Oy-3B2"/>
@@ -173,7 +166,6 @@
                                     <constraint firstAttribute="bottom" secondItem="7gY-Jg-qmU" secondAttribute="bottom" id="XfP-v2-7Qe"/>
                                     <constraint firstItem="F1L-Uj-XXy" firstAttribute="width" secondItem="Sk9-q7-8ZZ" secondAttribute="width" id="Zis-VH-S3f"/>
                                     <constraint firstItem="F1L-Uj-XXy" firstAttribute="height" secondItem="Sk9-q7-8ZZ" secondAttribute="height" id="a46-9X-zh1"/>
-                                    <constraint firstAttribute="bottom" secondItem="3w2-f8-0bm" secondAttribute="bottom" id="bbL-TP-rxk"/>
                                     <constraint firstAttribute="trailing" secondItem="Sk9-q7-8ZZ" secondAttribute="trailing" constant="18" id="bpi-AM-1Hg"/>
                                     <constraint firstItem="Q5g-Ru-jSB" firstAttribute="leading" secondItem="NOS-vB-xRS" secondAttribute="leading" id="cou-c7-qro"/>
                                     <constraint firstAttribute="trailing" secondItem="fab-JY-Rn8" secondAttribute="trailing" constant="8" id="dUK-TY-fAa"/>
@@ -182,14 +174,12 @@
                                     <constraint firstAttribute="width" constant="375" id="fsr-L6-RH0"/>
                                     <constraint firstItem="F1L-Uj-XXy" firstAttribute="top" secondItem="Sk9-q7-8ZZ" secondAttribute="bottom" constant="22" id="gTT-X9-os9"/>
                                     <constraint firstItem="TqS-Mv-MFZ" firstAttribute="leading" secondItem="kOD-Ga-LKx" secondAttribute="trailing" constant="22" id="h5Q-Q2-Vum"/>
-                                    <constraint firstItem="3w2-f8-0bm" firstAttribute="leading" secondItem="NOS-vB-xRS" secondAttribute="leading" id="hmL-U0-oP5"/>
                                     <constraint firstItem="FUD-BL-yhT" firstAttribute="leading" secondItem="NOS-vB-xRS" secondAttribute="leading" id="iEU-Y8-fLW"/>
                                     <constraint firstItem="Q5g-Ru-jSB" firstAttribute="top" secondItem="NOS-vB-xRS" secondAttribute="top" id="lUP-cd-SNF"/>
-                                    <constraint firstItem="3w2-f8-0bm" firstAttribute="top" secondItem="NOS-vB-xRS" secondAttribute="top" id="ldZ-87-0Yk"/>
                                     <constraint firstItem="TqS-Mv-MFZ" firstAttribute="width" secondItem="TqS-Mv-MFZ" secondAttribute="height" multiplier="1:1" id="r9R-9b-Vqu"/>
                                     <constraint firstAttribute="trailing" secondItem="FUD-BL-yhT" secondAttribute="trailing" id="t9c-aj-Jrr"/>
                                     <constraint firstAttribute="height" constant="667" id="v7Q-ug-4o2"/>
-                                    <constraint firstItem="Tc8-WL-3bp" firstAttribute="leading" secondItem="hMH-KT-L3A" secondAttribute="trailing" constant="30" id="vMF-Ux-Vor"/>
+                                    <constraint firstItem="Tc8-WL-3bp" firstAttribute="leading" secondItem="hMH-KT-L3A" secondAttribute="trailing" constant="54" id="vMF-Ux-Vor"/>
                                 </constraints>
                                 <connections>
                                     <outletCollection property="gestureRecognizers" destination="wgw-RT-Tdr" appends="YES" id="xLh-6r-ekk"/>
@@ -221,7 +211,6 @@
                         <outlet property="cameraView" destination="MNx-Pk-r1m" id="jLY-HF-kQs"/>
                         <outlet property="classBtn" destination="N5O-VC-ecw" id="0tO-2X-6AX"/>
                         <outlet property="doubleTapGesture" destination="gn4-0n-nIV" id="Sch-I1-8Ji"/>
-                        <outlet property="maskingBtn" destination="3w2-f8-0bm" id="XpL-nz-LbD"/>
                         <outlet property="pinchGesture" destination="UGR-PS-JnI" id="mCb-CX-SFE"/>
                         <outlet property="playBtn" destination="hMH-KT-L3A" id="30a-ed-zg2"/>
                         <outlet property="playCommentBtn" destination="Sk9-q7-8ZZ" id="YSM-10-ao4"/>

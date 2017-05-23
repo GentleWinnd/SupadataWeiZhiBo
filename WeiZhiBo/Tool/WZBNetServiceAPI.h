@@ -48,4 +48,10 @@
 + (void)postZhiBoStateMessageWithParameters:(id)parameters
                                     success:(void(^)(id reponseObject))success
                                     failure:(void(^)(NSError *error))failure;
+
+//测试版本号
+
++ (void)getAPPVersionWithParameters:(id)parameters
+                            success:(void(^)(id reponseObject))success
+                            failure:(void(^)(NSError *error))failure;
 @end

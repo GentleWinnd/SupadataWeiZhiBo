@@ -4,6 +4,7 @@
         <adaptation id="fullscreen"/>
     </device>
     <dependencies>
+        <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="12086"/>
         <capability name="Aspect ratio constraints" minToolsVersion="5.1"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
@@ -13,6 +14,7 @@
             <connections>
                 <outlet property="backBtn" destination="ZQO-Rx-K2C" id="3FS-e9-Ysg"/>
                 <outlet property="backImage" destination="pnQ-83-yuV" id="x9i-sa-oSW"/>
+                <outlet property="curveView" destination="xtZ-lK-RIa" id="Qq5-3V-FVx"/>
                 <outlet property="view" destination="i5M-Pr-FkT" id="sfx-zR-JGt"/>
             </connections>
         </placeholder>
@@ -69,11 +71,66 @@
                         <constraint firstAttribute="trailing" secondItem="PuO-zl-7bC" secondAttribute="trailing" id="xyJ-xn-q91"/>
                     </constraints>
                 </view>
+                <view hidden="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="xtZ-lK-RIa">
+                    <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                    <subviews>
+                        <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="backall.png" translatesAutoresizingMaskIntoConstraints="NO" id="enP-g8-gIG">
+                            <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                        </imageView>
+                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="V 1.6.6" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Qys-HZ-KVm">
+                            <rect key="frame" x="168.5" y="610.5" width="38" height="14.5"/>
+                            <fontDescription key="fontDescription" type="system" pointSize="12"/>
+                            <color key="textColor" red="0.24313725489999999" green="0.33333333329999998" blue="0.3803921569" alpha="1" colorSpace="calibratedRGB"/>
+                            <nil key="highlightedColor"/>
+                        </label>
+                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="索普特（北京）科技股份有限公司" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="xgO-lY-FJ8">
+                            <rect key="frame" x="111" y="640" width="153.5" height="12"/>
+                            <fontDescription key="fontDescription" type="system" pointSize="10"/>
+                            <color key="textColor" red="0.24313725489999999" green="0.33333333329999998" blue="0.3803921569" alpha="1" colorSpace="calibratedRGB"/>
+                            <nil key="highlightedColor"/>
+                        </label>
+                        <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="logo.png" translatesAutoresizingMaskIntoConstraints="NO" id="N9Y-rR-4LI">
+                            <rect key="frame" x="122.5" y="120" width="130" height="103"/>
+                        </imageView>
+                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="课堂因你而精彩" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="3MQ-1G-WZq">
+                            <rect key="frame" x="132" y="286.5" width="112" height="19"/>
+                            <fontDescription key="fontDescription" name="HelveticaNeue" family="Helvetica Neue" pointSize="16"/>
+                            <color key="textColor" red="0.24313725489999999" green="0.33333333329999998" blue="0.3803921569" alpha="1" colorSpace="calibratedRGB"/>
+                            <nil key="highlightedColor"/>
+                        </label>
+                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="微直播" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="I1Z-w8-qBY">
+                            <rect key="frame" x="148" y="241" width="78" height="30.5"/>
+                            <fontDescription key="fontDescription" name="HelveticaNeue" family="Helvetica Neue" pointSize="26"/>
+                            <color key="textColor" red="0.24313725489999999" green="0.33333333329999998" blue="0.3803921569" alpha="1" colorSpace="calibratedRGB"/>
+                            <nil key="highlightedColor"/>
+                        </label>
+                    </subviews>
+                    <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                    <constraints>
+                        <constraint firstItem="enP-g8-gIG" firstAttribute="top" secondItem="xtZ-lK-RIa" secondAttribute="top" id="2hR-pN-1ke"/>
+                        <constraint firstItem="enP-g8-gIG" firstAttribute="leading" secondItem="xtZ-lK-RIa" secondAttribute="leading" id="6IG-LQ-nDO"/>
+                        <constraint firstItem="xgO-lY-FJ8" firstAttribute="centerX" secondItem="xtZ-lK-RIa" secondAttribute="centerX" id="Hic-kH-tdl"/>
+                        <constraint firstItem="N9Y-rR-4LI" firstAttribute="top" secondItem="enP-g8-gIG" secondAttribute="top" constant="120" id="IAQ-B6-CxD"/>
+                        <constraint firstAttribute="trailing" secondItem="enP-g8-gIG" secondAttribute="trailing" id="QEE-Bk-Cb5"/>
+                        <constraint firstItem="xgO-lY-FJ8" firstAttribute="top" secondItem="Qys-HZ-KVm" secondAttribute="bottom" constant="15" id="T1X-CM-kIw"/>
+                        <constraint firstAttribute="bottom" secondItem="xgO-lY-FJ8" secondAttribute="bottom" constant="15" id="TtF-r8-7qk"/>
+                        <constraint firstItem="Qys-HZ-KVm" firstAttribute="centerX" secondItem="xtZ-lK-RIa" secondAttribute="centerX" id="Xws-or-kUq"/>
+                        <constraint firstItem="I1Z-w8-qBY" firstAttribute="top" secondItem="N9Y-rR-4LI" secondAttribute="bottom" constant="18" id="jUf-rN-jUB"/>
+                        <constraint firstItem="N9Y-rR-4LI" firstAttribute="centerX" secondItem="xtZ-lK-RIa" secondAttribute="centerX" id="pyx-3I-Bqw"/>
+                        <constraint firstItem="3MQ-1G-WZq" firstAttribute="centerX" secondItem="xtZ-lK-RIa" secondAttribute="centerX" id="rqg-Fz-MaU"/>
+                        <constraint firstItem="3MQ-1G-WZq" firstAttribute="top" secondItem="I1Z-w8-qBY" secondAttribute="bottom" constant="15" id="wKA-wa-WVO"/>
+                        <constraint firstItem="I1Z-w8-qBY" firstAttribute="centerX" secondItem="xtZ-lK-RIa" secondAttribute="centerX" id="wsH-zg-SwY"/>
+                    </constraints>
+                </view>
             </subviews>
             <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
             <constraints>
                 <constraint firstItem="RSq-Dn-gpQ" firstAttribute="top" secondItem="i5M-Pr-FkT" secondAttribute="top" id="1Al-dC-LNo"/>
                 <constraint firstItem="RSq-Dn-gpQ" firstAttribute="leading" secondItem="i5M-Pr-FkT" secondAttribute="leading" id="4eS-xY-Hc1"/>
+                <constraint firstItem="xtZ-lK-RIa" firstAttribute="top" secondItem="i5M-Pr-FkT" secondAttribute="top" id="4x0-Xm-Ijk"/>
+                <constraint firstAttribute="bottom" secondItem="xtZ-lK-RIa" secondAttribute="bottom" id="6fM-PZ-wqX"/>
+                <constraint firstItem="xtZ-lK-RIa" firstAttribute="leading" secondItem="i5M-Pr-FkT" secondAttribute="leading" id="PTr-pz-swg"/>
+                <constraint firstAttribute="trailing" secondItem="xtZ-lK-RIa" secondAttribute="trailing" id="R2F-ef-5oW"/>
                 <constraint firstAttribute="trailing" secondItem="RSq-Dn-gpQ" secondAttribute="trailing" id="R2w-JJ-yeX"/>
             </constraints>
             <point key="canvasLocation" x="34.5" y="53.5"/>
@@ -81,5 +138,7 @@
     </objects>
     <resources>
         <image name="back.png" width="20" height="46"/>
+        <image name="backall.png" width="375" height="667"/>
+        <image name="logo.png" width="130" height="103"/>
     </resources>
 </document>

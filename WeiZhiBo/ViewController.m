@@ -55,7 +55,7 @@
 @property (strong, nonatomic) ContentView *CView;
 
 @property (strong, nonatomic) IBOutlet UIButton *backBtn;
-@property (strong, nonatomic) IBOutlet UIButton *maskingBtn;
+@property (strong, nonatomic) IBOutlet UIView *maskingBtn;
 
 @property (strong, nonatomic) IBOutlet UIButton *sendCommentBtn;
 @property (strong, nonatomic) IBOutlet UIButton *playCommentBtn;
@@ -70,7 +70,6 @@
 /********end******/
 
 @property (strong, nonatomic) UIActivityIndicatorView *iniIndicator;
-
 @property (assign, nonatomic) BOOL publish_switch;
 
 
@@ -83,7 +82,7 @@ static NSString *cellID = @"cellId";
     NSString *classId;
     NSString *className;
     NSString *cameraDataId;
-    NSMutableDictionary *unfoldInfo;
+    
     UIDeviceOrientation _deviceOrientation;
     CMMotionManager *motionManager;
     SRWebSocket *_webSocket;
@@ -92,54 +91,64 @@ static NSString *cellID = @"cellId";
     CGFloat keyBoardHeight;
     CGFloat textMessgeHeight;
     NSString *playTitle;
+    NSString *recordStr;
+    NSInteger noDataCount;
 
 
     CommentMessageView *commentView;
     InputView *inputView;
     NSTimer *timer;
     int seconds;
-    BOOL isTengXun;
+    BOOL siglePlaying;
+    BOOL uploadFinished;
+    BOOL havedSendPlayState;
+    NSInteger liveType;
     
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
-    [super viewWillDisappear:animated];
-    
     [_webSocket close];
     _webSocket = nil;
+    
+    [super viewWillDisappear:animated];
 }
 
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view, typically from a nib.
+    //创建camera加载菊花
     _iniIndicator = [[UIActivityIndicatorView alloc] initWithFrame:CGRectMake(0, 0, 66, 66)];
     _iniIndicator.center = CGPointMake(SCREEN_WIDTH/2, SCREEN_HEIGHT/2);
     _iniIndicator.activityIndicatorViewStyle = UIActivityIndicatorViewStyleWhiteLarge;
-    [self.view addSubview:_iniIndicator];
+//    [self.view addSubview:_iniIndicator];
     [_iniIndicator startAnimating];
+    //旋转背景容器view
     self.backView.transform = CGAffineTransformMakeRotation(- M_PI_2);
-
+    //设置百度直播SDK
     [self setBaiDuSDK];
 }
 
+
+//初始化一些配置数据
 - (void)initNeedData {
     
     if (self.userClassInfo.count == 1) {
         NSDictionary *classInfo = [NSDictionary safeDictionary:[self.userClassInfo firstObject]];
         className = [NSString safeString:classInfo[@"className"]];
         classId = [NSString safeNumber:classInfo[@"classId"]];
+        self.CView.hidden = NO;
         _CView.classLabel.text = [NSString stringWithFormat:@"%@-%@",_schoolName,className];
-        playTitle = [NSString stringWithFormat:@"%@的直播",[UserData getUser].nickName];
         
         [self getPushInfo];
-    } else {
-        [self alertViewShowSelectedCLass];
-    }
-    
+    }     
     textMessgeHeight = 42;
+    noDataCount = 0;
+    liveType = 1;
     messageArr = [NSMutableArray arrayWithCapacity:0];
-    unfoldInfo = [NSMutableDictionary dictionaryWithCapacity:self.userClassInfo.count];
-    
+    siglePlaying = NO;
+    uploadFinished = NO;
+    havedSendPlayState = NO;
+    recordStr = @"";
 }
 
 #pragma mark - 创建班级label
@@ -158,7 +167,7 @@ static NSString *cellID = @"cellId";
     self.doubleTapGesture.numberOfTapsRequired = 2;
 //    self.tapGesture.enabled = YES;
     
-    self.classBtn.hidden = NO;
+//    self.classBtn.hidden = NO;
     self.playBtn.hidden = NO;
     self.traformCameraBtn.hidden = NO;
     self.backBtn.hidden = NO;
@@ -166,10 +175,22 @@ static NSString *cellID = @"cellId";
     [self.tapGesture requireGestureRecognizerToFail:self.doubleTapGesture];
     [_beautySlider setThumbImage:[UIImage imageNamed:@"heart"] forState:UIControlStateNormal];
     [self orientationChangedWithDeviceOrientation:UIDeviceOrientationLandscapeLeft];
+
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(changeContentViewPoint:) name:UIKeyboardDidChangeFrameNotification object:nil];
     //监听当键将要退出时
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillHide:) name:UIKeyboardWillHideNotification object:nil];
 
+}
+
+#pragma mark - 设置蒙版和按钮的模糊效果
+
+- (void)setBackgroundViewAlpal:(BOOL)hidden {
+
+    self.playBtn.alpha = hidden?0.5:1;
+    self.backBtn.alpha = hidden?0.5:1;
+    self.traformCameraBtn.alpha = hidden?0.5:1;
+    self.CView.alpha = hidden?0.5:1;
+    self.backBtn.hidden = hidden;
 }
 
 #pragma mark - 创建contentView
@@ -177,8 +198,15 @@ static NSString *cellID = @"cellId";
 - (void)createContentView {
     self.CView = [[NSBundle mainBundle] loadNibNamed:@"ContentView" owner:self options:nil].lastObject;
     self.CView.frame = CGRectMake(4, 26, 120, 30);
+    self.CView.hidden = YES;
     
     [self.view  addSubview:self.CView];
+    
+    self.maskingBtn = [[UIView alloc] initWithFrame:self.view.bounds];
+    self.maskingBtn.backgroundColor = [UIColor colorWithRed:0 green:0 blue:0 alpha:0.5];
+    self.maskingBtn.hidden = YES;
+    
+    [self.view addSubview:self.maskingBtn];
 }
 
 /*************************set baidu sdk**********************/
@@ -190,11 +218,8 @@ static NSString *cellID = @"cellId";
     [vmodel preview:_cameraView];
     [vmodel updateFrame:_cameraView];
     self.model = vmodel;
+}
 
-}
-- (IBAction)unfoldBtnClick:(UIButton *)sender {//显示或收起底部按钮栏
-    sender.selected = !sender.selected;
-}
 
 #pragma mark - comment
 - (IBAction)playCommenAction:(UIButton *)sender {
@@ -208,7 +233,8 @@ static NSString *cellID = @"cellId";
             [Progress progressShowcontent:@"打开评论才可以发表评论" currView:self.view];
         }
     } else {//显示蒙版
-        [self showClassInfoTable:NO];
+//        [self showClassInfoTable:NO];
+        [self.view resignFirstResponder];
     }
 }
 
@@ -233,14 +259,40 @@ static NSString *cellID = @"cellId";
             [self alertViewMessage:@"正在直播，是否关闭？" alertType:AlertViewTypeQuitPlayView];
 
         } else {
-            AppDelegate * app = [UIApplication sharedApplication].delegate;
-            app.shouldChangeOrientation = NO;
+//            AppDelegate * app = [UIApplication sharedApplication].delegate;
+//            app.shouldChangeOrientation = NO;
+//
+//            [self.navigationController dismissViewControllerAnimated:YES completion:^{
+//               
+//            }];
+            [self alertViewMessage:@"是否关闭直播？" alertType:AlertViewTypeQuitPlayView];
 
-            [self.navigationController dismissViewControllerAnimated:YES completion:^{
-               
-            }];
         }
     }
+}
+
+- (IBAction)btnClickAction:(UIButton *)sender {
+    if (sender.tag == 1) {//播放
+        if (sender.selected) {//停止zhibo
+            [self alertViewMessage:@"是否停止直播？" alertType:AlertViewTypeStopPlay];
+        } else {//开始直播
+            [self showClassInfoTable:_classView.hidden];
+        }
+        
+    } else if (sender.tag == 2){//翻转摄像头
+        [self.model switchCamera];
+        sender.selected = !sender.selected;
+        
+    }
+    //    else {//选择班级
+    //        if (_playBtn.selected) {
+    //            [Progress progressShowcontent:@"直播过程中不可选择班级" currView:self.view];
+    //        } else{
+    //            [self showClassInfoTable:_classView.hidden];
+    //
+    //        }
+    //    }
+    
 }
 
 
@@ -257,72 +309,155 @@ static NSString *cellID = @"cellId";
 
 - (IBAction)onDoubleTap:(id)sender {//双击手势
     [self.model zoomIn];
+}
+
+#pragma mark - change beauty value
+- (IBAction)changeSlider:(UISlider *)sender {//设置美颜
+    [self.model.session setBeatyEffect:sender.value withSmooth:sender.value withPink:sender.value];
     
 }
 
 #pragma mark - VCSessionDelegate
 
 - (void) connectionStatusChanged: (VCSessionState) sessionState {
+  
     switch(sessionState) {
-        case VCSessionStatePreviewStarted:
-            break;
-        case VCSessionStateStarting:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            
+        case VCSessionStatePreviewStarted:{// 开始出现预览画面，收到此状态回调后方可设置美颜参数
+            [self.model.session setBeatyEffect:0.5 withSmooth:0.3 withPink:0.3];
+            NSLog(@"*************开始出现预览画面，收到此状态回调后方可设置美颜参数^^^^^^^^\n");
+
+            break;}
+        case VCSessionStateStarting:{// 正在连接服务器或创建码流传输通道
             NSLog(@"Current state is VCSessionStateStarting\n");
-            break;
-        case VCSessionStateStarted:
+            NSLog(@"*************正在连接服务器或创建码流传输通道^^^^^^^^\n");
+
+            break;}
+        case VCSessionStateStarted:{// 已经建立连接，并已经开始推流
             NSLog(@"Current state is VCSessionStateStarted\n");
-            [self.playBtn setBackgroundImage:[UIImage imageNamed:@"streaming"] forState:UIControlStateNormal];
-            break;
-        case VCSessionStateError:
-            NSLog(@"Current state is VCSessionStateError\n");
-            [self.playBtn setBackgroundImage:[UIImage imageNamed:@"stream_background"] forState:UIControlStateNormal];
-            break;
-        case VCSessionStateEnded:
-            NSLog(@"Current state is VCSessionStateEnded\n");
-            [self.playBtn setBackgroundImage:[UIImage imageNamed:@"stream_background"] forState:UIControlStateNormal];
-//            if (self.isBacking) {
-//                [self.navigationController popViewControllerAnimated:YES];
-//                self.isBacking = NO;
-//            }
-            break;
+            if (self.userClassInfo.count>1) {
+                if (_classView.sendMessageBtn.selected ) {
+                    [self groupSendMassage];
+                }
+                [self performSelector:@selector(sendPlayState) withObject:nil afterDelay:10.0];
+            }
+
+            break;}
+        case VCSessionStateError:{// 推流sdk运行过程中出错
+            NSLog(@"*************Current state is VCSessionStateError^^^^^^^^\n");
+           
+            break;}
+        case VCSessionStateEnded:{// 推流已经结束
+            NSLog(@"**************Current state is VCSessionStateEnded^^^^^^^^\n");
+
+            break;}
         default:
             break;
     }
 }
 
-- (IBAction)btnClickAction:(UIButton *)sender {
-    if (sender.tag == 1) {//播放
-        if (sender.selected) {//停止zhibo
-            [self alertViewMessage:@"是否停止直播？" alertType:AlertViewTypeStopPlay];
-        } else {//开始直播
-            if (!([_pushUrl hasPrefix:@"rtmp://"] )) {
-                [Progress progressShowcontent:@"请选择班级" currView:self.view];
-                return;
-            }
-            [self alertViewMessage:@"是否短信告知家长？" alertType:AlertViewTypeSendParents];
-        }
-
-    } else if (sender.tag == 2){//翻转摄像头
-        [self.model switchCamera];
-        sender.selected = !sender.selected;
-
-    } else {//选择班级
-        if (_playBtn.selected) {
-            [Progress progressShowcontent:@"直播过程中不可选择班级" currView:self.view];
-        } else{
-            [self showClassInfoTable:_classView.hidden];
-
-        }
-    }
-
+- (void)sendPlayState {
+    [self uploadZhiBoState:NO];
 }
 
+
+// 当推流sdk创建CameraSource（即相机被占用）以后，该接口会被调用，参数session为VCSimpleSession的对象
+- (void) didAddCameraSource:(VCSimpleSession*)session {
+
+}
+// 当错误发生时会被调用。
+- (void) onError:(VCErrorCode)error {
+    
+    switch (error) {
+        case VCErrorCodePrepareSessionFailed:{//准备session的过程出错
+            NSLog(@"****************%@^^^^^^^^^^^^^^^^^",@"准备session的过程出错");
+            [self toastTip:@"开始直播出现错误，请稍后重试！！！"];
+            [self stopRtmp];
+            break;
+        }
+        case VCErrorCodeConnectToServerFailed:{//startRtmpSession过程中连接服务器出错
+            NSLog(@"****************%@^^^^^^^^^^^^^^^^^",@"startRtmpSession过程中连接服务器出错");
+            [self toastTip:@"开始直播出现错误，请稍后重试！！！"];
+            [self stopRtmp];
+
+            break;
+        }
+        case VCErrorCodeDisconnectFromServerFailed:{//endRtmpSession过程中出错
+            NSLog(@"****************%@^^^^^^^^^^^^^^^^^",@"endRtmpSession过程中出错");
+            [self toastTip:@"关闭直播出现错误，请稍后重试！！！"];
+            
+            break;
+        }
+        case VCErrorCodeOpenMicFailed:{//打开MIC设备出错
+            NSLog(@"****************%@^^^^^^^^^^^^^^^^^",@"打开MIC设备出错");
+
+            break;
+        }
+        case VCErrorCodeOpenCameraFailed:{//打开相机设备出错
+            NSLog(@"****************%@^^^^^^^^^^^^^^^^^",@"打开相机设备出错");
+
+            break;
+        }
+        case VCErrorCodeUnknownStreamingError:{//推流过程中，遇到未知错误导致推流失败
+            if (timer) {
+                [self toastTip:@"信息异常，直播断开，请稍后重试！"];
+            }
+            [self stopRtmp];
+            
+            break;
+        }
+        case VCErrorCodeWeakConnection:{
+            /*
+            * 推流过程中，遇到弱网情况导致推流失败
+            * 收到此错误后，建议提示用户当前网络不稳定，
+            * 如果反复收到此错误码，建议调用endRtmpSession停止推流
+            */
+            NSLog(@"****************%@^^^^^^^^^^^^^^^^^",@"当前网络不稳定，");
+            
+            break;
+        }
+        case VCErrorCodeServerNetworkError:{
+            /**
+             * 推流过程中，遇到服务器网络错误导致推流失败
+             * 收到此错误后，建议调用endRtmpSession立即停止推流，并在服务恢复后再重新推流
+             */
+            if (timer) {
+                [self toastTip:@"网络无法连接，直播断开，请稍后重试！"];
+            }
+
+            [self stopRtmp];
+            NSLog(@"****************%@^^^^^^^^^^^^^^^^^",@"当前网络不稳定，");
+
+            break;
+        }
+        case VCErrorCodeLocalNetworkError:{
+            /**
+             * 推流过程中，遇到设备断网导致推流失败，
+             * 收到此错误后，建议提示用户检查网络连接，然后调用endRtmpSession立即停止推流
+             */
+            NSLog(@"****************%@^^^^^^^^^^^^^^^^^",@"当前网络不稳定");
+            if (timer) {
+                [self toastTip:@"网络无法连接，直播断开，请稍后重试！"];
+            }
+
+            [self stopRtmp];
+
+            break;
+        }
+
+        default:
+            break;
+    }
+    
+}
 
 #pragma mark - start push
 -(BOOL)startRtmp {
 //    NSString* rtmpUrl = @"rtmp://push.bcelive.com/live/ftqhgk3ch6wtwcvexu";//测试地址
-    
-    [self createTimer];
+    if (!([_pushUrl hasPrefix:@"rtmp://"] )) {
+        [Progress progressShowcontent:@"发生意外错误了" currView:self.view];
+        return NO;
+    }
+
 
     NSString *rtmpUrl = _pushUrl;
     //是否有摄像头权限
@@ -336,17 +471,24 @@ static NSString *cellID = @"cellId";
     AVAuthorizationStatus statusAudio = [AVCaptureDevice authorizationStatusForMediaType:AVMediaTypeAudio];
     if (statusAudio == AVAuthorizationStatusDenied) {
         [Progress progressShowcontent:@"获取麦克风权限失败，请前往隐私-麦克风设置里面打开应用权限" currView:self.view];
-
         return NO;
     }
-    
-    
     [self.model.session startRtmpSessionWithURL:rtmpUrl];
+    
+    if (self.userClassInfo.count>1) {
+        [self ShowItemWhileStartPlay];
+    }
+
+    return YES;
+}
+
+#pragma mark - show play items
+
+- (void)ShowItemWhileStartPlay {
     [[UIApplication sharedApplication] setIdleTimerDisabled:YES];
-  
-    [self reconnectWebSocket];
+    
+    [self createTimer];
     [self.CView hiddenDoingView:NO];
-  
     
     self.isBacking = NO;
     _playBtn.selected = YES;
@@ -355,38 +497,41 @@ static NSString *cellID = @"cellId";
     _playCommentBtn.selected = YES;
     
     [self showCommentMessageView:YES showMessage:NO];
-    [self uploadZhiBoState:NO];
-
-    return YES;
 }
 
 - (void)stopRtmp {
-    self.isBacking = YES;
-    self.playBtn.selected = NO;
-    _sendCommentBtn.hidden = YES;
-    _playCommentBtn.hidden = YES;
+    [self.model.session endRtmpSession];
+    
     BOOL result = [self.model back];
     
     [self stopTimer];
     [self closeWebSocket];//关闭socket
     [self.CView hiddenDoingView:YES];
+    [self showCommentMessageView:NO showMessage:NO];
+
+    siglePlaying = NO;
+    self.isBacking = YES;
+    self.playBtn.selected = NO;
+    _sendCommentBtn.hidden = YES;
+    _playCommentBtn.hidden = YES;
     [messageArr removeAllObjects];
     commentView.messageArray = messageArr;
     [commentView reloadMessageTable];
-
     [messageArr removeAllObjects];
+    
     [[UIApplication sharedApplication] setIdleTimerDisabled:NO];
 }
 
 - (void)clearLog {
-    [self stopRtmp];
+    if (timer) {
+        [self stopRtmp];
+    }
     self.model = nil;
 }
 
 #pragma mark - create timer
 - (void)createTimer {
     seconds = 0;
-    
     if (timer) {
         [timer fire];
         return;
@@ -403,22 +548,38 @@ static NSString *cellID = @"cellId";
     self.CView.shotingTimeLable.text = [NSString stringWithFormat:@"%02d:%02d:%02d",hourse,minutes,second];
     double rate = [self.model.session getCurrentUploadBandwidthKbps];
     rate = rate < 0.0?0.0:rate;
+    self.CView.rateLabel.textColor = rate >50?[UIColor whiteColor]:[UIColor redColor];
+
     self.CView.rateLabel.text = [NSString stringWithFormat:@"%.lf %@",rate,@"kb"];
-    if (seconds == 90) {
+    if (seconds/90 && seconds%90==0 && !uploadFinished) {
         [self uploadZhiBoState:NO];
     }
-    self.CView.redDotImage.hidden = !self.CView.redDotImage.hidden;
-//    if (seconds%5==0) {//获取观看人数
-//        [self getWacthPeopleNumber];
-//    }
+    if (siglePlaying || self.userClassInfo.count>1) {
+        self.CView.redDotImage.hidden = !self.CView.redDotImage.hidden;
+    }
     
     if (seconds%10 == 0 && _webSocket) {//发送心跳包
         [_webSocket sendPing:nil error:nil];
     }
+    
+    if (rate == 0) {
+        noDataCount++;
+    }
+    
+    if (seconds/20&&seconds%20==0) {
+        noDataCount = 0;
+    }
+    if (noDataCount>10) {
+        [self stopRtmp];
+        [self toastTip:@"创建班级直播失败，请稍后重试！"];
+    }
 }
 
 - (void)stopTimer {
-    [self uploadZhiBoState:YES];
+    if (havedSendPlayState) {
+        [self uploadZhiBoState:YES];
+    }
+    
     [timer invalidate];
     timer = nil;
 }
@@ -433,7 +594,9 @@ static NSString *cellID = @"cellId";
 
 - (void)viewDidDisappear:(BOOL)animated {
     [super viewDidDisappear:animated];
-    [self stopRtmp];
+    if (timer) {
+        [self stopRtmp];
+    }
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
@@ -452,6 +615,7 @@ static NSString *cellID = @"cellId";
     [self initNeedData];
     [self createInputView];
     [self createMessageView];
+    [self showClassInfoTable:YES];
 
 }
 
@@ -484,12 +648,6 @@ static NSString *cellID = @"cellId";
 }
 
 
-#pragma mark - change beauty value
-- (IBAction)changeSlider:(UISlider *)sender {
-    [self.model.session setBeatyEffect:sender.value withSmooth:sender.value withPink:sender.value];
-    
-}
-
 #pragma Mark - net service
 
 /****************selected school and class******************/
@@ -519,19 +677,23 @@ static NSString *cellID = @"cellId";
                                 @"schoolIp":@"",@"cameraId":@"",
                                 @"schoolAdminName":@"",@"schoolAdminPhone":@"",
                                 @"adminClassName":@"",@"cameraClassLocation":@""};
-    
-    MBProgressManager *progressM = [[MBProgressManager alloc] init];
-    [progressM loadingWithTitleProgress:@"正在获取班级信息..."];
+    MBProgressManager *progressM ;
+    if (self.userClassInfo.count>1) {
+        progressM = [[MBProgressManager alloc] init];
+        [progressM loadingWithTitleProgress:@"正在获取班级信息..."];
+    }
+   
     [WZBNetServiceAPI postRegisterPhoneMicroLiveWithParameters:parameter success:^(id reponseObject) {
         [progressM hiddenProgress];
         if ([reponseObject[@"status"] intValue] == 1) {
+            
             _pushUrl = [NSString safeString:reponseObject[@"data"][@"cameraPushUrl"]];
 //            _logPlayId.text = [NSString safeString:reponseObject[@"data"][@"cameraPlayUrl"]];
             cameraDataId = [NSString safeString:reponseObject[@"data"][@"id"]];
-//            [self startRtmp];
+            [self startRtmp];
+            
         } else {
-            
-            
+            [Progress progressShowcontent:reponseObject[@"message"] currView:self.view];
         }
     } failure:^(NSError *error) {
         [progressM hiddenProgress];
@@ -565,7 +727,6 @@ static NSString *cellID = @"cellId";
 
         [KTMErrorHint showNetError:error inView:self.view];
     }];
-    
 }
 
 #pragma mark- 上传直播状态
@@ -579,14 +740,27 @@ static NSString *cellID = @"cellId";
     if (playTitle.length == 0) {
         playTitle = [NSString stringWithFormat:@"%@的直播",[UserData getUser].nickName];
     }
+    
     NSDictionary *parameter = @{@"id":cameraDataId,
                                 @"flag":stop?@"2":@"1",
                                 @"classId":classId,
+                                @"userName":[UserData getUser].nickName,
+                                @"schoolId":self.schoolId,
+                                @"liveType":[NSNumber numberWithInteger:liveType],//liveType 1：全校可见，0：班级可见
                                 @"sumTime":stop?[NSNumber numberWithInt:seconds]:@"",
                                 @"userId":self.userId,
                                 @"liveTitle":[NSString stringWithFormat:@"%@",playTitle]};
     [WZBNetServiceAPI postZhiBoStateMessageWithParameters:parameter success:^(id reponseObject) {
-        if ([reponseObject[@"state"] intValue] == 1) {
+        if ([reponseObject[@"status"] intValue] == 1) {
+            uploadFinished = [[NSString safeNumber:reponseObject[@"data"][@"status"]] intValue] == 1?YES:NO;
+            NSDictionary *recorderInfo = [NSDictionary safeDictionary:reponseObject[@"data"][@"record"]];
+            recordStr = [NSString stringWithFormat:@"%@",recorderInfo[@"id"]];
+            if (stop == NO && recordStr.length>0) {
+                havedSendPlayState = YES;
+                if (_webSocket == nil) {
+                    [self reconnectWebSocket];
+                }
+            }
             NSLog(@"send zhibo state success!!!!!");
         } else {
             NSLog(@"send zhibo state failed!!!!!");
@@ -595,80 +769,84 @@ static NSString *cellID = @"cellId";
         NSLog(@"send zhibo state failed!!!!!");
 
     }];
-
 }
 
-- (void)getWacthPeopleNumber {
-    NSDictionary *parameter = @{@"id":cameraDataId};
-    [WZBNetServiceAPI getWatchingNumberWithParameters:parameter success:^(id reponseObject) {
-        
-        if ([reponseObject[@"status"] integerValue] == 1) {
-            int WNum = [[NSString safeNumber: [NSDictionary safeDictionary:reponseObject[@"data"]][@"livePeople"]] intValue];
-            self.CView.watchLabel.text = [NSString stringWithFormat:@"%d 人",WNum];
-            
-            int PNum = [[NSString safeNumber: [NSDictionary safeDictionary:reponseObject[@"data"]][@"givePraise"]] intValue];
-            self.CView.thumbsUpLabel.text = [NSString stringWithFormat:@"%d 人",PNum];
-        }
-    } failure:^(NSError *error) {
-        
-    }];
-
-}
 
 /*******************create class name pickerview*****************/
 
 - (void)createCLassNamePickerView {
     _classView = [[NSBundle mainBundle] loadNibNamed:@"ClassNameView" owner:self options:nil].lastObject;
     _classView.hidden = YES;
-    _classView.userClassInfo = self.userClassInfo;
     _classView.classInfo = [NSDictionary safeDictionary:[self.userClassInfo firstObject]];
+    _classView.userClassInfo = self.userClassInfo;
     @WeakObj(self)
     
     _classView.getClassInfo = ^(BOOL success, NSDictionary *userInfo){
         
         if (success) {
-            playTitle = _classView.title;
-            if ([[NSString safeNumber:userInfo[@"classId"]] isEqualToString:classId]) {
-                [selfWeak showClassInfoTable:NO];
-
-                return ;
-            }
+            playTitle = _classView.classTitleTextFeild.text;
+            
             NSString *CId = [NSString safeNumber:userInfo[@"classId"]];
             NSString *CName = [NSString safeString:userInfo[@"className"]];
-            
-            if (CId.length != 0) {//ceshi
-                classId = CId;
-                className = CName.length == 0?@"未命名班级":CName;
-                _CView.classLabel.text = [NSString stringWithFormat:@"%@-%@",_schoolName,className];
-                [selfWeak showClassInfoTable:NO];
-                [selfWeak getPushInfo];//get push info
+            classId = CId;
+            className = CName.length == 0?@"未命名班级":CName;
 
+            if (CId.length != 0) {//ceshi
+                selfWeak.CView.hidden = NO;
+                selfWeak.CView.classLabel.text = [NSString stringWithFormat:@"%@-%@",selfWeak.schoolName,className];
+                selfWeak.classView.classTitleTextFeild.textColor = MAIN_LIGHT_WHITE_TEXTFEILD;
+                liveType = _classView.noticeAllSchoolBtn.selected?1:0;
+                
+                [selfWeak showClassInfoTable:NO];
+                
+                if (self.userClassInfo.count > 1) {
+                    siglePlaying = NO;
+
+//                    if ([[NSString safeNumber:userInfo[@"classId"]] isEqualToString:classId]) {
+//                        [selfWeak startRtmp];
+//                    } else {
+                        [selfWeak getPushInfo];//get push info
+//                    }
+                    
+                } else {
+                    siglePlaying = YES;
+
+                    if (timer == nil) {
+                        [selfWeak startRtmp];
+                    }
+                    
+                    if (_classView.sendMessageBtn.selected) {
+                        [self groupSendMassage];
+                    }
+                    [self uploadZhiBoState:NO];
+                    [self ShowItemWhileStartPlay];
+                }
             } else {
                 [Progress progressShowcontent:@"此班级不存在" currView:self.view];
             }
-           
         } else {
             [selfWeak showClassInfoTable:NO];
+            if (timer) {
+                [self stopRtmp];
+            }
         }
     };
-    [_classView.classNameTab reloadData];
     [self.view addSubview:_classView];
 }
 
 
 #pragma mark - show classInfo table
-- (void)showClassInfoTable:(BOOL)show {
+- (void)showClassInfoTable:(BOOL)show {//780X470
     
     CGRect frame = _classView.frame;
     if (show) {
-//        CGFloat height = 39 + HEIGHT_6_ZSCALE(36)*5;
-        frame = CGRectMake(0, 0,SCREEN_WIDTH - WIDTH_6_ZSCALE(266) ,SCREEN_HEIGHT - HEIGHT_6_ZSCALE(74));
+        frame = CGRectMake(0, 0,SCREEN_WIDTH ,SCREEN_HEIGHT);
         [_classView.classNameTab reloadData];
         if (playTitle.length == 0) {
             _classView.proTitle = [NSString stringWithFormat:@"%@的直播",[UserData getUser].nickName];
+            _classView.classTitleTextFeild.textColor = MAIN_LIGHT_WHITE_TEXTFEILD;
         } else {
             _classView.proTitle = playTitle;
-
         }
 
     } else {
@@ -677,11 +855,11 @@ static NSString *cellID = @"cellId";
     
     _maskingBtn.hidden = !show;
     _classView.hidden = !show;
+    [self setBackgroundViewAlpal:show];
     
     [UIView animateWithDuration:0.01 animations:^{
         _classView.frame = frame;
         _classView.center = CGPointMake(WIDTH/2, HEIGHT/2);
-
     }];
 }
 
@@ -692,22 +870,21 @@ static NSString *cellID = @"cellId";
 ///--------------------------------------
 
 - (void)reconnectWebSocket {//创建webSocket
-    
     _webSocket.delegate = nil;
     [_webSocket close];
     
 //    _webSocket = [[SRWebSocket alloc] initWithURL:[NSURL URLWithString:@"ws://baihongyu1234567.xicp.io/ssm/websocket"]];
     _webSocket = [[SRWebSocket alloc] initWithURL:[NSURL URLWithString:@"ws://live.sch.supadata.cn/ssm/websocket"]];
     _webSocket.delegate = self;
-    
     [_webSocket open];
 }
 
 - (void)closeWebSocket {//关闭webSocket
-    [self sendMessage:MessageTypeClose messageString:@"WebSocket closed"];
+    if (havedSendPlayState) {
+        [self sendMessage:MessageTypeClose messageString:@"WebSocket closed"];
+    }
     [_webSocket close];
     _webSocket = nil;
-
 }
 
 ///--------------------------------------
@@ -717,8 +894,7 @@ static NSString *cellID = @"cellId";
 - (void)webSocketDidOpen:(SRWebSocket *)webSocket {
     NSLog(@"Websocket Connected");
 //    self.title = @"Connected!";
-    NSLog(@"Websocket Connected");
-    [self sendMessage:MessageTypeOpen messageString:@"Websocket Connected"];
+     [self sendMessage:MessageTypeOpen messageString:@"Websocket Connected"];
 }
 
 - (void)webSocket:(SRWebSocket *)webSocket didFailWithError:(NSError *)error {
@@ -748,16 +924,13 @@ static NSString *cellID = @"cellId";
        
     } else if (type == MessageSocketTypeThumbNumebr) {
         int PNum = [[NSString safeNumber: messageInfos[@"givePraise"]] intValue];
-        self.CView.thumbsUpLabel.text = [NSString stringWithFormat:@"%d 人",PNum];
-
+        self.CView.thumbsUpLabel.text = [NSString stringWithFormat:@"%d 赞",PNum];
     }
-    
 }
 
 - (void)webSocket:(SRWebSocket *)webSocket didCloseWithCode:(NSInteger)code reason:(NSString *)reason wasClean:(BOOL)wasClean {
     NSLog(@"WebSocket closed");
     _webSocket = nil;
-    
 }
 
 - (void)webSocket:(SRWebSocket *)webSocket didReceivePong:(NSData *)pongPayload {//每次发送一次心跳包时，服务器返回的消息
@@ -768,22 +941,7 @@ static NSString *cellID = @"cellId";
 
 #pragma mark - sendMessage
 - (void)sendMessage:(MessageType)type messageString:(NSString *)messageStr {
-    /*
-     "message": {
-     "type": 1,(1建立连接第一次发，2发消息，3关闭连接发)
-     "userType": 1,(1老师，3家长)
-     "classId": 43432,(老师必传)
-     "parentId": 123,(家长必传)
-     "teacherId": 321,
-     "livePeopel": 321,
-     "content": "fsdjkgdaga"
-     "userName": "李家长",
-     "userPic": "http://aservice.139jy.cn/webshare/static/ucenter/user/64066/2100.jpg",
-     "videoId":
-     },
-     
-     
-     */
+   
     if (classId == nil) {
         return;
     }
@@ -800,6 +958,7 @@ static NSString *cellID = @"cellId";
                                                                  @"content":messageStr,
                                                                  @"userName":userNickName,
                                                                  @"userPic":@"",
+                                                                 @"record":recordStr,
                                                                  @"videoId":cameraDataId}} options:NSJSONWritingPrettyPrinted error:&error];
     
     NSString *jsonString = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
@@ -856,7 +1015,6 @@ static NSString *cellID = @"cellId";
         } else {
             [Progress progressShowcontent:@"关闭评论详情" currView:self.view];
         }
- 
     }
 }
 
@@ -869,6 +1027,7 @@ static NSString *cellID = @"cellId";
     if ([device isEqualToString:@"iPad"]) {
 //        [self changeOration];
     }
+    
     CGRect frame = CGRectMake(0,SCREEN_HEIGHT-keyBoardEndX-textMessgeHeight, SCREEN_WIDTH, textMessgeHeight);
     inputView.frame = frame;
     keyBoardHeight = keyBoardEndX;
@@ -877,15 +1036,13 @@ static NSString *cellID = @"cellId";
         [UIView setAnimationBeginsFromCurrentState:YES];
         inputView.frame = frame;
     }];
-
-    // 添加移动动画，使视图跟随键盘移动
 }
+
 - (void)keyboardWillHide:(NSNotification *)notification {
 
     [self removeBackView];
     inputView.hidden = YES;
     inputView.frame = CGRectMake(0, SCREEN_WIDTH, SCREEN_WIDTH, 42);
-
 }
 
 /***************评论输入框***************/
@@ -912,7 +1069,6 @@ static NSString *cellID = @"cellId";
             return ;
         }
         [selfWeak sendMessage:MessageTypeSendMessage messageString:message];
-    
     };
     
     [self.view addSubview:inputView];
@@ -982,15 +1138,21 @@ static NSString *cellID = @"cellId";
 
 - (void)alertViewMessage:(NSString *)messageStr alertType:(AlertViewType)type {
     
-    UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"温馨提示" message:messageStr preferredStyle:UIAlertControllerStyleAlert];
+    UIAlertController *alert = [UIAlertController alertControllerWithTitle:nil message:messageStr preferredStyle:UIAlertControllerStyleAlert];
     
-    // 添加按钮
-    [alert addAction:[UIAlertAction actionWithTitle:@"是" style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
+    //修改标题的内容，字号，颜色。使用的key值是“attributedTitle”
+    NSMutableAttributedString *hogan = [[NSMutableAttributedString alloc] initWithString:messageStr];
+    [hogan addAttribute:NSFontAttributeName value:[UIFont systemFontOfSize:15] range:NSMakeRange(0, [[hogan string] length])];
+//    [hogan addAttribute:NSForegroundColorAttributeName value:MAIN_DACK_BLUE_ALERT range:NSMakeRange(0, [[hogan string] length])];
+    [alert setValue:hogan forKey:@"attributedMessage"];
+    
+    //修改按钮的颜色，同上可以使用同样的方法修改内容，样式
+    UIAlertAction *defaultAction = [UIAlertAction actionWithTitle:@"是" style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
         if (type == AlertViewTypeStopPlay) {
             [self stopRtmp];
         } else if (type == AlertViewTypeSendParents) {
-            [self startRtmp];
-            [self groupSendMassage];
+//            [self startRtmp];
+//            [self groupSendMassage];
         } else {
             [self clearLog];
             AppDelegate * app = [UIApplication sharedApplication].delegate;
@@ -998,43 +1160,55 @@ static NSString *cellID = @"cellId";
             
             [self dismissViewControllerAnimated:YES completion:nil];
         }
-        
-    }]];
+    }];
     
-    [alert addAction:[UIAlertAction actionWithTitle:@"否" style:UIAlertActionStyleCancel handler:^(UIAlertAction *action) {
-        if (type == AlertViewTypeSendParents) {
-            [self startRtmp];
-        }
-        
-    }]];
+    [defaultAction setValue:MAIN_DACK_BLUE_ALERT forKey:@"_titleTextColor"];
     
+    UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:@"否" style:UIAlertActionStyleCancel handler:^(UIAlertAction *action) {
+//        if (type == AlertViewTypeSendParents) {
+//            [self startRtmp];
+//        }
+    }];
+    
+    [cancelAction setValue:MAIN_LIGHT_GRAY_ALERT forKey:@"_titleTextColor"];
+
+    // 添加按钮
+    [alert addAction:defaultAction];
+    [alert addAction:cancelAction];
+
     [self presentViewController:alert animated:YES completion:nil];
 }
 
+#pragma mark - 提示文字
 
-- (void)alertViewShowSelectedCLass {
+- (void) toastTip:(NSString*)toastInfo {
     
-    UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"温馨提示" message:@"请先选择班级再开始直播" preferredStyle:UIAlertControllerStyleAlert];
-//    NSMutableAttributedString *hogan = [[NSMutableAttributedString alloc] initWithString:@"heihei"];
-//    [hogan addAttribute:NSFontAttributeName value:[UIFont systemFontOfSize:50] range:NSMakeRange(0, [[hogan string] length])];
-//    [hogan addAttribute:NSForegroundColorAttributeName value:[UIColor redColor] range:NSMakeRange(0, [[hogan string] length])];
-//    [alert setValue:hogan forKey:@"attributedTitle"];
+    CGRect frameRC = [[UIScreen mainScreen] bounds];
     
-    //修改按钮的颜色，同上可以使用同样的方法修改内容，样式
-    // 添加按钮
-    UIAlertAction *defualt = [UIAlertAction actionWithTitle:@"知道了" style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
-        
-    }];
-    [alert addAction:defualt];
-    UIAlertAction *cacnel = [UIAlertAction actionWithTitle:@"不再提示" style:UIAlertActionStyleCancel handler:^(UIAlertAction *action) {
-        
-    }];
-    [alert addAction:cacnel];
-    [defualt setValue:[UIColor redColor] forKey:@"_titleTextColor"];
+    NSDictionary *attribute = @{NSFontAttributeName: [UIFont systemFontOfSize:15]};
+    CGRect rect = [toastInfo boundingRectWithSize:CGSizeMake(MAXFLOAT, MAXFLOAT)
+                                          options:NSStringDrawingUsesLineFragmentOrigin
+                                       attributes:attribute
+                                          context:nil];
 
-    [cacnel setValue:[UIColor lightGrayColor] forKey:@"_titleTextColor"];
-
-    [self presentViewController:alert animated:YES completion:nil];
+   __block UILabel * toastView = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, rect.size.width+16, 28)];
+    toastView.font = [UIFont systemFontOfSize:15];
+    toastView.textColor = [UIColor whiteColor];
+    toastView.backgroundColor = [UIColor colorWithRed:0 green:0 blue:0 alpha:0.6];
+    toastView.text = toastInfo;
+    toastView.center = CGPointMake(frameRC.size.width/2, frameRC.size.height/2);
+    toastView.layer.cornerRadius = 3.0f;
+    toastView.layer.masksToBounds = YES;
+    toastView.textAlignment = NSTextAlignmentCenter;
+    
+    [self.view addSubview:toastView];
+    
+    dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, 2 * NSEC_PER_SEC);
+    
+    dispatch_after(popTime, dispatch_get_main_queue(), ^(){
+        [toastView removeFromSuperview];
+        toastView = nil;
+    });
 }
 
 
@@ -1145,7 +1319,7 @@ static NSString *cellID = @"cellId";
 
 -(UIInterfaceOrientationMask)supportedInterfaceOrientations {
     _iniIndicator.center = CGPointMake(WIDTH/2, HEIGHT/2);
-    return UIInterfaceOrientationMaskLandscape;
+    return UIInterfaceOrientationMaskLandscapeRight;
 }
 
 
@@ -1158,10 +1332,10 @@ static NSString *cellID = @"cellId";
 
 @interface ClassNameView()<UITableViewDelegate, UITableViewDataSource, UITextFieldDelegate>
 @property (strong, nonatomic) IBOutlet UIView *classInfoView;
-@property (strong, nonatomic) IBOutlet UITextField *classTitleTextFeild;
 @property (strong, nonatomic) IBOutlet UIButton *cancleBtn;
 @property (strong, nonatomic) IBOutlet UIButton *confirmBtn;
 @property (strong, nonatomic) NSIndexPath *selectedIndexPath;
+@property (strong, nonatomic) IBOutlet UIButton *clearBtn;
 
 @end
 static NSString *CellIdOfClass = @"cellIdOfClass";
@@ -1170,30 +1344,42 @@ static NSString *CellIdOfClass = @"cellIdOfClass";
 
 - (void)awakeFromNib {
     [super awakeFromNib];
+    _firstEdite = YES;
     _classTitleTextFeild.delegate = self;
-    [_classTitleTextFeild setValue:[UIColor whiteColor]
+    _selectedIndexPath = [NSIndexPath indexPathForRow:0 inSection:0];
+    [_classTitleTextFeild setValue:MAIN_LIGHT_WHITE_TEXTFEILD
               forKeyPath:@"_placeholderLabel.textColor"];
-    [self customCLassNameTableView];
     
+    [self customCLassNameTableView];
 }
 
 - (BOOL)textFieldShouldReturn:(UITextField *)textField {
     [textField resignFirstResponder];
+    self.clearBtn.hidden = NO;
     return YES;
 }
 
+- (void)textFieldDidBeginEditing:(UITextField *)textField {
+    _clearBtn.hidden = YES;
+    _firstEdite = NO;
+    _classTitleTextFeild.textColor = [UIColor whiteColor];
+}
+
 - (void)setProTitle:(NSString *)proTitle {
-    _classTitleTextFeild.placeholder = proTitle;
+    _classTitleTextFeild.text = proTitle;
+    _classTitleTextFeild.textColor = _firstEdite?MAIN_LIGHT_WHITE_TEXTFEILD:[UIColor whiteColor];
     _title = proTitle;
 }
 
 - (void)customCLassNameTableView {
     // 显示选中框
-    self.classNameTab.backgroundColor = [UIColor clearColor];
+    self.classNameTab.backgroundColor = [UIColor whiteColor];
     self.classNameTab.dataSource = self;
     self.classNameTab.delegate = self;
+    self.classNameTab.layer.cornerRadius = 3;
+    self.classNameTab.layer.masksToBounds = YES;
     [self.classNameTab registerNib:[UINib nibWithNibName:@"ClassNameTableViewCell" bundle:nil] forCellReuseIdentifier:CellIdOfClass];
-    
+    [self hiddenClassNameTableView:YES];
 }
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
@@ -1206,7 +1392,7 @@ static NSString *CellIdOfClass = @"cellIdOfClass";
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
-    return HEIGHT_6_ZSCALE(36);
+    return HEIGHT_6_ZSCALE(48);
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -1220,14 +1406,11 @@ static NSString *CellIdOfClass = @"cellIdOfClass";
     } else {
         cell.classNameLabel.text = classN;
     }
-    
-    if (indexPath.row == 0 && _selectedIndexPath == nil) {
-        cell.classNameLabel.textColor = MaIN_LIGHTBLUE_CLASSNAME;
-        _selectedIndexPath = indexPath;
+    cell.classNameLabel.textColor = MAIN_MIDDLEBLACK_TEXT;
 
-    } else if (indexPath.row == _selectedIndexPath.row) {
+    
+    if (indexPath.row == _selectedIndexPath.row) {
             cell.classNameLabel.textColor = MaIN_LIGHTBLUE_CLASSNAME;
-            _selectedIndexPath = indexPath;
     }
     cell.selectedBackgroundView = [[UIView alloc] initWithFrame:cell.bounds];
     cell.selectedBackgroundView.backgroundColor = [UIColor clearColor];
@@ -1240,19 +1423,38 @@ static NSString *CellIdOfClass = @"cellIdOfClass";
     self.className = [NSString safeString:classInfo[@"className"]];
     self.classId = [NSString safeNumber:classInfo[@"classId"]];
     self.classInfo = [NSDictionary safeDictionary:classInfo];
+    
+    
     ClassNameTableViewCell *SCell = [tableView cellForRowAtIndexPath:_selectedIndexPath];
-    SCell.classNameLabel.textColor = [UIColor whiteColor];
+    SCell.classNameLabel.textColor = MAIN_MIDDLEBLACK_TEXT;
     _selectedIndexPath = indexPath;
     ClassNameTableViewCell *cell = [tableView cellForRowAtIndexPath:indexPath];
     cell.classNameLabel.textColor = MaIN_LIGHTBLUE_CLASSNAME;
+    self.classNameTextfeild.text = self.className;
     
+    [self hiddenClassNameTableView:YES];
 //    if (self.getClassInfo) {
 //        self.getClassInfo(YES,self.classInfo);
 //    }
 //
-
 }
 
+- (void)setUserClassInfo:(NSArray *)userClassInfo {
+
+    if (userClassInfo.count>0) {
+        NSDictionary *classInfo = [NSDictionary safeDictionary:self.userClassInfo[0]];
+        self.className = [NSString safeString:classInfo[@"className"]];
+        self.classId = [NSString safeNumber:classInfo[@"classId"]];
+        self.classInfo = [NSDictionary safeDictionary:classInfo];
+        
+        NSIndexPath *indexPath = [NSIndexPath indexPathForRow:0 inSection:0];
+        ClassNameTableViewCell *cell = [self.classNameTab cellForRowAtIndexPath:indexPath];
+        cell.classNameLabel.textColor = MaIN_LIGHTBLUE_CLASSNAME;
+        self.classNameTextfeild.text = self.className;
+        _userClassInfo = userClassInfo;
+        [self.classNameTab reloadData];
+    }
+}
 
 #pragma mark - selectedCLass
 - (IBAction)cancelBtnAction:(UIButton *)sender {
@@ -1267,8 +1469,66 @@ static NSString *CellIdOfClass = @"cellIdOfClass";
             self.title = self.proTitle;
         }
     }
- 
 }
+
+- (IBAction)sendMeesageAction:(UIButton *)sender {
+    sender.selected = !sender.selected;
+}
+
+- (IBAction)clearBtnAction:(UIButton *)sender {
+    
+    sender.hidden = YES;
+    _classTitleTextFeild.textColor = [UIColor whiteColor];
+    [_classTitleTextFeild becomeFirstResponder];
+    _firstEdite = NO;
+}
+
+- (IBAction)maskBtnAction:(UIButton *)sender {
+    [self hiddenClassNameTableView:YES];
+}
+
+- (IBAction)noticeAllSchool:(UIButton *)sender {
+    sender.selected = !sender.selected;
+    
+}
+- (IBAction)unfoldClassTable:(UIButton *)sender {
+    [self hiddenClassNameTableView:NO];
+}
+
+- (void)hiddenClassNameTableView:(BOOL) hidden {
+    
+    CGSize tableSize = CGSizeMake(0, 0);
+    self.maskVIew.hidden = hidden;
+
+    if (hidden == NO) {
+        NSInteger length = [self getClassNameMaxLength];
+        NSInteger height = HEIGHT_6_ZSCALE(48)*self.userClassInfo.count;
+        NSInteger WSpace = length > (SCREEN_WIDTH - WIDTH_6_ZSCALE(266))?SCREEN_WIDTH - WIDTH_6_ZSCALE(266):length;
+        NSInteger HSpace = height > (SCREEN_HEIGHT - HEIGHT_6_ZSCALE(88))?(SCREEN_HEIGHT - HEIGHT_6_ZSCALE(88)):height;
+        tableSize = CGSizeMake(WSpace+60, HSpace);
+    }
+    
+    [UIView animateWithDuration:0.8f animations:^{
+     
+        self.tabelWidth.constant = tableSize.width;
+        self.tabelHeight.constant = tableSize.height;
+   
+    }];
+
+}
+
+- (NSInteger)getClassNameMaxLength {
+    
+    NSInteger maxLength = 0;
+    for (NSDictionary *classInfo in self.userClassInfo) {
+        NSString *classN = [NSString safeString:classInfo[@"className"]];
+        NSInteger length = [classN boundingRectWithSize:CGSizeMake(1000, MAXFLOAT) options:NSStringDrawingUsesLineFragmentOrigin attributes:@{NSFontAttributeName:[UIFont systemFontOfSize:15]} context:nil].size.width;
+        maxLength = maxLength>length?maxLength:length;
+    }
+    return maxLength;
+}
+
+
 
 //#pragma mark - unfold or fold cell
 //- (void)unFoldCell:(UIGestureRecognizer *)gesture {

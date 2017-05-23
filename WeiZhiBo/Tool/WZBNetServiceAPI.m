@@ -144,6 +144,26 @@
     }];
 }
 
+//测试版本号
+
++ (void)getAPPVersionWithParameters:(id)parameters
+                            success:(void(^)(id reponseObject))success
+                            failure:(void(^)(NSError *error))failure {
+    
+    NSString *urlStr = [NSString stringWithFormat:@"appInfo/getNewestIOSInfo?flag=%@",[parameters allValues].lastObject];
+    NSString *URLString = [NSString stringWithFormat:@"%@%@", HOST_URL,urlStr];
+    
+    [KTMWebService CMGetWithURL:URLString parameters:nil sucess:^(id responseObject) {
+        if (success) {
+            success(responseObject);
+        }
+    } failure:^(NSError *error) {
+        if (failure) {
+            failure(error);
+        }
+    }];
+}
+
 
 
 @end

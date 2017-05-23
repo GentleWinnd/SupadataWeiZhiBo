@@ -4,6 +4,7 @@
         <adaptation id="fullscreen"/>
     </device>
     <dependencies>
+        <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="12086"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -23,7 +24,7 @@
                             <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="backall.png" translatesAutoresizingMaskIntoConstraints="NO" id="ydT-Oj-Gj9">
                                 <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                             </imageView>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="V 1.5.2" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="WmC-Tv-gJQ">
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="V 1.6.6" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="WmC-Tv-gJQ">
                                 <rect key="frame" x="168.5" y="610.5" width="38" height="14.5"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="12"/>
                                 <color key="textColor" red="0.24313725490196078" green="0.33333333333333331" blue="0.38039215686274508" alpha="1" colorSpace="calibratedRGB"/>
@@ -53,15 +54,15 @@
                         </subviews>
                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
-                            <constraint firstItem="xb3-aO-Qok" firstAttribute="top" secondItem="WfI-XQ-hWD" secondAttribute="bottom" constant="15" id="426-bE-dPH"/>
                             <constraint firstItem="WfI-XQ-hWD" firstAttribute="top" secondItem="WmC-Tv-gJQ" secondAttribute="bottom" constant="15" id="5y7-SI-xg7"/>
                             <constraint firstItem="ydT-Oj-Gj9" firstAttribute="top" secondItem="Ze5-6b-2t3" secondAttribute="top" id="AXH-o6-efs"/>
-                            <constraint firstItem="xb3-aO-Qok" firstAttribute="top" secondItem="ydT-Oj-Gj9" secondAttribute="bottom" id="D9p-iW-Ilu"/>
                             <constraint firstItem="nvR-3v-fcS" firstAttribute="top" secondItem="OEz-oj-YPJ" secondAttribute="bottom" constant="18" id="Keu-7y-qDC"/>
                             <constraint firstItem="3Nr-3U-GfN" firstAttribute="top" secondItem="nvR-3v-fcS" secondAttribute="bottom" constant="15" id="MzX-yu-fLe"/>
                             <constraint firstAttribute="trailing" secondItem="ydT-Oj-Gj9" secondAttribute="trailing" id="NIc-Wj-GCK"/>
                             <constraint firstItem="WmC-Tv-gJQ" firstAttribute="centerX" secondItem="Ze5-6b-2t3" secondAttribute="centerX" id="Oka-oR-pAS"/>
                             <constraint firstItem="OEz-oj-YPJ" firstAttribute="centerX" secondItem="Ze5-6b-2t3" secondAttribute="centerX" id="Qzv-Ua-wIh"/>
+                            <constraint firstItem="xb3-aO-Qok" firstAttribute="top" secondItem="WfI-XQ-hWD" secondAttribute="bottom" constant="15" id="UpK-YB-pfg"/>
+                            <constraint firstItem="xb3-aO-Qok" firstAttribute="top" secondItem="ydT-Oj-Gj9" secondAttribute="bottom" id="UwT-UW-ofU"/>
                             <constraint firstItem="WfI-XQ-hWD" firstAttribute="centerX" secondItem="Ze5-6b-2t3" secondAttribute="centerX" id="V1f-q5-PTh"/>
                             <constraint firstItem="OEz-oj-YPJ" firstAttribute="top" secondItem="ydT-Oj-Gj9" secondAttribute="top" constant="120" id="gKU-OT-805"/>
                             <constraint firstItem="nvR-3v-fcS" firstAttribute="centerX" secondItem="Ze5-6b-2t3" secondAttribute="centerX" id="iT3-B8-f34"/>

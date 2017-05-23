@@ -31,6 +31,10 @@
 #define MAIN_BLUE_MESSAGE [@"#02bbff" toColor]
 #define MaIN_LIGHTBLUE_CLASSNAME [@"#2396f3" toColor]
 
+#define MAIN_LIGHT_GRAY_ALERT [@"#a1aeb6" toColor]
+#define MAIN_DACK_BLUE_ALERT [@"#2396f3" toColor]
+
+#define MAIN_LIGHT_WHITE_TEXTFEILD [@"#b6b6b7" toColor]
 
 
 #endif /* ColorHeader_h */

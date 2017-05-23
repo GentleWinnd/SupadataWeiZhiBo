@@ -4,6 +4,7 @@
         <adaptation id="fullscreen"/>
     </device>
     <dependencies>
+        <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="12086"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -17,9 +18,9 @@
                 <rect key="frame" x="0.0" y="0.0" width="523" height="316"/>
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
-                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="暂无数据" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="uNM-Bi-KsV">
-                        <rect key="frame" x="0.0" y="150" width="53.5" height="16"/>
-                        <fontDescription key="fontDescription" type="system" pointSize="13"/>
+                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="暂无数据" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="uNM-Bi-KsV">
+                        <rect key="frame" x="231" y="149" width="61.5" height="18"/>
+                        <fontDescription key="fontDescription" type="system" pointSize="15"/>
                         <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                         <nil key="highlightedColor"/>
                     </label>
@@ -35,7 +36,7 @@
                     <constraint firstAttribute="trailing" secondItem="An7-Oe-sfO" secondAttribute="trailing" id="5aD-ki-7a4"/>
                     <constraint firstAttribute="bottom" secondItem="An7-Oe-sfO" secondAttribute="bottom" id="65R-LP-vCD"/>
                     <constraint firstItem="An7-Oe-sfO" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" id="KOU-WF-INy"/>
-                    <constraint firstItem="uNM-Bi-KsV" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" id="O4M-LM-v9I"/>
+                    <constraint firstItem="uNM-Bi-KsV" firstAttribute="centerX" secondItem="H2p-sc-9uM" secondAttribute="centerX" id="Kjh-e8-Wdt"/>
                     <constraint firstItem="uNM-Bi-KsV" firstAttribute="centerY" secondItem="H2p-sc-9uM" secondAttribute="centerY" id="ypP-UC-kvM"/>
                 </constraints>
             </tableViewCellContentView>
