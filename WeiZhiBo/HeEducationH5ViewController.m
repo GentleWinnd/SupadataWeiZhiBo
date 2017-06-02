@@ -11,13 +11,13 @@
 
 #import "LogInViewController.h"
 #import "ViewController.h"
-#import "ReloadView.h"
 #import "UserData.h"
 #import "User.h"
 #import <WebKit/WebKit.h>
 #import "AppDelegate.h"
 #import "APPDeviceInfoManager.h"
 #import "TRDAnimationIndicator.h"
+#import <CoreMotion/CoreMotion.h>
 
 @interface HeEducationH5ViewController ()<WKNavigationDelegate,WKUIDelegate,WKScriptMessageHandler, UINavigationControllerDelegate, UIScrollViewDelegate, TRDAnimationIndicatorDelegate>
 {
@@ -27,6 +27,8 @@
     NSArray *classesArray;
     NSURLConnection *theConnection;
     TRDAnimationIndicator *loadIndicator;
+    CMMotionManager *motionManager;
+    UIDeviceOrientation _deviceOrientation;
 }
 @property (assign, nonatomic) NSUInteger loadCount;
 
@@ -84,7 +86,6 @@
     [self presentViewController:alert animated:YES completion:nil];
 }
 
-
 #pragma mark - UIWebViewDelegate
 
 - (void)viewDidLoad {
@@ -114,6 +115,8 @@
     
     [self customPlayBtn];
     [self testAPPVersion];
+    
+//    [self initDeviceOrientation];
 
 }
 
@@ -149,47 +152,6 @@
     }
 }
 
-#pragma - mark  进入全屏
--(void)begainFullScreen {
-    AppDelegate *appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
-    appDelegate.shouldChangeOrientation = YES;
-    
-    [[UIDevice currentDevice] setValue:@"UIInterfaceOrientationLandscapeLeft" forKey:@"orientation"];
-    
-//    int count = [UIApplication sharedApplication].windows.count;
-//    NSLog(@"%@", [UIApplication sharedApplication].windows.lastObject.subviews.firstObject);
-//    NSLog(@"key=%@",[UIApplication sharedApplication].windows);
-//    //强制zhuan'p：
-//    if ([[UIDevice currentDevice] respondsToSelector:@selector(setOrientation:)] && count==4) {
-//        SEL selector = NSSelectorFromString(@"setOrientation:");
-//        NSInvocation *invocation = [NSInvocation invocationWithMethodSignature:[UIDevice instanceMethodSignatureForSelector:selector]];
-//        [invocation setSelector:selector];
-//        [invocation setTarget:[UIDevice currentDevice]];
-//        int val = UIInterfaceOrientationLandscapeLeft;
-//        [invocation setArgument:&val atIndex:2];
-//        [invocation invoke];
-//    }
-}
-
-
-#pragma - mark 退出全屏
--(void)endFullScreen {
-    
-    AppDelegate *appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
-    appDelegate.shouldChangeOrientation = NO;
-    
-    //强制归正：
-    if ([[UIDevice currentDevice] respondsToSelector:@selector(setOrientation:)]) {
-        SEL selector = NSSelectorFromString(@"setOrientation:");
-        NSInvocation *invocation = [NSInvocation invocationWithMethodSignature:[UIDevice instanceMethodSignatureForSelector:selector]];
-        [invocation setSelector:selector];
-        [invocation setTarget:[UIDevice currentDevice]];
-        int val =UIInterfaceOrientationPortrait;
-        [invocation setArgument:&val atIndex:2];
-        [invocation invoke];
-    }
-}
-
 
 #pragma mark - 通过APPtoken获取登录验证码
 - (void)getAppTokenByThirdApp {
@@ -222,6 +184,9 @@
     self.openId = [NSString safeString:userInfo[@"uOpenId"]];
     
     self.userClassInfo = [NSArray safeArray:reponseObject[@"data"][@"school"]];
+    if (self.userClassInfo.count == 0) {
+        [Progress progressShowcontent:@"该老师暂未录入班级信息" currView:self.view];
+    }
     self.userId = userInfo[@"uId"];
     
     User *user = [[User alloc] init];
@@ -229,6 +194,7 @@
     user.userPass = [NSString safeString:userInfo[@"uPass"]];
     user.userID = [NSString stringWithFormat:@"%@",self.userId];
     user.nickName = [NSString safeString:userInfo[@"uNickName"]];
+    user.userRole = self.userRole;
     
     [UserData storeUserData:user];
 }
@@ -242,18 +208,16 @@
     config.userContentController = [[WKUserContentController alloc] init];
     //    window.webkit.messageHandlers.Supadata.postMessage({body:'schoolId'})
     config.preferences.minimumFontSize = 0;
-    NSString *jScript = @"var meta = document.createElement('meta'); meta.setAttribute('name', 'viewport'); meta.setAttribute('content', 'width=device-width'); document.getElementsByTagName('head')[0].appendChild(meta);";
+    NSString *jScript = @"var meta = document.createElement('meta'); meta.setAttribute('name', 'viewport'); meta.setAttribute('content', 'width=device-width'); document.getElementsByTagName('head')[0].appendChild(meta);document.cookie = 'fromapp=ios';document.cookie = 'channel=appstore';";
     
-    WKUserScript *wkUScript = [[WKUserScript alloc] initWithSource:jScript injectionTime:WKUserScriptInjectionTimeAtDocumentEnd forMainFrameOnly:YES];
+    WKUserScript *wkUScript = [[WKUserScript alloc] initWithSource:jScript injectionTime:WKUserScriptInjectionTimeAtDocumentStart forMainFrameOnly:NO];
     [config.userContentController addUserScript:wkUScript];
-    
     
     WWebView = [[WKWebView alloc] initWithFrame:CGRectMake(0, 64, SCREEN_WIDTH, SCREEN_HEIGHT-64) configuration:config];
     WWebView.UIDelegate = self;
     WWebView.navigationDelegate = self;
     WWebView.allowsBackForwardNavigationGestures = NO;
     WWebView.scrollView.delegate = self;
-    
     [self.view addSubview:WWebView];
 }
 
@@ -263,28 +227,24 @@
 - (void)startLoadWebView {
     
     NSURL *repURL = [NSURL URLWithString:[NSString stringWithFormat:@"%@resource/html/teacher/?user=%@#/tab/live",HOST_URL,self.userId]];
-    NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:repURL cachePolicy:NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:3];
+    NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:repURL];
     
-    NSMutableString *cookies = [NSMutableString string];
-    // 一般都只需要同步JSESSIONID,可视不同需求自己做更改
-    NSString * JSESSIONID;
-    // 获取本地所有的Cookie
-    NSArray *tmp = [[NSHTTPCookieStorage sharedHTTPCookieStorage] cookies];
-    for (NSHTTPCookie * cookie in tmp) {
-        if ([cookie.name isEqualToString:@"JSESSIONID"]) {
-            JSESSIONID = cookie.value;
-            break;
-        }
+    // 在此处获取返回的cookie
+    NSMutableDictionary *cookieDic = [NSMutableDictionary dictionary];
+    NSMutableString *cookieValue = [NSMutableString stringWithFormat:@""];
+    NSHTTPCookieStorage *cookieJar = [NSHTTPCookieStorage sharedHTTPCookieStorage];
+    
+    for (NSHTTPCookie *cookie in [cookieJar cookies]) {
+        [cookieDic setObject:cookie.value forKey:cookie.name];
     }
-    if (JSESSIONID.length) {
-        // 格式化Cookie
-        [cookies appendFormat:@"JSESSIONID=%@;",JSESSIONID];
+    // cookie重复，先放到字典进行去重，再进行拼接
+    for (NSString *key in cookieDic) {
+        NSString *appendString = [NSString stringWithFormat:@"%@=%@;", key, [cookieDic valueForKey:key]];
+        [cookieValue appendString:appendString];
     }
-    // 注入Cookie
-    [request setValue:cookies forHTTPHeaderField:@"Cookie"];
+    [request addValue:cookieValue forHTTPHeaderField:@"Cookie"];
     
     [WWebView loadRequest: request];
-    
     // 通过JS与webview内容交互
     WKUserContentController *userCC = WWebView.configuration.userContentController;
     // 注入JS对象名称AppModel，当JS通过AppModel来调用时，
@@ -302,7 +262,7 @@
 }
 
 
-- (UIView *)viewForZoomingInScrollView:(UIScrollView *)scrollView {
+- (UIView *)viewForZoomingInScrollView:(UIScrollView *)scrollView {//禁止h5页面缩放
     return nil;
 }
 
@@ -324,7 +284,6 @@
 // 页面加载失败时调用
 - (void)webView:(WKWebView *)webView didFailProvisionalNavigation:(WKNavigation *)navigation{
     [loadIndicator stopAnimationWithLoadText:@"点击重新加载" withType:NO];
-    
     self.loadCount --;
 }
 
@@ -387,7 +346,9 @@
         }
        
     }
-       //live/camera/square/playback/selected
+    
+  
+    //live/camera/square/playback/selected
     //允许跳转
     decisionHandler(WKNavigationActionPolicyAllow);
 }
@@ -400,6 +361,25 @@
     for (NSHTTPCookie *cookie in cookies) {
         [[NSHTTPCookieStorage sharedHTTPCookieStorage] setCookie:cookie];
     }
+    
+//    NSLog(@"\n====================================\n");
+//    //读取wkwebview中的cookie 方法1
+//    for (NSHTTPCookie *cookie in cookies) {
+//        //        [[NSHTTPCookieStorage sharedHTTPCookieStorage] setCookie:cookie];
+//        NSLog(@"wkwebview中的cookie:%@", cookie);
+//    }
+//    NSLog(@"\n====================================\n");
+//    //读取wkwebview中的cookie 方法2 读取Set-Cookie字段
+//    NSString *cookieString = [[response allHeaderFields] valueForKey:@"Set-Cookie"];
+//    NSLog(@"wkwebview中的cookie:%@", cookieString);
+//    NSLog(@"\n====================================\n");
+//    //看看存入到了NSHTTPCookieStorage了没有
+//    NSHTTPCookieStorage *cookieJar2 = [NSHTTPCookieStorage sharedHTTPCookieStorage];
+//    for (NSHTTPCookie *cookie in cookieJar2.cookies) {
+//        NSLog(@"NSHTTPCookieStorage中的cookie%@", cookie);
+//    }
+//    NSLog(@"\n====================================\n");
+
     decisionHandler(WKNavigationResponsePolicyAllow);
 }
 
@@ -447,7 +427,6 @@
 #pragma mark - WKScriptMessageHandler
 - (void)userContentController:(WKUserContentController *)userContentController
       didReceiveScriptMessage:(WKScriptMessage *)message {
-    
     
     if ([message.name isEqualToString:@"Supadata"]) {
         // 打印所传过来的参数，只支持NSNumber, NSString, NSDate, NSArray,
@@ -503,7 +482,6 @@
         //        [self openNextLink];
         NSLog(@"-1005");
 
-        
     }
     else if (error.code == -1009){ //The Internet connection appears to be offline
         //do nothing
@@ -567,6 +545,7 @@
         ViewController *VC = [board instantiateViewControllerWithIdentifier:@"ViewController"];
         VC.userClassInfo = classesArray;
         VC.userId = self.userId;
+        VC.userRole = self.userRole;
         VC.accessToken = self.accessToken;
         VC.openId = self.openId;
         VC.schoolId = CSchoolId;
@@ -683,6 +662,106 @@
     //exit(0);
     
 }
+
+
+#pragma mark - 初始化设备旋转监听管理
+
+- (void)initDeviceOrientation {
+    //----- SETUP DEVICE ORIENTATION CHANGE NOTIFICATION -----1
+    //    UIDevice *device = [UIDevice currentDevice]; //Get the device object
+    //    [device beginGeneratingDeviceOrientationNotifications]; //Tell it to start monitoring the accelerometer for orientation
+    //    NSNotificationCenter *notificatioCenter = [NSNotificationCenter defaultCenter]; //Get the notification centre for the app
+    //    [notificatioCenter addObserver:self selector:@selector(orientationChanged:) name:UIDeviceOrientationDidChangeNotification  object:device];
+    motionManager = [[CMMotionManager alloc] init];
+    if (motionManager.deviceMotionAvailable) {
+        motionManager.deviceMotionUpdateInterval = 1;
+        [motionManager startDeviceMotionUpdatesToQueue:[NSOperationQueue mainQueue]
+                                           withHandler:^(CMDeviceMotion *data, NSError *error) {
+                                               double rotation = atan2(data.gravity.x,data.gravity.y)*180/M_PI;
+                                               if (rotation>135 || rotation<-135) {
+                                                   [self orientationChangedWithDeviceOrientation:UIDeviceOrientationPortrait];
+                                               } else if (rotation>-135 && rotation<-45) {
+                                                   [self orientationChangedWithDeviceOrientation:UIDeviceOrientationLandscapeLeft];
+                                               } else if (rotation>-45 && rotation<45) {
+                                                   [self orientationChangedWithDeviceOrientation:UIDeviceOrientationPortraitUpsideDown];
+                                               } else {
+                                                   [self orientationChangedWithDeviceOrientation:UIDeviceOrientationLandscapeRight];
+                                               }
+                                           }];
+    }
+    
+}
+
+#pragma mark - 更具设备旋转方向设置旋转角度  uiioiu
+- (void)orientationChangedWithDeviceOrientation:(UIDeviceOrientation ) orientation {
+    //UIDeviceOrientation orientation = [[UIDevice currentDevice] orientation];
+    if (orientation == _deviceOrientation) {
+        return;
+    }
+    _deviceOrientation = orientation;
+    switch (orientation) {
+        case UIDeviceOrientationPortrait:            // Device oriented vertically, home button on the bottom
+//            [self endFullScreen];
+            
+            break;
+        case UIDeviceOrientationPortraitUpsideDown:  // Device oriented vertically, home button on the top
+            
+            break;
+        case UIDeviceOrientationLandscapeLeft:      // Device oriented horizontally, home button on the right
+            [[UIApplication sharedApplication] setStatusBarOrientation:UIInterfaceOrientationLandscapeRight animated:YES];
+//            [self begainFullScreen];
+            break;
+        case UIDeviceOrientationLandscapeRight:      // Device oriented horizontally, home button on the left
+            [[UIApplication sharedApplication] setStatusBarOrientation:UIInterfaceOrientationLandscapeLeft animated:YES];
+//            [self begainFullScreen];
+
+            break;
+        default:
+            break;
+    }
+}
+
+#pragma - mark  进入全屏
+-(void)begainFullScreen {
+    AppDelegate *appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
+    appDelegate.shouldChangeOrientation = YES;
+    
+    [[UIDevice currentDevice] setValue:@"UIInterfaceOrientationLandscapeLeft" forKey:@"orientation"];
+    
+    int count = [UIApplication sharedApplication].windows.count;
+    NSLog(@"%@", [UIApplication sharedApplication].windows.lastObject.subviews.firstObject);
+    NSLog(@"key=%@",[UIApplication sharedApplication].windows);
+    //强制zhuan'p：
+    if ([[UIDevice currentDevice] respondsToSelector:@selector(setOrientation:)] && count==4) {
+        SEL selector = NSSelectorFromString(@"setOrientation:");
+        NSInvocation *invocation = [NSInvocation invocationWithMethodSignature:[UIDevice instanceMethodSignatureForSelector:selector]];
+        [invocation setSelector:selector];
+        [invocation setTarget:[UIDevice currentDevice]];
+        int val = UIInterfaceOrientationLandscapeLeft;
+        [invocation setArgument:&val atIndex:2];
+        [invocation invoke];
+    }
+}
+
+
+#pragma - mark 退出全屏
+-(void)endFullScreen {
+    
+    AppDelegate *appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
+    appDelegate.shouldChangeOrientation = NO;
+    
+    //强制归正：
+    if ([[UIDevice currentDevice] respondsToSelector:@selector(setOrientation:)]) {
+        SEL selector = NSSelectorFromString(@"setOrientation:");
+        NSInvocation *invocation = [NSInvocation invocationWithMethodSignature:[UIDevice instanceMethodSignatureForSelector:selector]];
+        [invocation setSelector:selector];
+        [invocation setTarget:[UIDevice currentDevice]];
+        int val =UIInterfaceOrientationPortrait;
+        [invocation setArgument:&val atIndex:2];
+        [invocation invoke];
+    }
+}
+
 
 - (void)viewWillAppear:(BOOL)animated {
     self.navigationController.navigationBarHidden = NO;

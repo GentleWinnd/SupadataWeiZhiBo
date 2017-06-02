@@ -103,6 +103,7 @@ static NSString *cellID = @"cellId";
     BOOL uploadFinished;
     BOOL havedSendPlayState;
     NSInteger liveType;
+    NSInteger requestCount;
     
 }
 
@@ -144,6 +145,7 @@ static NSString *cellID = @"cellId";
     textMessgeHeight = 42;
     noDataCount = 0;
     liveType = 1;
+    requestCount = 1;
     messageArr = [NSMutableArray arrayWithCapacity:0];
     siglePlaying = NO;
     uploadFinished = NO;
@@ -159,6 +161,8 @@ static NSString *cellID = @"cellId";
     self.iniIndicator.hidden = YES;
     self.sendCommentBtn.transform = CGAffineTransformMakeRotation(M_PI_2);
     self.playCommentBtn.transform = CGAffineTransformMakeRotation( M_PI_2);
+    self.playBtn.transform = CGAffineTransformMakeRotation(M_PI_2);
+    self.traformCameraBtn.transform = CGAffineTransformMakeRotation( M_PI_2);
 //    _beautySlider.transform = CGAffineTransformMakeRotation(M_PI_2);
 
     self.backViewWidth.constant = HEIGHT;
@@ -174,7 +178,6 @@ static NSString *cellID = @"cellId";
     
     [self.tapGesture requireGestureRecognizerToFail:self.doubleTapGesture];
     [_beautySlider setThumbImage:[UIImage imageNamed:@"heart"] forState:UIControlStateNormal];
-    [self orientationChangedWithDeviceOrientation:UIDeviceOrientationLandscapeLeft];
 
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(changeContentViewPoint:) name:UIKeyboardDidChangeFrameNotification object:nil];
     //监听当键将要退出时
@@ -338,7 +341,7 @@ static NSString *cellID = @"cellId";
                 if (_classView.sendMessageBtn.selected ) {
                     [self groupSendMassage];
                 }
-                [self performSelector:@selector(sendPlayState) withObject:nil afterDelay:10.0];
+                [self performSelector:@selector(sendPlayState) withObject:nil afterDelay:3.0];
             }
 
             break;}
@@ -411,7 +414,7 @@ static NSString *cellID = @"cellId";
             * 收到此错误后，建议提示用户当前网络不稳定，
             * 如果反复收到此错误码，建议调用endRtmpSession停止推流
             */
-            NSLog(@"****************%@^^^^^^^^^^^^^^^^^",@"当前网络不稳定，");
+            NSLog(@"****************%@^^^^^^^^^^^^^^^^^",@"当前网络不稳定001，");
             
             break;
         }
@@ -425,7 +428,7 @@ static NSString *cellID = @"cellId";
             }
 
             [self stopRtmp];
-            NSLog(@"****************%@^^^^^^^^^^^^^^^^^",@"当前网络不稳定，");
+            NSLog(@"****************%@^^^^^^^^^^^^^^^^^",@"当前网络不稳定001，");
 
             break;
         }
@@ -434,7 +437,7 @@ static NSString *cellID = @"cellId";
              * 推流过程中，遇到设备断网导致推流失败，
              * 收到此错误后，建议提示用户检查网络连接，然后调用endRtmpSession立即停止推流
              */
-            NSLog(@"****************%@^^^^^^^^^^^^^^^^^",@"当前网络不稳定");
+            NSLog(@"****************%@^^^^^^^^^^^^^^^^^",@"当前网络不稳定003");
             if (timer) {
                 [self toastTip:@"网络无法连接，直播断开，请稍后重试！"];
             }
@@ -457,8 +460,7 @@ static NSString *cellID = @"cellId";
         [Progress progressShowcontent:@"发生意外错误了" currView:self.view];
         return NO;
     }
-
-
+//    _pushUrl = @"rtmp://push.bcelive.com/live/tx3oxm9lgdccnmpo9j";
     NSString *rtmpUrl = _pushUrl;
     //是否有摄像头权限
     AVAuthorizationStatus statusVideo = [AVCaptureDevice authorizationStatusForMediaType:AVMediaTypeVideo];
@@ -569,10 +571,10 @@ static NSString *cellID = @"cellId";
     if (seconds/20&&seconds%20==0) {
         noDataCount = 0;
     }
-    if (noDataCount>10) {
-        [self stopRtmp];
-        [self toastTip:@"创建班级直播失败，请稍后重试！"];
-    }
+//    if (noDataCount>10) {
+//        [self stopRtmp];
+//        [self toastTip:@"创建班级直播失败，请稍后重试！"];
+//    }
 }
 
 - (void)stopTimer {
@@ -712,10 +714,9 @@ static NSString *cellID = @"cellId";
     NSDictionary *parameter = @{@"access_token":self.accessToken,
                                 @"open_id":self.openId,
                                 @"flag":@"2",
-                                @"classId":classId,
+                                @"classId":[self getSendMessageClassId],
                                 @"className":_schoolName,
                                 @"schoolId":_schoolId};
-    
     
     [WZBNetServiceAPI getGroupSendMassageWithParameters:parameter success:^(id reponseObject) {
         if ([reponseObject[@"status"] intValue] == 1) {
@@ -727,6 +728,24 @@ static NSString *cellID = @"cellId";
 
         [KTMErrorHint showNetError:error inView:self.view];
     }];
+}
+
+- (NSString *)getSendMessageClassId {
+    NSString *sendClassId = classId;
+    if (self.userRole == UserRoleKindergartenLeader && liveType == 2) {
+        sendClassId = @"";
+        NSInteger index = 0;
+        for (NSDictionary *classInfo in self.userClassInfo) {
+            if (index == 0) {
+                sendClassId = classInfo[@"classId"];
+            } else {
+                sendClassId = [NSString stringWithFormat:@"%@,%@",sendClassId,classInfo[@"classId"]];
+
+            }
+            index++;
+        }
+    }
+    return sendClassId;
 }
 
 #pragma mark- 上传直播状态
@@ -746,10 +765,11 @@ static NSString *cellID = @"cellId";
                                 @"classId":classId,
                                 @"userName":[UserData getUser].nickName,
                                 @"schoolId":self.schoolId,
-                                @"liveType":[NSNumber numberWithInteger:liveType],//liveType 1：全校可见，0：班级可见
+                                @"liveType":[NSNumber numberWithInteger:liveType],//liveType 2：全校可见，1：班级可见
                                 @"sumTime":stop?[NSNumber numberWithInt:seconds]:@"",
                                 @"userId":self.userId,
-                                @"liveTitle":[NSString stringWithFormat:@"%@",playTitle]};
+                                @"liveTitle":[NSString stringWithFormat:@"%@",playTitle],
+                                @"count":[NSNumber numberWithInteger:requestCount]};
     [WZBNetServiceAPI postZhiBoStateMessageWithParameters:parameter success:^(id reponseObject) {
         if ([reponseObject[@"status"] intValue] == 1) {
             uploadFinished = [[NSString safeNumber:reponseObject[@"data"][@"status"]] intValue] == 1?YES:NO;
@@ -763,7 +783,14 @@ static NSString *cellID = @"cellId";
             }
             NSLog(@"send zhibo state success!!!!!");
         } else {
+            uploadFinished = NO;
             NSLog(@"send zhibo state failed!!!!!");
+        }
+        
+        if (stop) {
+            requestCount = 1;
+        } else {
+            requestCount++;
         }
     } failure:^(NSError *error) {
         NSLog(@"send zhibo state failed!!!!!");
@@ -779,8 +806,9 @@ static NSString *cellID = @"cellId";
     _classView.hidden = YES;
     _classView.classInfo = [NSDictionary safeDictionary:[self.userClassInfo firstObject]];
     _classView.userClassInfo = self.userClassInfo;
-    @WeakObj(self)
+    _classView.userRole = self.userRole;
     
+    @WeakObj(self)
     _classView.getClassInfo = ^(BOOL success, NSDictionary *userInfo){
         
         if (success) {
@@ -795,7 +823,7 @@ static NSString *cellID = @"cellId";
                 selfWeak.CView.hidden = NO;
                 selfWeak.CView.classLabel.text = [NSString stringWithFormat:@"%@-%@",selfWeak.schoolName,className];
                 selfWeak.classView.classTitleTextFeild.textColor = MAIN_LIGHT_WHITE_TEXTFEILD;
-                liveType = _classView.noticeAllSchoolBtn.selected?1:0;
+                liveType = _classView.noticeAllSchoolBtn.selected?2:1;
                 
                 [selfWeak showClassInfoTable:NO];
                 
@@ -836,12 +864,10 @@ static NSString *cellID = @"cellId";
 
 
 #pragma mark - show classInfo table
-- (void)showClassInfoTable:(BOOL)show {//780X470
-    
+- (void)showClassInfoTable:(BOOL)show {
     CGRect frame = _classView.frame;
     if (show) {
         frame = CGRectMake(0, 0,SCREEN_WIDTH ,SCREEN_HEIGHT);
-        [_classView.classNameTab reloadData];
         if (playTitle.length == 0) {
             _classView.proTitle = [NSString stringWithFormat:@"%@的直播",[UserData getUser].nickName];
             _classView.classTitleTextFeild.textColor = MAIN_LIGHT_WHITE_TEXTFEILD;
@@ -873,8 +899,11 @@ static NSString *cellID = @"cellId";
     _webSocket.delegate = nil;
     [_webSocket close];
     
-//    _webSocket = [[SRWebSocket alloc] initWithURL:[NSURL URLWithString:@"ws://baihongyu1234567.xicp.io/ssm/websocket"]];
-    _webSocket = [[SRWebSocket alloc] initWithURL:[NSURL URLWithString:@"ws://live.sch.supadata.cn/ssm/websocket"]];
+//    _webSocket = [[SRWebSocket alloc] initWithURL:[NSURL URLWithString:@"ws://live.sch.supadata.cn/ssm/websocket"]];
+    NSArray *urlContensArr = [HOST_URL componentsSeparatedByString:@"http"];
+    NSString *socketStr = [NSString stringWithFormat:@"ws%@websocket",urlContensArr.lastObject];
+    _webSocket = [[SRWebSocket alloc] initWithURL:[NSURL URLWithString:socketStr]];
+
     _webSocket.delegate = self;
     [_webSocket open];
 }
@@ -1201,103 +1230,16 @@ static NSString *cellID = @"cellId";
     toastView.layer.masksToBounds = YES;
     toastView.textAlignment = NSTextAlignmentCenter;
     
-    [self.view addSubview:toastView];
+//    [self.view addSubview:toastView];
     
-    dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, 2 * NSEC_PER_SEC);
-    
-    dispatch_after(popTime, dispatch_get_main_queue(), ^(){
-        [toastView removeFromSuperview];
-        toastView = nil;
-    });
+//    dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, 2 * NSEC_PER_SEC);
+//    
+//    dispatch_after(popTime, dispatch_get_main_queue(), ^(){
+//        [toastView removeFromSuperview];
+//        toastView = nil;
+//    });
 }
 
-
-#pragma mark -
-
-/**********************rotation btn********************/
-
-//#pragma mark -  当手机旋转时将按钮旋转
-
--(void)rotation_icon:(float)n {
-    [UIView animateWithDuration:0.55 animations:^{
-        
-        //        self.classView.transform = CGAffineTransformMakeRotation(-n*M_PI/180.0);
-        
-        self.torchButton.transform = CGAffineTransformMakeRotation(-n*M_PI/180.0);
-        self.playBtn.transform = CGAffineTransformMakeRotation(-n*M_PI/180.0);
-        self.classBtn.transform = CGAffineTransformMakeRotation(-n*M_PI/180.0);
-        self.traformCameraBtn.transform = CGAffineTransformMakeRotation(-n*M_PI/180.0);
-        self.beautyBtn.transform = CGAffineTransformMakeRotation(-n*M_PI/180.0);
-        
-        //        CGRect frame = _classView.frame;
-        //        if (_deviceOrientation == UIDeviceOrientationPortrait) {
-        //            frame = CGRectMake(8, WIDTH - 55 -208, 120, 200);
-        //        } else {
-        //            frame = CGRectMake(8, WIDTH - 55 -128, 200, 120);
-        //
-        //        }
-        //        _classView.frame = frame;
-        
-        
-    }];
-}
-
-#pragma mark - 初始化设备旋转监听管理
-
-- (void)initDeviceOrientation {
-    //----- SETUP DEVICE ORIENTATION CHANGE NOTIFICATION -----1
-    //    UIDevice *device = [UIDevice currentDevice]; //Get the device object
-    //    [device beginGeneratingDeviceOrientationNotifications]; //Tell it to start monitoring the accelerometer for orientation
-    //    NSNotificationCenter *notificatioCenter = [NSNotificationCenter defaultCenter]; //Get the notification centre for the app
-    //    [notificatioCenter addObserver:self selector:@selector(orientationChanged:) name:UIDeviceOrientationDidChangeNotification  object:device];
-    motionManager = [[CMMotionManager alloc] init];
-    if (motionManager.deviceMotionAvailable) {
-        motionManager.deviceMotionUpdateInterval = 1;
-        [motionManager startDeviceMotionUpdatesToQueue:[NSOperationQueue mainQueue]
-                                           withHandler:^(CMDeviceMotion *data, NSError *error) {
-                                               double rotation = atan2(data.gravity.x,data.gravity.y)*180/M_PI;
-                                               if (rotation>135 || rotation<-135) {
-                                                   [self orientationChangedWithDeviceOrientation:UIDeviceOrientationPortrait];
-                                               } else if (rotation>-135 && rotation<-45) {
-                                                   [self orientationChangedWithDeviceOrientation:UIDeviceOrientationLandscapeLeft];
-                                               } else if (rotation>-45 && rotation<45) {
-                                                   [self orientationChangedWithDeviceOrientation:UIDeviceOrientationPortraitUpsideDown];
-                                               } else {
-                                                   [self orientationChangedWithDeviceOrientation:UIDeviceOrientationLandscapeRight];
-                                               }
-                                           }];
-    }
-    
-}
-
-#pragma mark - 更具设备旋转方向设置旋转角度
-- (void)orientationChangedWithDeviceOrientation:(UIDeviceOrientation ) orientation {
-    //UIDeviceOrientation orientation = [[UIDevice currentDevice] orientation];
-    if (orientation == _deviceOrientation) {
-        return;
-    }
-    _deviceOrientation = orientation;
-    switch (orientation) {
-        case UIDeviceOrientationPortrait:            // Device oriented vertically, home button on the bottom
-            [self  rotation_icon:0.0];
-            break;
-        case UIDeviceOrientationPortraitUpsideDown:  // Device oriented vertically, home button on the top
-            [self  rotation_icon:180.0];
-            break;
-        case UIDeviceOrientationLandscapeLeft:      // Device oriented horizontally, home button on the right
-            [[UIApplication sharedApplication] setStatusBarOrientation:UIInterfaceOrientationLandscapeRight animated:YES];
-            
-            [self  rotation_icon:90.0*3];
-            break;
-        case UIDeviceOrientationLandscapeRight:      // Device oriented horizontally, home button on the left
-            [[UIApplication sharedApplication] setStatusBarOrientation:UIInterfaceOrientationLandscapeLeft animated:YES];
-            
-            [self  rotation_icon:90.0];
-            break;
-        default:
-            break;
-    }
-}
 
 - (BOOL)prefersStatusBarHidden {
     return YES;
@@ -1353,6 +1295,17 @@ static NSString *CellIdOfClass = @"cellIdOfClass";
     [self customCLassNameTableView];
 }
 
+- (void)setUserRole:(UserRole)userRole {
+   
+    if (userRole == UserRoleKindergartenLeader) {
+        
+    } else {
+        self.noticeAllSchoolBtn.hidden = YES;
+        self.noticeAllSchoolLabel.hidden = YES;
+        self.sendMessageLeadingSpace.constant = 0;
+    }
+}
+
 - (BOOL)textFieldShouldReturn:(UITextField *)textField {
     [textField resignFirstResponder];
     self.clearBtn.hidden = NO;
@@ -1379,6 +1332,7 @@ static NSString *CellIdOfClass = @"cellIdOfClass";
     self.classNameTab.layer.cornerRadius = 3;
     self.classNameTab.layer.masksToBounds = YES;
     [self.classNameTab registerNib:[UINib nibWithNibName:@"ClassNameTableViewCell" bundle:nil] forCellReuseIdentifier:CellIdOfClass];
+    [self.classNameTab flashScrollIndicators];
     [self hiddenClassNameTableView:YES];
 }
 
@@ -1388,7 +1342,7 @@ static NSString *CellIdOfClass = @"cellIdOfClass";
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
     
-    return self.userClassInfo.count;
+    return self.userClassInfo.count == 1?0:self.userClassInfo.count;
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -1440,20 +1394,33 @@ static NSString *CellIdOfClass = @"cellIdOfClass";
 }
 
 - (void)setUserClassInfo:(NSArray *)userClassInfo {
+    _userClassInfo = userClassInfo;
 
     if (userClassInfo.count>0) {
         NSDictionary *classInfo = [NSDictionary safeDictionary:self.userClassInfo[0]];
         self.className = [NSString safeString:classInfo[@"className"]];
         self.classId = [NSString safeNumber:classInfo[@"classId"]];
         self.classInfo = [NSDictionary safeDictionary:classInfo];
-        
-        NSIndexPath *indexPath = [NSIndexPath indexPathForRow:0 inSection:0];
-        ClassNameTableViewCell *cell = [self.classNameTab cellForRowAtIndexPath:indexPath];
-        cell.classNameLabel.textColor = MaIN_LIGHTBLUE_CLASSNAME;
         self.classNameTextfeild.text = self.className;
-        _userClassInfo = userClassInfo;
-        [self.classNameTab reloadData];
+        
+        if (userClassInfo.count != 1) {
+            
+            NSIndexPath *indexPath = [NSIndexPath indexPathForRow:0 inSection:0];
+            ClassNameTableViewCell *cell = [self.classNameTab cellForRowAtIndexPath:indexPath];
+            cell.classNameLabel.textColor = MaIN_LIGHTBLUE_CLASSNAME;
+            self.classNameTextfeild.text = self.className;
+            [self.classNameTab reloadData];
+            self.singleClassLabel.hidden = YES;
+        } else {
+            self.singleClassLabel.hidden = NO;
+            [self.singleClassLabel setTitle:self.className forState:UIControlStateNormal];
+            [self.singleClassLabel setTitleColor:MaIN_LIGHTBLUE_CLASSNAME forState:UIControlStateNormal];
+        }
+       
+    } else {
+        self.singleClassLabel.hidden = YES;
     }
+
 }
 
 #pragma mark - selectedCLass
@@ -1470,6 +1437,11 @@ static NSString *CellIdOfClass = @"cellIdOfClass";
         }
     }
 }
+
+- (IBAction)singleClassLabelAction:(UIButton *)sender {
+    [self hiddenClassNameTableView:YES];
+}
+
 
 - (IBAction)sendMeesageAction:(UIButton *)sender {
     sender.selected = !sender.selected;
@@ -1499,20 +1471,21 @@ static NSString *CellIdOfClass = @"cellIdOfClass";
     
     CGSize tableSize = CGSizeMake(0, 0);
     self.maskVIew.hidden = hidden;
-
+    if (self.userClassInfo.count == 1) {
+        self.singleClassLabel.hidden = hidden;
+    }
     if (hidden == NO) {
-        NSInteger length = [self getClassNameMaxLength];
-        NSInteger height = HEIGHT_6_ZSCALE(48)*self.userClassInfo.count;
-        NSInteger WSpace = length > (SCREEN_WIDTH - WIDTH_6_ZSCALE(266))?SCREEN_WIDTH - WIDTH_6_ZSCALE(266):length;
-        NSInteger HSpace = height > (SCREEN_HEIGHT - HEIGHT_6_ZSCALE(88))?(SCREEN_HEIGHT - HEIGHT_6_ZSCALE(88)):height;
-        tableSize = CGSizeMake(WSpace+60, HSpace);
+//        NSInteger length = [self getClassNameMaxLength];
+//        NSInteger height = HEIGHT_6_ZSCALE(48)*self.userClassInfo.count;
+//        NSInteger WSpace = length > (SCREEN_WIDTH - WIDTH_6_ZSCALE(266))?SCREEN_WIDTH - WIDTH_6_ZSCALE(266):length;
+//        NSInteger HSpace = height > (SCREEN_HEIGHT - HEIGHT_6_ZSCALE(88))?(SCREEN_HEIGHT - HEIGHT_6_ZSCALE(88)):height;
+//        tableSize = CGSizeMake(WSpace+60, HSpace);
+         tableSize = CGSizeMake(WIDTH_6_ZSCALE(390), HEIGHT_6_ZSCALE(230));
     }
     
     [UIView animateWithDuration:0.8f animations:^{
-     
         self.tabelWidth.constant = tableSize.width;
         self.tabelHeight.constant = tableSize.height;
-   
     }];
 
 }

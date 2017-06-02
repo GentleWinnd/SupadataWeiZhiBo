@@ -14,10 +14,15 @@
 
  - UserRoleTeacher: 教师
  - UserRoleStudent: 学生
+ 用户角色1:教师 2：学生 3：家长 4.年级组组长 5 校长 10其他高权限教师
  */
 typedef NS_ENUM(NSInteger, UserRole) {
-    UserRoleTeacher,
-    UserRoleStudent
+    UserRoleTeacher =1,
+    UserRoleStudent = 2,
+    UserRoleParents = 3,
+    UserRoleGradeLeader =4,
+    UserRoleKindergartenLeader =5,
+    UserRoleAdministrator =10
 };
 
 /**

@@ -154,16 +154,19 @@
 - (BOOL)application:(UIApplication *)application openURL:(NSURL *)url sourceApplication:(NSString *)sourceApplication annotation:(id)annotation {
     NSString *urlStr = [url absoluteString];
     /*
-     URL Schemes?appToken=
+     URL Schemes?appToken=&userType=
      */
     if ([urlStr hasPrefix:@"jsLinkageHebaobei002://"] || [urlStr hasPrefix:@"JSHeEducationAppOpenThirdAppReservedMethod3://"]) {
 
         NSArray *paramArray = [urlStr componentsSeparatedByString:@"appToken="];
 //        NSLog(@"=====%@",paramArray);
-        _apptoken = [NSString safeString:paramArray.lastObject];
+        NSString *cateStr = [NSString safeString:paramArray.lastObject];
+        NSArray *contentsArr = [cateStr componentsSeparatedByString:@"&userType="];
+        _apptoken = contentsArr.firstObject;
         
         HeEducationH5ViewController *h5View = [[HeEducationH5ViewController alloc] init];
         h5View.appToken = _apptoken;
+        h5View.userRole = [[NSString safeString:contentsArr.lastObject] integerValue] == 0 ?1:[[NSString safeString:contentsArr.lastObject] integerValue];
 //        UINavigationController *navVC = [[UINavigationController alloc] initWithRootViewController:h5View];
 //    navVC.navigationBarHidden = YES;
 //        navVC.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;

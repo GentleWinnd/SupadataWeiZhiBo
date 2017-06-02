@@ -197,6 +197,7 @@
         heView.userId = responseObject[@"data"][@"user"][@"uId"];
         heView.accessToken = self.accessToken;
         heView.openId = self.openId;
+        heView.userRole = UserRoleTeacher;
         
        [self restoreRootViewController:heView];
 
@@ -210,6 +211,7 @@
         ViewController *VC = [board instantiateViewControllerWithIdentifier:@"ViewController"];
         VC.userClassInfo = [NSArray safeArray:schoolInfo[@"classes"]];
         VC.userId = responseObject[@"data"][@"user"][@"uId"];
+        VC.userRole = UserRoleTeacher;
         VC.accessToken = self.accessToken;
         VC.openId = self.openId;
         VC.schoolId = schoolInfo[@"schoolId"];

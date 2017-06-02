@@ -12,6 +12,7 @@
 
 @property (nonatomic, strong) NSArray *userClassInfo;
 @property (nonatomic, strong) NSString *userId;
+@property (nonatomic, assign) UserRole userRole;
 
 @property (nonatomic, strong) NSString *accessToken;
 @property (nonatomic, strong) NSString *openId;

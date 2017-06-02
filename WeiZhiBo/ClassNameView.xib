@@ -95,13 +95,13 @@
                     </connections>
                 </button>
                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="      短信通知家长" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="4gi-Pi-N2n">
-                    <rect key="frame" x="262" y="367" width="116" height="22"/>
+                    <rect key="frame" x="256" y="367" width="116" height="22"/>
                     <fontDescription key="fontDescription" type="system" pointSize="15"/>
                     <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                     <nil key="highlightedColor"/>
                 </label>
                 <button opaque="NO" contentMode="scaleToFill" selected="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ufy-Vb-Tin">
-                    <rect key="frame" x="262" y="367" width="116" height="22"/>
+                    <rect key="frame" x="256" y="367" width="116" height="22"/>
                     <state key="normal" image="buxuan.png"/>
                     <state key="selected" image="xuan.png"/>
                     <connections>
@@ -130,28 +130,39 @@
                     </connections>
                 </button>
                 <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" style="plain" separatorStyle="none" rowHeight="44" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="U9D-te-VKl">
-                    <rect key="frame" x="104" y="259" width="120" height="88"/>
+                    <rect key="frame" x="127.5" y="289.5" width="120" height="88"/>
                     <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                     <constraints>
                         <constraint firstAttribute="width" constant="120" id="LEO-1A-Cg7"/>
                         <constraint firstAttribute="height" constant="88" id="wO6-Gc-sSB"/>
                     </constraints>
                 </tableView>
+                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="WIh-Ya-RlJ">
+                    <rect key="frame" x="127" y="318" width="120" height="30"/>
+                    <state key="normal" title="暂无数据">
+                        <color key="titleColor" red="0.20000000000000001" green="0.20000000000000001" blue="0.20000000000000001" alpha="1" colorSpace="calibratedRGB"/>
+                    </state>
+                    <connections>
+                        <action selector="singleClassLabelAction:" destination="iN0-l3-epB" eventType="touchUpInside" id="x9O-bV-rrb"/>
+                    </connections>
+                </button>
             </subviews>
             <constraints>
+                <constraint firstItem="WIh-Ya-RlJ" firstAttribute="leading" secondItem="U9D-te-VKl" secondAttribute="leading" id="2fU-nq-Llc"/>
                 <constraint firstItem="4Iy-C7-gj8" firstAttribute="width" secondItem="NGV-6H-U73" secondAttribute="width" id="4Qh-V7-tgb"/>
                 <constraint firstItem="Dc7-C2-BZC" firstAttribute="trailing" secondItem="JoM-W9-gtP" secondAttribute="trailing" id="4r7-hs-uAN"/>
                 <constraint firstItem="JoM-W9-gtP" firstAttribute="leading" secondItem="Dc7-C2-BZC" secondAttribute="leading" constant="3" id="6aC-KQ-tuX"/>
                 <constraint firstItem="NGV-6H-U73" firstAttribute="centerY" secondItem="JoM-W9-gtP" secondAttribute="centerY" id="9Rs-n9-PgZ"/>
-                <constraint firstItem="4Iy-C7-gj8" firstAttribute="leading" secondItem="U9D-te-VKl" secondAttribute="trailing" constant="3" id="9rX-GH-yyS"/>
+                <constraint firstItem="U9D-te-VKl" firstAttribute="centerY" secondItem="iN0-l3-epB" secondAttribute="centerY" id="9re-ZW-rfb"/>
                 <constraint firstAttribute="bottom" secondItem="zdO-pF-zvR" secondAttribute="bottom" id="DjU-D7-xQf"/>
                 <constraint firstItem="JoM-W9-gtP" firstAttribute="leading" secondItem="d7U-HI-mv2" secondAttribute="trailing" constant="6" id="HAr-Ib-gzu"/>
-                <constraint firstItem="4Iy-C7-gj8" firstAttribute="centerY" secondItem="U9D-te-VKl" secondAttribute="centerY" id="Hxv-f7-EYV"/>
-                <constraint firstItem="ufy-Vb-Tin" firstAttribute="leading" secondItem="DWR-gy-Ebv" secondAttribute="trailing" constant="36" id="LRR-qW-GSx"/>
+                <constraint firstItem="WIh-Ya-RlJ" firstAttribute="trailing" secondItem="U9D-te-VKl" secondAttribute="trailing" id="IgP-ur-wuT"/>
                 <constraint firstItem="oOx-Xi-lFr" firstAttribute="leading" secondItem="JoM-W9-gtP" secondAttribute="leading" id="MTR-RG-csq"/>
                 <constraint firstAttribute="trailing" secondItem="zdO-pF-zvR" secondAttribute="trailing" id="NUZ-PO-EN4"/>
+                <constraint firstItem="WIh-Ya-RlJ" firstAttribute="centerX" secondItem="iN0-l3-epB" secondAttribute="centerX" id="NXC-3j-tyT"/>
                 <constraint firstItem="DWR-gy-Ebv" firstAttribute="leading" secondItem="TI5-cT-JEZ" secondAttribute="leading" id="No6-aw-Pzn"/>
                 <constraint firstItem="TI5-cT-JEZ" firstAttribute="top" secondItem="Dc7-C2-BZC" secondAttribute="bottom" constant="13" id="NuN-5K-BeK"/>
+                <constraint firstItem="WIh-Ya-RlJ" firstAttribute="centerY" secondItem="iN0-l3-epB" secondAttribute="centerY" id="OFf-Tr-bYU"/>
                 <constraint firstItem="bgI-ws-SJN" firstAttribute="trailing" secondItem="Dc7-C2-BZC" secondAttribute="trailing" id="Oqk-cA-eez"/>
                 <constraint firstItem="1Dz-K6-MZh" firstAttribute="top" secondItem="DWR-gy-Ebv" secondAttribute="top" id="R6f-qs-i33"/>
                 <constraint firstAttribute="trailing" secondItem="JoM-W9-gtP" secondAttribute="trailing" constant="110" id="Syq-gg-5Wk"/>
@@ -176,6 +187,7 @@
                 <constraint firstItem="4Iy-C7-gj8" firstAttribute="leading" secondItem="oOx-Xi-lFr" secondAttribute="trailing" constant="3" id="mdX-Zm-4e7"/>
                 <constraint firstItem="4Iy-C7-gj8" firstAttribute="trailing" secondItem="NGV-6H-U73" secondAttribute="trailing" id="oA7-f1-Upo"/>
                 <constraint firstItem="2Bv-aW-g16" firstAttribute="centerY" secondItem="vWR-53-nvK" secondAttribute="centerY" id="rqD-va-2hk"/>
+                <constraint firstItem="U9D-te-VKl" firstAttribute="centerX" secondItem="iN0-l3-epB" secondAttribute="centerX" id="tjP-tf-d2t"/>
                 <constraint firstItem="4gi-Pi-N2n" firstAttribute="bottom" secondItem="ufy-Vb-Tin" secondAttribute="bottom" id="v1I-hn-4lV"/>
                 <constraint firstItem="d7U-HI-mv2" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" constant="110" id="vwY-8d-OiT"/>
                 <constraint firstItem="2Bv-aW-g16" firstAttribute="leading" secondItem="vWR-53-nvK" secondAttribute="trailing" constant="18" id="x3z-cV-YeE"/>
@@ -183,8 +195,9 @@
                 <constraint firstItem="bgI-ws-SJN" firstAttribute="leading" secondItem="Dc7-C2-BZC" secondAttribute="leading" id="xin-n0-2gP"/>
                 <constraint firstItem="oOx-Xi-lFr" firstAttribute="leading" secondItem="bgI-ws-SJN" secondAttribute="leading" constant="3" id="yhY-Sl-Vzk"/>
                 <constraint firstItem="4gi-Pi-N2n" firstAttribute="trailing" secondItem="ufy-Vb-Tin" secondAttribute="trailing" id="yiS-7W-iNj"/>
-                <constraint firstItem="4gi-Pi-N2n" firstAttribute="leading" secondItem="ufy-Vb-Tin" secondAttribute="leading" id="zF2-B5-kXQ"/>
+                <constraint firstItem="4gi-Pi-N2n" firstAttribute="leading" secondItem="ufy-Vb-Tin" secondAttribute="leading" id="zF2-B5-kXQ" userLabel="短信通知家长.leading = Send Message Btn.leading"/>
                 <constraint firstItem="4gi-Pi-N2n" firstAttribute="top" secondItem="ufy-Vb-Tin" secondAttribute="top" id="zKp-sR-9bc"/>
+                <constraint firstItem="ufy-Vb-Tin" firstAttribute="leading" secondItem="TI5-cT-JEZ" secondAttribute="leading" constant="146" id="zn5-ey-YcX"/>
             </constraints>
             <connections>
                 <outlet property="cancleBtn" destination="vWR-53-nvK" id="Pdr-fo-wqk"/>
@@ -196,7 +209,11 @@
                 <outlet property="confirmBtn" destination="2Bv-aW-g16" id="hsJ-a8-6Oz"/>
                 <outlet property="maskVIew" destination="zdO-pF-zvR" id="KGT-ax-ajW"/>
                 <outlet property="noticeAllSchoolBtn" destination="DWR-gy-Ebv" id="V0k-jX-8pX"/>
+                <outlet property="noticeAllSchoolLabel" destination="1Dz-K6-MZh" id="ape-Vf-9BW"/>
                 <outlet property="sendMessageBtn" destination="ufy-Vb-Tin" id="v7I-k6-UCw"/>
+                <outlet property="sendMessageLabel" destination="4gi-Pi-N2n" id="SDZ-Yq-DL5"/>
+                <outlet property="sendMessageLeadingSpace" destination="zn5-ey-YcX" id="5XP-RP-SVs"/>
+                <outlet property="singleClassLabel" destination="WIh-Ya-RlJ" id="SFB-vQ-dog"/>
                 <outlet property="tabelHeight" destination="wO6-Gc-sSB" id="RFV-a3-FyP"/>
                 <outlet property="tabelWidth" destination="LEO-1A-Cg7" id="tUl-0a-2xT"/>
             </connections>

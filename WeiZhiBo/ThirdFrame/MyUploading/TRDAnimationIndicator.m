@@ -13,6 +13,7 @@
 {
     NSTimer *timer;
     int currentTime;
+    CGRect proframe;
 }
 @end
 @implementation TRDAnimationIndicator
@@ -20,6 +21,7 @@
 - (id)initWithFrame:(CGRect)frame {
     self = [super initWithFrame:frame];
     if (self) {
+        proframe = frame;
         CGFloat width = frame.size.width;
         CGFloat height = frame.size.height;
         
@@ -36,19 +38,19 @@
         //设置动画帧
         self.imageView.animationImages = [NSArray arrayWithObjects:
                                          [UIImage imageNamed:@"1"],
-//                                         [UIImage imageNamed:@"2"],
-//                                         [UIImage imageNamed:@"3"],
-//                                         [UIImage imageNamed:@"4"],
+                                         [UIImage imageNamed:@"2"],
+                                         [UIImage imageNamed:@"3"],
+                                         [UIImage imageNamed:@"4"],
                                          [UIImage imageNamed:@"5"],
                                           
-//                                          [UIImage imageNamed:@"6"],
+                                          [UIImage imageNamed:@"6"],
                                           [UIImage imageNamed:@"7"],
-//                                          [UIImage imageNamed:@"8"],
+                                          [UIImage imageNamed:@"8"],
                                           [UIImage imageNamed:@"9"],
-//                                          [UIImage imageNamed:@"10"],
+                                          [UIImage imageNamed:@"10"],
 
-//                                          [UIImage imageNamed:@"11"],
-//                                          [UIImage imageNamed:@"12"],
+                                          [UIImage imageNamed:@"11"],
+                                          [UIImage imageNamed:@"12"],
                                           [UIImage imageNamed:@"13"],
 
                                           nil ];
@@ -67,6 +69,13 @@
 }
 
 - (void)startAnimation {
+    CGFloat width = proframe.size.width;
+    CGFloat height = proframe.size.height;
+    UIImage *image = [UIImage imageNamed:@"1"];
+    CGRect frame =  self.imageView.frame;
+    self.imageView.frame = CGRectMake(frame.origin.x, frame.origin.y, image.size.width, image.size.height);
+    self.Infolabel.center = CGPointMake(width/2, height/2+CGRectGetHeight(self.imageView.frame)/2+20-30);
+
     [self doAnimation];
 }
 
@@ -78,9 +87,9 @@
 }
 
 -(void)doAnimation {
-    self.Infolabel.text = @"加载中";
+    self.Infolabel.text = @"宝宝努力加载中...";
     // 设置动画总时间
-    self.imageView.animationDuration = 2.f;
+    self.imageView.animationDuration = 1.6f;
     // 设置重复次数,0表示无限次
     self.imageView.animationRepeatCount = 0;
     // 开始动画
@@ -100,8 +109,16 @@
             self.alpha = 1;
         }];
     } else {
+        CGFloat width = proframe.size.width;
+        CGFloat height = proframe.size.height;
+        UIImage *image = [UIImage imageNamed:@"jaizaishibai"];
+        CGRect frame =  self.imageView.frame;
+        self.imageView.frame = CGRectMake(frame.origin.x, frame.origin.y, image.size.width, image.size.height);
+        self.Infolabel.center = CGPointMake(width/2, height/2+60+20-30);
+
+        
         [self.imageView stopAnimating];
-        [self.imageView setImage:[UIImage imageNamed:@"jaizaishibai"]];
+        [self.imageView setImage:image];
         
         UITapGestureRecognizer *tapGesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(loadData:)];
         [self addGestureRecognizer:tapGesture];
