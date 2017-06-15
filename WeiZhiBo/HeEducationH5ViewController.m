@@ -512,7 +512,6 @@
         }
         
     } else {
-        
         [Progress progressShowcontent:@"未能获取学校" currView:self.view];
     }
 }
