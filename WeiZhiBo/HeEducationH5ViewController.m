@@ -18,6 +18,7 @@
 #import "APPDeviceInfoManager.h"
 #import "TRDAnimationIndicator.h"
 #import <CoreMotion/CoreMotion.h>
+#import "StreamingViewModel.h"
 
 @interface HeEducationH5ViewController ()<WKNavigationDelegate,WKUIDelegate,WKScriptMessageHandler, UINavigationControllerDelegate, UIScrollViewDelegate, TRDAnimationIndicatorDelegate>
 {
@@ -539,7 +540,11 @@
     
     if (classesArray.count >0) {
         
+
+        StreamingViewModel* vmodel = [[StreamingViewModel alloc] initWithPushUrl:@""];
+
         AppDelegate *app = [UIApplication sharedApplication].delegate;
+        
         app.shouldChangeOrientation = YES;
         
         ViewController *VC = [board instantiateViewControllerWithIdentifier:@"ViewController"];
@@ -550,7 +555,9 @@
         VC.openId = self.openId;
         VC.schoolId = CSchoolId;
         VC.schoolName = CSchoolName;
-        
+        VC.model = vmodel;
+//        [vmodel setupSession:AVCaptureVideoOrientationLandscapeRight delegate:VC];
+
         UINavigationController * nav = [[UINavigationController alloc] initWithRootViewController:VC];
         nav.navigationBarHidden = YES;
         [self presentViewController:nav animated:NO completion:^{

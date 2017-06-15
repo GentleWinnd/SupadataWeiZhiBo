@@ -107,13 +107,6 @@ static NSString *cellID = @"cellId";
     
 }
 
-- (void)viewWillDisappear:(BOOL)animated {
-    [_webSocket close];
-    _webSocket = nil;
-    
-    [super viewWillDisappear:animated];
-}
-
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view, typically from a nib.
@@ -215,12 +208,10 @@ static NSString *cellID = @"cellId";
 /*************************set baidu sdk**********************/
 
 - (void)setBaiDuSDK {
-    StreamingViewModel* vmodel = [[StreamingViewModel alloc] initWithPushUrl:_pushUrl];
-    
-    [vmodel setupSession:AVCaptureVideoOrientationLandscapeRight delegate:self];
-    [vmodel preview:_cameraView];
-    [vmodel updateFrame:_cameraView];
-    self.model = vmodel;
+    [self.model setupSession:AVCaptureVideoOrientationLandscapeRight delegate:self];
+    [self.model preview:_cameraView];
+    [self.model updateFrame:_cameraView];
+
 }
 
 
@@ -455,12 +446,10 @@ static NSString *cellID = @"cellId";
 
 #pragma mark - start push
 -(BOOL)startRtmp {
-//    NSString* rtmpUrl = @"rtmp://push.bcelive.com/live/ftqhgk3ch6wtwcvexu";//测试地址
     if (!([_pushUrl hasPrefix:@"rtmp://"] )) {
         [Progress progressShowcontent:@"发生意外错误了" currView:self.view];
         return NO;
     }
-//    _pushUrl = @"rtmp://push.bcelive.com/live/tx3oxm9lgdccnmpo9j";
     NSString *rtmpUrl = _pushUrl;
     //是否有摄像头权限
     AVAuthorizationStatus statusVideo = [AVCaptureDevice authorizationStatusForMediaType:AVMediaTypeVideo];
@@ -501,9 +490,8 @@ static NSString *cellID = @"cellId";
     [self showCommentMessageView:YES showMessage:NO];
 }
 
-- (void)stopRtmp {
+- (BOOL)stopRtmp {
     [self.model.session endRtmpSession];
-    
     BOOL result = [self.model back];
     
     [self stopTimer];
@@ -522,6 +510,7 @@ static NSString *cellID = @"cellId";
     [messageArr removeAllObjects];
     
     [[UIApplication sharedApplication] setIdleTimerDisabled:NO];
+    return result;
 }
 
 - (void)clearLog {
@@ -571,10 +560,10 @@ static NSString *cellID = @"cellId";
     if (seconds/20&&seconds%20==0) {
         noDataCount = 0;
     }
-//    if (noDataCount>10) {
-//        [self stopRtmp];
-//        [self toastTip:@"创建班级直播失败，请稍后重试！"];
-//    }
+    if (noDataCount>10) {
+        [self stopRtmp];
+        [self toastTip:@"创建班级直播失败，请稍后重试！"];
+    }
 }
 
 - (void)stopTimer {
@@ -599,6 +588,9 @@ static NSString *cellID = @"cellId";
     if (timer) {
         [self stopRtmp];
     }
+    [_webSocket close];
+    _webSocket = nil;
+
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
@@ -1230,14 +1222,14 @@ static NSString *cellID = @"cellId";
     toastView.layer.masksToBounds = YES;
     toastView.textAlignment = NSTextAlignmentCenter;
     
-//    [self.view addSubview:toastView];
+    [self.view addSubview:toastView];
     
-//    dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, 2 * NSEC_PER_SEC);
-//    
-//    dispatch_after(popTime, dispatch_get_main_queue(), ^(){
-//        [toastView removeFromSuperview];
-//        toastView = nil;
-//    });
+    dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, 2 * NSEC_PER_SEC);
+    
+    dispatch_after(popTime, dispatch_get_main_queue(), ^(){
+        [toastView removeFromSuperview];
+        toastView = nil;
+    });
 }
 
 

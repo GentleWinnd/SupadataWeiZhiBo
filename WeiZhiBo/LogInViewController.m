@@ -7,6 +7,7 @@
 //
 #import "HeEducationH5ViewController.h"
 #import "LogInViewController.h"
+#import "StreamingViewModel.h"
 #import "ViewController.h"
 #import "AppDelegate.h"
 #import "UserData.h"
@@ -207,7 +208,10 @@
         AppDelegate *app = [UIApplication sharedApplication].delegate;
         app.shouldChangeOrientation = YES;
         UIStoryboard *board = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
+        StreamingViewModel* vmodel = [[StreamingViewModel alloc] initWithPushUrl:@""];
+        [vmodel setupSession:AVCaptureVideoOrientationLandscapeRight delegate:self];
 
+        
         ViewController *VC = [board instantiateViewControllerWithIdentifier:@"ViewController"];
         VC.userClassInfo = [NSArray safeArray:schoolInfo[@"classes"]];
         VC.userId = responseObject[@"data"][@"user"][@"uId"];
@@ -216,6 +220,7 @@
         VC.openId = self.openId;
         VC.schoolId = schoolInfo[@"schoolId"];
         VC.schoolName = schoolInfo[@"schoolName"];
+        VC.model = vmodel;
         
         UINavigationController * nav = [[UINavigationController alloc] initWithRootViewController:VC];
         nav.navigationBarHidden = YES;

@@ -69,6 +69,7 @@
 		583544CE1EC975CC00AEC08B /* 13@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 583544B21EC975CC00AEC08B /* 13@2x.png */; };
 		583544CF1EC975CC00AEC08B /* 13@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 583544B31EC975CC00AEC08B /* 13@3x.png */; };
 		58367BDE1E9BD492004CF4F1 /* ContentView.m in Sources */ = {isa = PBXBuildFile; fileRef = 58367BDD1E9BD492004CF4F1 /* ContentView.m */; };
+		5857930F1EE10E530041188F /* BDPulisherManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 5857930E1EE10E530041188F /* BDPulisherManager.m */; };
 		5857BAE31E9F1DC200339D60 /* hd.png in Resources */ = {isa = PBXBuildFile; fileRef = 5857BACB1E9F1DC200339D60 /* hd.png */; };
 		5857BAE41E9F1DC200339D60 /* line_gray.png in Resources */ = {isa = PBXBuildFile; fileRef = 5857BACC1E9F1DC200339D60 /* line_gray.png */; };
 		5857BAE51E9F1DC200339D60 /* line_orange.png in Resources */ = {isa = PBXBuildFile; fileRef = 5857BACD1E9F1DC200339D60 /* line_orange.png */; };
@@ -359,6 +360,8 @@
 		58367BDC1E9BD492004CF4F1 /* ContentView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ContentView.h; sourceTree = "<group>"; };
 		58367BDD1E9BD492004CF4F1 /* ContentView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ContentView.m; sourceTree = "<group>"; };
 		58529D0F1EAF50BE00670C50 /* APIHeader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = APIHeader.h; sourceTree = "<group>"; };
+		5857930D1EE10E530041188F /* BDPulisherManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BDPulisherManager.h; sourceTree = "<group>"; };
+		5857930E1EE10E530041188F /* BDPulisherManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BDPulisherManager.m; sourceTree = "<group>"; };
 		5857BACB1E9F1DC200339D60 /* hd.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = hd.png; sourceTree = "<group>"; };
 		5857BACC1E9F1DC200339D60 /* line_gray.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = line_gray.png; sourceTree = "<group>"; };
 		5857BACD1E9F1DC200339D60 /* line_orange.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = line_orange.png; sourceTree = "<group>"; };
@@ -937,6 +940,8 @@
 				588548491EB2EBE300CEC625 /* APPDeviceInfoManager.h */,
 				5885484A1EB2EBE300CEC625 /* APPDeviceInfoManager.m */,
 				581682D91E83927B003F669F /* NetService */,
+				5857930D1EE10E530041188F /* BDPulisherManager.h */,
+				5857930E1EE10E530041188F /* BDPulisherManager.m */,
 			);
 			path = Tool;
 			sourceTree = "<group>";
@@ -1650,6 +1655,7 @@
 				58CDBCD91EA4631800C9FE30 /* SRRunLoopThread.m in Sources */,
 				581682DC1E8392AD003F669F /* WZBNetServiceAPI.m in Sources */,
 				581683381E83A079003F669F /* UIProgressView+AFNetworking.m in Sources */,
+				5857930F1EE10E530041188F /* BDPulisherManager.m in Sources */,
 				589C58371E9B3471007D0EBB /* TPKeyboardAvoidingScrollView.m in Sources */,
 				586851631E83903400115227 /* KTMError.m in Sources */,
 				588735E81EA7340B00ADA1DA /* InputView.m in Sources */,
