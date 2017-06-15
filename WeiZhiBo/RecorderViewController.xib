@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="12118" systemVersion="16E195" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
+    <device id="retina4_7" orientation="portrait">
+        <adaptation id="fullscreen"/>
+    </device>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="12086"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="RecorderViewController">
+            <connections>
+                <outlet property="backBtn" destination="HX1-0v-r8Z" id="fkR-zV-5qP"/>
+                <outlet property="backView" destination="kIX-oT-XMg" id="1jz-dN-IlV"/>
+                <outlet property="backViewHeight" destination="2mJ-LM-z8x" id="a4a-Ui-XK2"/>
+                <outlet property="backViewWidth" destination="WKI-hB-ugn" id="Tpk-SG-yDW"/>
+                <outlet property="cameraView" destination="yTp-Mb-KHc" id="Ls9-Dn-5PB"/>
+                <outlet property="doubleTapGesture" destination="Di0-zq-9PE" id="hIO-an-gKG"/>
+                <outlet property="historyBtn" destination="AF2-Xa-Ns4" id="jWK-b0-XfV"/>
+                <outlet property="pinchGesture" destination="xnn-9p-ZN1" id="Yja-Fc-wlx"/>
+                <outlet property="playBtn" destination="vrz-up-Nhk" id="Xpe-Xq-ysy"/>
+                <outlet property="tapGesture" destination="WzF-tY-I7f" id="Fsz-pm-m8S"/>
+                <outlet property="traformCameraBtn" destination="2fy-Hs-UOe" id="me9-Xg-cUb"/>
+            </connections>
+        </placeholder>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <view contentMode="scaleToFill" id="o3A-st-IXf">
+            <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+            <subviews>
+                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="yTp-Mb-KHc" userLabel="cameraView">
+                    <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                    <color key="backgroundColor" red="0.80000001190000003" green="0.80000001190000003" blue="0.80000001190000003" alpha="1" colorSpace="calibratedRGB"/>
+                    <gestureRecognizers/>
+                </view>
+                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="kIX-oT-XMg">
+                    <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                    <subviews>
+                        <imageView contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="masking_top.png" translatesAutoresizingMaskIntoConstraints="NO" id="dwn-gO-ViA">
+                            <rect key="frame" x="285" y="0.0" width="90" height="667"/>
+                        </imageView>
+                        <imageView contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="masking_bottom.png" translatesAutoresizingMaskIntoConstraints="NO" id="nxn-el-1R0">
+                            <rect key="frame" x="0.0" y="0.0" width="90" height="667"/>
+                        </imageView>
+                        <imageView contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="masking_right.png" translatesAutoresizingMaskIntoConstraints="NO" id="Ujn-rU-pMw">
+                            <rect key="frame" x="0.0" y="597" width="375" height="70"/>
+                        </imageView>
+                        <button hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="AF2-Xa-Ns4">
+                            <rect key="frame" x="42" y="607" width="45" height="45"/>
+                            <fontDescription key="fontDescription" type="system" pointSize="16"/>
+                            <state key="normal" image="class.png">
+                                <color key="titleColor" red="0.0" green="0.47843137250000001" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                            </state>
+                            <state key="selected" image="class_s.png">
+                                <color key="titleColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                            </state>
+                        </button>
+                        <button hidden="YES" opaque="NO" tag="1" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="vrz-up-Nhk">
+                            <rect key="frame" x="117" y="607" width="45" height="45"/>
+                            <state key="normal" image="play_n.png"/>
+                            <state key="selected" image="play_s.png">
+                                <color key="titleColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                            </state>
+                        </button>
+                        <button hidden="YES" opaque="NO" tag="2" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="2fy-Hs-UOe">
+                            <rect key="frame" x="216" y="607" width="45" height="45"/>
+                            <state key="normal" image="camera_back.png"/>
+                            <state key="selected" image="camera_front.png">
+                                <color key="titleColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                            </state>
+                        </button>
+                        <button hidden="YES" opaque="NO" tag="13" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="HX1-0v-r8Z">
+                            <rect key="frame" x="329" y="621" width="38" height="38"/>
+                            <constraints>
+                                <constraint firstAttribute="height" constant="38" id="bVh-CH-K3M"/>
+                                <constraint firstAttribute="width" constant="38" id="euV-TN-d12"/>
+                            </constraints>
+                            <state key="normal" image="close_play.png"/>
+                        </button>
+                    </subviews>
+                    <color key="backgroundColor" white="1" alpha="0.0" colorSpace="calibratedWhite"/>
+                    <gestureRecognizers/>
+                    <constraints>
+                        <constraint firstAttribute="bottom" secondItem="HX1-0v-r8Z" secondAttribute="bottom" constant="8" id="2d5-iR-lkg"/>
+                        <constraint firstAttribute="height" constant="667" id="2mJ-LM-z8x"/>
+                        <constraint firstItem="Ujn-rU-pMw" firstAttribute="leading" secondItem="kIX-oT-XMg" secondAttribute="leading" id="6qI-oa-CZc"/>
+                        <constraint firstItem="vrz-up-Nhk" firstAttribute="centerY" secondItem="AF2-Xa-Ns4" secondAttribute="centerY" id="7FY-SP-sEy"/>
+                        <constraint firstItem="nxn-el-1R0" firstAttribute="leading" secondItem="kIX-oT-XMg" secondAttribute="leading" id="BFT-WG-r7P"/>
+                        <constraint firstAttribute="trailing" secondItem="dwn-gO-ViA" secondAttribute="trailing" id="Dgt-Fz-YBf"/>
+                        <constraint firstItem="dwn-gO-ViA" firstAttribute="top" secondItem="kIX-oT-XMg" secondAttribute="top" id="GZr-tI-2ik"/>
+                        <constraint firstAttribute="bottom" secondItem="Ujn-rU-pMw" secondAttribute="bottom" id="Gz5-Cx-hYg"/>
+                        <constraint firstAttribute="trailing" secondItem="Ujn-rU-pMw" secondAttribute="trailing" id="HBf-9h-Ws5"/>
+                        <constraint firstAttribute="trailing" secondItem="HX1-0v-r8Z" secondAttribute="trailing" constant="8" id="HfB-Pk-F5Y"/>
+                        <constraint firstItem="2fy-Hs-UOe" firstAttribute="leading" secondItem="vrz-up-Nhk" secondAttribute="trailing" constant="54" id="JBF-Yu-h9M"/>
+                        <constraint firstAttribute="bottom" secondItem="vrz-up-Nhk" secondAttribute="bottom" constant="15" id="KiE-RC-8HR"/>
+                        <constraint firstItem="2fy-Hs-UOe" firstAttribute="centerY" secondItem="AF2-Xa-Ns4" secondAttribute="centerY" id="Ra7-Lc-WiJ"/>
+                        <constraint firstItem="nxn-el-1R0" firstAttribute="top" secondItem="kIX-oT-XMg" secondAttribute="top" id="SE6-Gz-mtF"/>
+                        <constraint firstItem="vrz-up-Nhk" firstAttribute="centerX" secondItem="kIX-oT-XMg" secondAttribute="centerX" constant="-48" id="UcC-Ro-6dK"/>
+                        <constraint firstAttribute="width" constant="375" id="WKI-hB-ugn"/>
+                        <constraint firstAttribute="bottom" secondItem="nxn-el-1R0" secondAttribute="bottom" id="pOD-CA-VpP"/>
+                        <constraint firstItem="vrz-up-Nhk" firstAttribute="leading" secondItem="AF2-Xa-Ns4" secondAttribute="trailing" constant="30" id="pt1-CJ-NrP"/>
+                        <constraint firstAttribute="bottom" secondItem="dwn-gO-ViA" secondAttribute="bottom" id="qBZ-ml-cAg"/>
+                    </constraints>
+                    <connections>
+                        <outletCollection property="gestureRecognizers" destination="xnn-9p-ZN1" appends="YES" id="EOH-Dr-8bQ"/>
+                    </connections>
+                </view>
+            </subviews>
+            <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <gestureRecognizers/>
+            <constraints>
+                <constraint firstItem="kIX-oT-XMg" firstAttribute="centerY" secondItem="o3A-st-IXf" secondAttribute="centerY" id="CJd-aF-KEE"/>
+                <constraint firstAttribute="trailing" secondItem="yTp-Mb-KHc" secondAttribute="trailing" id="Eox-LR-KE5"/>
+                <constraint firstItem="yTp-Mb-KHc" firstAttribute="centerX" secondItem="o3A-st-IXf" secondAttribute="centerX" id="KEY-Xm-wEo"/>
+                <constraint firstItem="yTp-Mb-KHc" firstAttribute="centerY" secondItem="o3A-st-IXf" secondAttribute="centerY" id="NRQ-vu-QIa"/>
+                <constraint firstItem="kIX-oT-XMg" firstAttribute="centerX" secondItem="o3A-st-IXf" secondAttribute="centerX" id="mSk-a9-qIu"/>
+                <constraint firstItem="yTp-Mb-KHc" firstAttribute="top" secondItem="o3A-st-IXf" secondAttribute="top" id="tVu-4K-RXG"/>
+                <constraint firstItem="yTp-Mb-KHc" firstAttribute="leading" secondItem="o3A-st-IXf" secondAttribute="leading" id="ucQ-3e-ZSt"/>
+            </constraints>
+            <connections>
+                <outletCollection property="gestureRecognizers" destination="Di0-zq-9PE" appends="YES" id="vXM-Q1-fhF"/>
+            </connections>
+        </view>
+        <tapGestureRecognizer id="WzF-tY-I7f"/>
+        <tapGestureRecognizer id="Di0-zq-9PE"/>
+        <pinchGestureRecognizer id="xnn-9p-ZN1"/>
+    </objects>
+    <resources>
+        <image name="camera_back.png" width="45" height="45"/>
+        <image name="camera_front.png" width="45" height="45"/>
+        <image name="class.png" width="45" height="45"/>
+        <image name="class_s.png" width="16" height="16"/>
+        <image name="close_play.png" width="28" height="28"/>
+        <image name="masking_bottom.png" width="90" height="667"/>
+        <image name="masking_right.png" width="375" height="70"/>
+        <image name="masking_top.png" width="90" height="667"/>
+        <image name="play_n.png" width="45" height="45"/>
+        <image name="play_s.png" width="45" height="45"/>
+    </resources>
+</document>

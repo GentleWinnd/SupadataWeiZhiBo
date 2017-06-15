@@ -37,6 +37,13 @@
 @property (strong, nonatomic) IBOutlet UIImageView *backImage;
 @property (strong, nonatomic) IBOutlet UIView *curveView;
 
+
+@property (strong, nonatomic) IBOutlet UIButton *vedioBtn;
+@property (strong, nonatomic) IBOutlet UIImageView *vedioBackView;
+@property (strong, nonatomic) IBOutlet UIButton *liveBtn;
+@property (strong, nonatomic) IBOutlet UIButton *recordBtn;
+
+
 @end
 
 @implementation HeEducationH5ViewController
@@ -114,11 +121,9 @@
         [self startLoadWebView];
     }
     
-    [self customPlayBtn];
     [self testAPPVersion];
     
 //    [self initDeviceOrientation];
-
 }
 
 - (void)chanegsBackBtnActive {
@@ -517,25 +522,32 @@
     }
 }
 
-#pragma mark - 创建播放按钮
 
-- (void)customPlayBtn {
+- (IBAction)vedioBtnAction:(UIButton *)sender {
     
-    UIButton *playBtn = [UIButton buttonWithType:UIButtonTypeCustom];
-    playBtn.frame = CGRectMake(SCREEN_WIDTH - 18 - 95, 30+60, 97, 40);
-    [playBtn setImage:[UIImage imageNamed:@"zhibo"] forState:UIControlStateNormal];
-    [playBtn addTarget:self action:@selector(playAction:) forControlEvents:UIControlEventTouchUpInside];
-    playBtn.hidden = YES;
-    playBtn.tag = 110;
-    [self.view addSubview:playBtn];
+    if (sender.tag == 1) {//视频按钮
+        sender.selected = !sender.selected;
+        [self hiddenVedioBtnView:sender.selected];
+    } else if (sender.tag == 2) {//直播按钮
+        [self liveBtnAction];
+        [self hiddenVedioBtnView:YES];
+    } else if (sender.tag == 3) {//录播按钮
+        [self hiddenVedioBtnView:YES];
     
-    UIPanGestureRecognizer *pan = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(doHandlePanAction:)];
-    [playBtn addGestureRecognizer:pan];
+    }
     
 }
+
+- (void)hiddenVedioBtnView:(BOOL)hidden {
+
+    self.vedioBackView.hidden = hidden;
+    self.liveBtn.hidden = hidden;
+    self.recordBtn.hidden = hidden;
+}
+
 #pragma mark- 直播按钮事件
 
-- (void)playAction:(UIButton *)sender {
+- (void)liveBtnAction {
     UIStoryboard *board = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
     
     if (classesArray.count >0) {
