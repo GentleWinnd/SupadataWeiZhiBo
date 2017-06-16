@@ -1,26 +1,27 @@
 //
-//  CLassNameView.m
+//  RecordClassNameView.m
 //  WeiZhiBo
 //
 //  Created by SUPADATA on 2017/6/15.
 //  Copyright © 2017年 YH. All rights reserved.
 //
 
-#import "CLassNameView.h"
+#import "RecordClassNameView.h"
+
 #import "ClassNameTableViewCell.h"
 
-@interface CLassNameView()<UITableViewDelegate, UITableViewDataSource, UITextFieldDelegate>
-
+@interface RecordClassNameView()<UITableViewDelegate, UITableViewDataSource, UITextFieldDelegate>
+@property (strong, nonatomic) IBOutlet UIView *classInfoView;
 @property (strong, nonatomic) IBOutlet UIButton *cancleBtn;
 @property (strong, nonatomic) IBOutlet UIButton *confirmBtn;
-@property (strong, nonatomic) IBOutlet UIButton *clearBtn;
 @property (strong, nonatomic) NSIndexPath *selectedIndexPath;
+@property (strong, nonatomic) IBOutlet UIButton *clearBtn;
 
 @end
 static NSString *CellIdOfClass = @"cellIdOfClass";
 
 
-@implementation CLassNameView
+@implementation RecordClassNameView
 
 - (void)awakeFromNib {
     [super awakeFromNib];
@@ -38,9 +39,9 @@ static NSString *CellIdOfClass = @"cellIdOfClass";
     if (userRole == UserRoleKindergartenLeader) {
         
     } else {
-        self.noticeAllSchoolBtn.hidden = YES;
-        self.noticeAllSchoolLabel.hidden = YES;
-        self.sendMessageLeadingSpace.constant = 0;
+//        self.noticeAllSchoolBtn.hidden = YES;
+//        self.noticeAllSchoolLabel.hidden = YES;
+//        self.sendMessageLeadingSpace.constant = 0;
     }
 }
 
@@ -148,15 +149,15 @@ static NSString *CellIdOfClass = @"cellIdOfClass";
             cell.classNameLabel.textColor = MaIN_LIGHTBLUE_CLASSNAME;
             self.classNameTextfeild.text = self.className;
             [self.classNameTab reloadData];
-            self.singleClassLabel.hidden = YES;
+//            self.singleClassLabel.hidden = YES;
         } else {
-            self.singleClassLabel.hidden = NO;
-            [self.singleClassLabel setTitle:self.className forState:UIControlStateNormal];
-            [self.singleClassLabel setTitleColor:MaIN_LIGHTBLUE_CLASSNAME forState:UIControlStateNormal];
+//            self.singleClassLabel.hidden = NO;
+//            [self.singleClassLabel setTitle:self.className forState:UIControlStateNormal];
+//            [self.singleClassLabel setTitleColor:MaIN_LIGHTBLUE_CLASSNAME forState:UIControlStateNormal];
         }
         
     } else {
-        self.singleClassLabel.hidden = YES;
+//        self.singleClassLabel.hidden = YES;
     }
     
 }
@@ -210,7 +211,7 @@ static NSString *CellIdOfClass = @"cellIdOfClass";
     CGSize tableSize = CGSizeMake(0, 0);
     self.maskVIew.hidden = hidden;
     if (self.userClassInfo.count == 1) {
-        self.singleClassLabel.hidden = hidden;
+//        self.singleClassLabel.hidden = hidden;
     }
     if (hidden == NO) {
         //        NSInteger length = [self getClassNameMaxLength];
@@ -248,7 +249,8 @@ static NSString *CellIdOfClass = @"cellIdOfClass";
 //    BOOL fold = ![unfoldInfo[indexStr] boolValue];
 //    [unfoldInfo setValue:[NSNumber numberWithBool:fold] forKey:indexStr];
 //    [_classNameTable reloadData];
-//    
+//
 //}
+
 
 @end

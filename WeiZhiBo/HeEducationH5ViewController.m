@@ -224,7 +224,7 @@
     WWebView.navigationDelegate = self;
     WWebView.allowsBackForwardNavigationGestures = NO;
     WWebView.scrollView.delegate = self;
-    [self.view addSubview:WWebView];
+    [self.view insertSubview:WWebView atIndex:0];
 }
 
 
@@ -232,7 +232,9 @@
 
 - (void)startLoadWebView {
     
-    NSURL *repURL = [NSURL URLWithString:[NSString stringWithFormat:@"%@resource/html/teacher/?user=%@#/tab/live",HOST_URL,self.userId]];
+//    NSURL *repURL = [NSURL URLWithString:[NSString stringWithFormat:@"%@resource/html/teacher/?user=%@#/tab/live",HOST_URL,self.userId]];
+    NSURL *repURL = [NSURL URLWithString:[NSString stringWithFormat:@"%@resource/html/teacher/?user=%@#/tab/live",@"http://pengxiuxiao.55555.io/ssm/",self.userId]];
+
     NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:repURL];
     
     // 在此处获取返回的cookie
@@ -256,7 +258,8 @@
     // 注入JS对象名称AppModel，当JS通过AppModel来调用时，
     // 我们可以在WKScriptMessageHandler代理中接收到
     [userCC addScriptMessageHandler:self name:@"Supadata"];
-    
+    [userCC addScriptMessageHandler:self name:@"userType"];
+
     if (theConnection) {
         [theConnection cancel];
         //        SAFE_RELEASE(theConnection);
@@ -440,6 +443,9 @@
         NSLog(@"%@", message.body);
         [self getSchoolId:message.body];
         
+    } else {
+        NSLog(@"%@", message.body);
+
     }
 }
 
@@ -526,8 +532,9 @@
 - (IBAction)vedioBtnAction:(UIButton *)sender {
     
     if (sender.tag == 1) {//视频按钮
-        sender.selected = !sender.selected;
         [self hiddenVedioBtnView:sender.selected];
+        sender.selected = !sender.selected;
+
     } else if (sender.tag == 2) {//直播按钮
         [self liveBtnAction];
         [self hiddenVedioBtnView:YES];

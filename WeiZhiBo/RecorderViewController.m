@@ -28,7 +28,7 @@
 #import "InputView.h"
 #import "DeviceDetailManager.h"
 #import "AppDelegate.h"
-#import "CLassNameView.h"
+#import "RecordClassNameView.h"
 
 
 @interface RecorderViewController ()
@@ -54,7 +54,7 @@
 @property (strong, nonatomic) IBOutlet UIButton *playBtn;
 @property (strong, nonatomic) IBOutlet UIButton *traformCameraBtn;
 
-@property (strong, nonatomic) CLassNameView *classView;
+@property (strong, nonatomic) RecordClassNameView *classView;
 /********end******/
 
 @property (strong, nonatomic) UIActivityIndicatorView *iniIndicator;
@@ -320,7 +320,6 @@ static NSString *cellID = @"cellId";
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onAppWillEnterForeground:) name:UIApplicationWillEnterForegroundNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onAppDidBecomeActive:) name:UIApplicationDidBecomeActiveNotification object:nil];
     
-    //    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(statusBarOrientationChanged:) name:UIApplicationDidChangeStatusBarOrientationNotification object:nil];
     
     [self setShowItem];
     [self createCLassNamePickerView];
@@ -357,30 +356,10 @@ static NSString *cellID = @"cellId";
     
 }
 
-
-- (NSString *)getSendMessageClassId {
-    NSString *sendClassId = classId;
-    if (self.userRole == UserRoleKindergartenLeader && liveType == 2) {
-        sendClassId = @"";
-        NSInteger index = 0;
-        for (NSDictionary *classInfo in self.userClassInfo) {
-            if (index == 0) {
-                sendClassId = classInfo[@"classId"];
-            } else {
-                sendClassId = [NSString stringWithFormat:@"%@,%@",sendClassId,classInfo[@"classId"]];
-                
-            }
-            index++;
-        }
-    }
-    return sendClassId;
-}
-
-
 /*******************create class name pickerview*****************/
 
 - (void)createCLassNamePickerView {
-    _classView = [[NSBundle mainBundle] loadNibNamed:@"ClassNameView" owner:self options:nil].lastObject;
+    _classView = [[NSBundle mainBundle] loadNibNamed:@"RecordClassNameView" owner:self options:nil].lastObject;
     _classView.hidden = YES;
     _classView.classInfo = [NSDictionary safeDictionary:[self.userClassInfo firstObject]];
     _classView.userClassInfo = self.userClassInfo;
@@ -399,7 +378,6 @@ static NSString *cellID = @"cellId";
             
             if (CId.length != 0) {//ceshi
                 selfWeak.classView.classTitleTextFeild.textColor = MAIN_LIGHT_WHITE_TEXTFEILD;
-                liveType = _classView.noticeAllSchoolBtn.selected?2:1;
                 
                 
             } else {

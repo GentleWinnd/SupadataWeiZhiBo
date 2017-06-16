@@ -232,6 +232,8 @@
 		58CB1CCA1EF232B70009419C /* RecorderViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 58CB1CC81EF232B70009419C /* RecorderViewController.m */; };
 		58CB1CCB1EF232B70009419C /* RecorderViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 58CB1CC91EF232B70009419C /* RecorderViewController.xib */; };
 		58CB1CCE1EF23DB70009419C /* CLassNameView.m in Sources */ = {isa = PBXBuildFile; fileRef = 58CB1CCD1EF23DB70009419C /* CLassNameView.m */; };
+		58CB1CD11EF25A950009419C /* RecordClassNameView.m in Sources */ = {isa = PBXBuildFile; fileRef = 58CB1CD01EF25A950009419C /* RecordClassNameView.m */; };
+		58CB1CD31EF25AAF0009419C /* RecordClassNameView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 58CB1CD21EF25AAF0009419C /* RecordClassNameView.xib */; };
 		58CDBCD51EA4631800C9FE30 /* SRDelegateController.m in Sources */ = {isa = PBXBuildFile; fileRef = 58CDBCAF1EA4631800C9FE30 /* SRDelegateController.m */; };
 		58CDBCD61EA4631800C9FE30 /* SRIOConsumer.m in Sources */ = {isa = PBXBuildFile; fileRef = 58CDBCB21EA4631800C9FE30 /* SRIOConsumer.m */; };
 		58CDBCD71EA4631800C9FE30 /* SRIOConsumerPool.m in Sources */ = {isa = PBXBuildFile; fileRef = 58CDBCB41EA4631800C9FE30 /* SRIOConsumerPool.m */; };
@@ -602,6 +604,9 @@
 		58CB1CC91EF232B70009419C /* RecorderViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = RecorderViewController.xib; sourceTree = "<group>"; };
 		58CB1CCC1EF23DB70009419C /* CLassNameView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CLassNameView.h; sourceTree = "<group>"; };
 		58CB1CCD1EF23DB70009419C /* CLassNameView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CLassNameView.m; sourceTree = "<group>"; };
+		58CB1CCF1EF25A950009419C /* RecordClassNameView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RecordClassNameView.h; sourceTree = "<group>"; };
+		58CB1CD01EF25A950009419C /* RecordClassNameView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RecordClassNameView.m; sourceTree = "<group>"; };
+		58CB1CD21EF25AAF0009419C /* RecordClassNameView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = RecordClassNameView.xib; sourceTree = "<group>"; };
 		58CDBCAE1EA4631800C9FE30 /* SRDelegateController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SRDelegateController.h; sourceTree = "<group>"; };
 		58CDBCAF1EA4631800C9FE30 /* SRDelegateController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SRDelegateController.m; sourceTree = "<group>"; };
 		58CDBCB11EA4631800C9FE30 /* SRIOConsumer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SRIOConsumer.h; sourceTree = "<group>"; };
@@ -868,6 +873,9 @@
 				589C1E791EB06E4D00C22FDA /* HeEducationH5ViewController.xib */,
 				585EF4FA1E817E1300EC879F /* LogInViewController.h */,
 				585EF4FB1E817E1300EC879F /* LogInViewController.m */,
+				58CB1CCF1EF25A950009419C /* RecordClassNameView.h */,
+				58CB1CD01EF25A950009419C /* RecordClassNameView.m */,
+				58CB1CD21EF25AAF0009419C /* RecordClassNameView.xib */,
 				58CDBD401EA4D09800C9FE30 /* View */,
 				5895850A1E84EF7100E4FAB7 /* SelectedClass */,
 				585EF4FC1E817E1300EC879F /* LogInViewController.xib */,
@@ -1429,9 +1437,9 @@
 		58CDBD411EA4D0AC00C9FE30 /* Views */ = {
 			isa = PBXGroup;
 			children = (
-				58FA06111E94D78400EFB656 /* ClassNameView.xib */,
 				58CB1CCC1EF23DB70009419C /* CLassNameView.h */,
 				58CB1CCD1EF23DB70009419C /* CLassNameView.m */,
+				58FA06111E94D78400EFB656 /* ClassNameView.xib */,
 				58C87C041E8CAD8500A917FD /* ReloadView.h */,
 				58C87C051E8CAD8500A917FD /* ReloadView.m */,
 				58C87C071E8CADAF00A917FD /* ReloadView.xib */,
@@ -1656,6 +1664,7 @@
 				589C1E7B1EB06E4D00C22FDA /* HeEducationH5ViewController.xib in Resources */,
 				583544BF1EC975CC00AEC08B /* 5@3x.png in Resources */,
 				58A431661EADA8850022ED4F /* comment_s@2x.png in Resources */,
+				58CB1CD31EF25AAF0009419C /* RecordClassNameView.xib in Resources */,
 				58CB1C9B1EF227A50009419C /* backGround@2x.png in Resources */,
 				583544CF1EC975CC00AEC08B /* 13@3x.png in Resources */,
 				58A4316F1EADA8850022ED4F /* play_n@3x.png in Resources */,
@@ -1766,6 +1775,7 @@
 				581682DC1E8392AD003F669F /* WZBNetServiceAPI.m in Sources */,
 				581683381E83A079003F669F /* UIProgressView+AFNetworking.m in Sources */,
 				5857930F1EE10E530041188F /* BDPulisherManager.m in Sources */,
+				58CB1CD11EF25A950009419C /* RecordClassNameView.m in Sources */,
 				589C58371E9B3471007D0EBB /* TPKeyboardAvoidingScrollView.m in Sources */,
 				586851631E83903400115227 /* KTMError.m in Sources */,
 				588735E81EA7340B00ADA1DA /* InputView.m in Sources */,
