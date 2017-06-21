@@ -30,6 +30,7 @@
     TRDAnimationIndicator *loadIndicator;
     CMMotionManager *motionManager;
     UIDeviceOrientation _deviceOrientation;
+    UIButton *playBtn;
 }
 @property (assign, nonatomic) NSUInteger loadCount;
 
@@ -251,7 +252,8 @@
     // 注入JS对象名称AppModel，当JS通过AppModel来调用时，
     // 我们可以在WKScriptMessageHandler代理中接收到
     [userCC addScriptMessageHandler:self name:@"Supadata"];
-    
+    [userCC addScriptMessageHandler:self name:@"userType"];
+
     if (theConnection) {
         [theConnection cancel];
         //        SAFE_RELEASE(theConnection);
@@ -435,6 +437,18 @@
         NSLog(@"%@", message.body);
         [self getSchoolId:message.body];
         
+    } else if ([message.name isEqualToString:@"userType"]) {
+        NSLog(@"%@", message.body);
+
+        NSInteger userType = [message.body integerValue];
+        if (userType == 1) {
+            playBtn.hidden = NO;
+//            [Progress progressShowcontent:@"您是该校教师，可以进行直播哦。" currView:self.view];
+        } else {
+            [Progress progressShowcontent:@"您在该校不是教师身份，不能进行直播哦。" currView:self.view];
+            playBtn.hidden = YES;
+        }
+    
     }
 }
 
@@ -520,7 +534,7 @@
 
 - (void)customPlayBtn {
     
-    UIButton *playBtn = [UIButton buttonWithType:UIButtonTypeCustom];
+    playBtn = [UIButton buttonWithType:UIButtonTypeCustom];
     playBtn.frame = CGRectMake(SCREEN_WIDTH - 18 - 95, 30+60, 97, 40);
     [playBtn setImage:[UIImage imageNamed:@"zhibo"] forState:UIControlStateNormal];
     [playBtn addTarget:self action:@selector(playAction:) forControlEvents:UIControlEventTouchUpInside];
@@ -562,6 +576,8 @@
         [self presentViewController:nav animated:NO completion:^{
         }];
         
+    } else {
+        [Progress progressShowcontent:@"您在该校不是教师身份，不能进行直播哦。" currView:self.view];
     }
 }
 

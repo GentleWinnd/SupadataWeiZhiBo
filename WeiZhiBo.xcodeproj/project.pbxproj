@@ -1445,7 +1445,7 @@
 					585EF4571E816EF600EC879F = {
 						CreatedOnToolsVersion = 8.2;
 						DevelopmentTeam = 45EEG7H946;
-						ProvisioningStyle = Manual;
+						ProvisioningStyle = Automatic;
 					};
 					585EF4731E816EF600EC879F = {
 						CreatedOnToolsVersion = 8.2;
@@ -1890,7 +1890,7 @@
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CODE_SIGN_IDENTITY = "iPhone Developer: youde wang (ZF7KM34YTL)";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				DEVELOPMENT_TEAM = 45EEG7H946;
+				DEVELOPMENT_TEAM = "";
 				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1905,8 +1905,8 @@
 				OTHER_LIBTOOLFLAGS = "-all_load -ObjC XCTest -framework";
 				PRODUCT_BUNDLE_IDENTIFIER = com.supadata.WeiZhiBo;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "825f7464-615b-4c47-bb2b-735c46220c73";
-				PROVISIONING_PROFILE_SPECIFIER = WeiZhiBoForHeBaobeiForDeveloper;
+				PROVISIONING_PROFILE = "";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				TARGETED_DEVICE_FAMILY = 1;
 				VALID_ARCHS = "arm64 armv7";
 			};
@@ -1918,8 +1918,8 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CODE_SIGN_IDENTITY = "iPhone Distribution: Supadata (Beijing) Technology Co., Ltd. (45EEG7H946)";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
-				DEVELOPMENT_TEAM = 45EEG7H946;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				DEVELOPMENT_TEAM = "";
 				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1934,8 +1934,8 @@
 				OTHER_LIBTOOLFLAGS = "-all_load -ObjC XCTest -framework";
 				PRODUCT_BUNDLE_IDENTIFIER = com.supadata.WeiZhiBo;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "e8a73850-7411-4250-b997-a4db9b02632d";
-				PROVISIONING_PROFILE_SPECIFIER = WeiZhiBoForHeBaobeiForDistribution;
+				PROVISIONING_PROFILE = "";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				TARGETED_DEVICE_FAMILY = 1;
 				VALID_ARCHS = "arm64 armv7";
 			};
