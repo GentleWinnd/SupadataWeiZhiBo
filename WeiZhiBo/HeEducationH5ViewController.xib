@@ -139,7 +139,7 @@
                         <constraint firstAttribute="trailing" secondItem="PuO-zl-7bC" secondAttribute="trailing" id="xyJ-xn-q91"/>
                     </constraints>
                 </view>
-                <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="rectangular_box.png" translatesAutoresizingMaskIntoConstraints="NO" id="HW3-my-FQL">
+                <imageView hidden="YES" userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="rectangular_box.png" translatesAutoresizingMaskIntoConstraints="NO" id="HW3-my-FQL">
                     <rect key="frame" x="256" y="64" width="107" height="156"/>
                 </imageView>
                 <button hidden="YES" opaque="NO" tag="2" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="X2u-e2-sBe">

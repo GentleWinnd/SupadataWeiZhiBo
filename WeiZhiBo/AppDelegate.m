@@ -241,12 +241,9 @@
     
     if (self.shouldChangeOrientation == YES) {
         return UIInterfaceOrientationMaskLandscapeRight;
-    }
-    else
-    {
+    } else {
         return UIInterfaceOrientationMaskPortrait;
     }
-    //    return UIInterfaceOrientationMaskAll;
 }
 
 

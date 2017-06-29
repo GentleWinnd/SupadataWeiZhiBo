@@ -5,33 +5,33 @@
 //  Created by YH on 2017/3/21.
 //  Copyright © 2017年 YH. All rights reserved.
 //
-#define  HEIGHT CGRectGetHeight(self.view.frame)
-#define  WIDTH CGRectGetWidth(self.view.frame)
 #define  KEY_BOARD_M_H 162
 #define  KEY_BOARD_H_H 193
 
+
+#import "HistoryRecoderViewController.h"
 #import "RecorderViewController.h"
-#import "SchoolNameView.h"
-#import "NSString+Extension.h"
-#import "ContentView.h"
-
-#import "AppLogMgr.h"
-
-#import <sys/types.h>
-#import <sys/sysctl.h>
-#import <UIKit/UIKit.h>
-#import <mach/mach.h>
-#import <CoreMotion/CoreMotion.h>
-#import "UserData.h"
-#import "SocketRocket.h"
-#import "CommentMessageView.h"
-#import "InputView.h"
-#import "DeviceDetailManager.h"
-#import "AppDelegate.h"
 #import "RecordClassNameView.h"
+#import "RecordingEndView.h"
+#import "AppDelegate.h"
+#import "UserData.h"
+
+#import "NSString+Extension.h"
+#import "SaveDataManager.h"
+
+//视频录播
+#import "WCLRecordEngine.h"
+#import "WCLRecordProgressView.h"
+#import <MobileCoreServices/MobileCoreServices.h>
+#import <MediaPlayer/MediaPlayer.h>
 
 
-@interface RecorderViewController ()
+typedef NS_ENUM(NSUInteger, UploadVieoStyle) {
+    VideoRecord = 0,
+    VideoLocation,
+};
+
+@interface RecorderViewController ()<WCLRecordEngineDelegate>
 //手势
 @property (strong, nonatomic) IBOutlet UIPinchGestureRecognizer *pinchGesture;//缩放手势
 @property (strong, nonatomic) IBOutlet UITapGestureRecognizer *tapGesture;//点击手势
@@ -42,6 +42,9 @@
 
 @property (strong, nonatomic) IBOutlet NSLayoutConstraint *backViewHeight;
 @property (strong, nonatomic) IBOutlet NSLayoutConstraint *backViewWidth;
+@property (strong, nonatomic) IBOutlet NSLayoutConstraint *cameraViewHeight;
+@property (strong, nonatomic) IBOutlet NSLayoutConstraint *cameraViewWidth;
+
 
 /*************contentView**********/
 
@@ -55,10 +58,19 @@
 @property (strong, nonatomic) IBOutlet UIButton *traformCameraBtn;
 
 @property (strong, nonatomic) RecordClassNameView *classView;
+@property (strong, nonatomic) IBOutlet UILabel *recorderTime;
+@property (strong, nonatomic) IBOutlet UILabel *recorderTitle;
+@property (strong, nonatomic) IBOutlet UIImageView *redDot;
+
+
 /********end******/
 
-@property (strong, nonatomic) UIActivityIndicatorView *iniIndicator;
-@property (assign, nonatomic) BOOL publish_switch;
+@property (weak, nonatomic) IBOutlet WCLRecordProgressView *progressView;
+@property (strong, nonatomic) WCLRecordEngine         *recordEngine;
+@property (assign, nonatomic) BOOL                    allowRecord;//允许录制
+@property (assign, nonatomic) UploadVieoStyle         videoStyle;//视频的类型
+@property (strong, nonatomic) UIImagePickerController *moviePicker;//视频选择器
+@property (strong, nonatomic) MPMoviePlayerViewController *playerVC;
 
 
 @end
@@ -67,76 +79,90 @@ static NSString *cellID = @"cellId";
 
 @implementation RecorderViewController {
     
-    NSString *classId;
-    NSString *className;
-    NSString *cameraDataId;
-    
-    UIDeviceOrientation _deviceOrientation;
-    CMMotionManager *motionManager;
-    MessageType messageType;
-    NSMutableArray *messageArr;
-    CGFloat keyBoardHeight;
-    CGFloat textMessgeHeight;
+    NSMutableArray *selClassArr;
     NSString *playTitle;
-    NSString *recordStr;
-    NSInteger noDataCount;
-    
     
     NSTimer *timer;
     int seconds;
-    BOOL siglePlaying;
-    BOOL uploadFinished;
-    BOOL havedSendPlayState;
-    NSInteger liveType;
-    NSInteger requestCount;
-    
 }
 
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view, typically from a nib.
-    //创建camera加载菊花
-    _iniIndicator = [[UIActivityIndicatorView alloc] initWithFrame:CGRectMake(0, 0, 66, 66)];
-    _iniIndicator.center = CGPointMake(SCREEN_WIDTH/2, SCREEN_HEIGHT/2);
-    _iniIndicator.activityIndicatorViewStyle = UIActivityIndicatorViewStyleWhiteLarge;
-    //    [self.view addSubview:_iniIndicator];
-    [_iniIndicator startAnimating];
+   
     //旋转背景容器view
     self.backView.transform = CGAffineTransformMakeRotation(- M_PI_2);
+    self.cameraView.transform = CGAffineTransformMakeRotation(- M_PI_2);
+
+    
+    [self initNeedData];
+    [self setShowItem];
+    
+    [self createCLassNamePickerView];
+    [self performSelector:@selector(showClassView) withObject:nil afterDelay:1.0];
 }
 
+- (void)showClassView {
+    [self showClassInfoTable:YES];
+
+}
+
+- (void)viewDidDisappear:(BOOL)animated {
+    [super viewDidDisappear:animated];
+    
+    if (self.recordEngine) {
+        [self.recordEngine shutdown];
+        [self stopTimer];
+    }
+    
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
+
+- (void)viewDidAppear:(BOOL)animated {
+    [super viewDidAppear:animated];
+    [self readyRecorder];
+
+}
+
+#pragma mark - 设置record
+
+- (void)readyRecorder {
+    if (_recordEngine == nil) {
+        [self.recordEngine previewLayer].frame = self.cameraView.bounds;
+        [self.cameraView.layer insertSublayer:[self.recordEngine previewLayer] atIndex:0];
+    }
+    [self.recordEngine startUp];
+}
+
+#pragma mark - set、get方法
+
+- (WCLRecordEngine *)recordEngine {
+    if (_recordEngine == nil) {
+        _recordEngine = [[WCLRecordEngine alloc] init];
+        _recordEngine.delegate = self;
+    }
+    return _recordEngine;
+}
 
 //初始化一些配置数据
 - (void)initNeedData {
     
-    if (self.userClassInfo.count == 1) {
-        NSDictionary *classInfo = [NSDictionary safeDictionary:[self.userClassInfo firstObject]];
-        className = [NSString safeString:classInfo[@"className"]];
-        classId = [NSString safeNumber:classInfo[@"classId"]];
-    }
-    textMessgeHeight = 42;
-    noDataCount = 0;
-    liveType = 1;
-    requestCount = 1;
-    messageArr = [NSMutableArray arrayWithCapacity:0];
-    siglePlaying = NO;
-    uploadFinished = NO;
-    havedSendPlayState = NO;
-    recordStr = @"";
+    selClassArr = [NSMutableArray arrayWithCapacity:0];
+    self.allowRecord = YES;
 }
 
 #pragma mark - 创建班级label
 
 - (void)setShowItem {
-    
-    [self.iniIndicator stopAnimating];
-    self.iniIndicator.hidden = YES;
     self.playBtn.transform = CGAffineTransformMakeRotation(M_PI_2);
     self.traformCameraBtn.transform = CGAffineTransformMakeRotation( M_PI_2);
     //    _beautySlider.transform = CGAffineTransformMakeRotation(M_PI_2);
     
-    self.backViewWidth.constant = HEIGHT;
-    self.backViewHeight.constant = WIDTH;
+    self.backViewWidth.constant = SCREEN_HEIGHT;
+    self.backViewHeight.constant = SCREEN_WIDTH;
+    self.cameraViewWidth.constant = SCREEN_HEIGHT;
+    self.cameraViewHeight.constant = SCREEN_WIDTH;
+    
     self.tapGesture.numberOfTapsRequired = 1;
     self.doubleTapGesture.numberOfTapsRequired = 2;
     //    self.tapGesture.enabled = YES;
@@ -147,40 +173,23 @@ static NSString *cellID = @"cellId";
     self.backBtn.hidden = NO;
     
     [self.tapGesture requireGestureRecognizerToFail:self.doubleTapGesture];
-    
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(changeContentViewPoint:) name:UIKeyboardDidChangeFrameNotification object:nil];
-    //监听当键将要退出时
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillHide:) name:UIKeyboardWillHideNotification object:nil];
-    
+//    self.historyBtn.hidden = [self getVideoPathAtFilePath:[self.recordEngine getVideoCachePath]].count>0?NO:YES;
 }
 
 #pragma mark - 设置蒙版和按钮的模糊效果
 
 - (void)setBackgroundViewAlpal:(BOOL)hidden {
     
-    self.playBtn.alpha = hidden?0.5:1;
-    self.backBtn.alpha = hidden?0.5:1;
-    self.traformCameraBtn.alpha = hidden?0.5:1;
+    self.playBtn.alpha = hidden?0.3:1;
+    self.historyBtn.alpha = hidden?0.3:1;
+    self.traformCameraBtn.alpha = hidden?0.3:1;
     self.backBtn.hidden = hidden;
 }
-
-
-#pragma mark - comment
-- (IBAction)playCommenAction:(UIButton *)sender {
-    if (sender.tag == 123) {//显示评论
-        sender.selected = !sender.selected;
-    } else if(sender.tag == 321){//发送评论
-       
-    } else {//显示蒙版
-        //        [self showClassInfoTable:NO];
-        [self.view resignFirstResponder];
-    }
-}
-
 
 #pragma mark - action
 
 - (IBAction)onToggleFlash:(UIButton *)sender {
+    
     if (sender.tag == 11) {//闪光灯
         
     } else if (sender.tag == 12){//美颜
@@ -188,54 +197,70 @@ static NSString *cellID = @"cellId";
         
     } else {//返回
         if (timer) {
-            [self alertViewMessage:@"正在直播，是否关闭？" alertType:AlertViewTypeQuitPlayView];
             
         } else {
-            //            AppDelegate * app = [UIApplication sharedApplication].delegate;
-            //            app.shouldChangeOrientation = NO;
-            //
-            //            [self.navigationController dismissViewControllerAnimated:YES completion:^{
-            //
-            //            }];
-            [self alertViewMessage:@"是否关闭直播？" alertType:AlertViewTypeQuitPlayView];
             
+            AppDelegate * app = [UIApplication sharedApplication].delegate;
+            app.shouldChangeOrientation = NO;
+            
+            [self.navigationController dismissViewControllerAnimated:YES completion:^{
+                
+            }];
         }
     }
 }
 
 - (IBAction)btnClickAction:(UIButton *)sender {
-    if (sender.tag == 1) {//播放
+    if (sender.tag == 2) {//播放
         if (sender.selected) {//停止zhibo
-            [self alertViewMessage:@"是否停止直播？" alertType:AlertViewTypeStopPlay];
+            [self stopRecoder];
         } else {//开始直播
             [self showClassInfoTable:_classView.hidden];
         }
         
-    } else if (sender.tag == 2){//翻转摄像头
+    } else if (sender.tag == 3){//翻转摄像头
         sender.selected = !sender.selected;
-        
-    }
-    //    else {//选择班级
-    //        if (_playBtn.selected) {
-    //            [Progress progressShowcontent:@"直播过程中不可选择班级" currView:self.view];
-    //        } else{
-    //            [self showClassInfoTable:_classView.hidden];
-    //
-    //        }
-    //    }
+        if (sender.selected == YES) {
+            //前置摄像头
+            [self.recordEngine closeFlashLight];
+            [self.recordEngine changeCameraInputDeviceisFront:YES];
+        }else {
+            [self.recordEngine changeCameraInputDeviceisFront:NO];
+        }
+    } else{//历史录制视频
     
+        HistoryRecoderViewController *historyVC = [[HistoryRecoderViewController alloc] init];
+        historyVC.historyRecoderArr = [self getVideoPathAtFilePath:[self.recordEngine getVideoCachePath]];
+        
+        [self.navigationController pushViewController:historyVC animated:YES];
+    }
 }
 
 
-- (IBAction)onPinch:(id)sender {//缩放手势
+#pragma mark - 获取文件夹里图片filePath
+- (NSMutableArray *)getVideoPathAtFilePath:(NSString *)filePath {
+    
+    NSError *error = nil;
+    NSFileManager *fileManager = [NSFileManager defaultManager];
+    //将filePath路径下的文件夹里的照片取出
+    NSArray *imageNameArray = [[NSArray alloc] initWithArray:[fileManager contentsOfDirectoryAtPath:filePath error:&error]];
+    NSMutableArray *imagesPathArray  = [NSMutableArray arrayWithCapacity:imageNameArray.count];
+    
+    for (NSString *imageName in imageNameArray) {
+        [imagesPathArray addObject:[filePath stringByAppendingPathComponent:imageName]];
+    }
+    
+    return imagesPathArray;
+}
 
+- (IBAction)onPinch:(id)sender {//缩放手势
+    
 }
 
 - (IBAction)onTap:(id)sender {//单击手势
     CGPoint point = [self.tapGesture locationInView:self.view];
     point.x /= self.view.frame.size.width;
     point.y /= self.view.frame.size.height;
-
 }
 
 - (IBAction)onDoubleTap:(id)sender {//双击手势
@@ -245,13 +270,59 @@ static NSString *cellID = @"cellId";
 #pragma mark - change beauty value
 - (IBAction)changeSlider:(UISlider *)sender {//设置美颜
 
-    
 }
 
+#pragma mark - 开始录制视频
+
+- (void)startRecoder {
+
+    if (self.recordEngine.isCapturing) {
+        [self.recordEngine resumeCapture];
+    } else {
+        [self.recordEngine startCapture];
+    }
+    [self showClassInfoTable:NO];
+    [self setDoingState:NO];
+    [self createTimer];
+
+    [[UIApplication sharedApplication] setIdleTimerDisabled:YES];
+
+}
+
+#pragma mark - 停止录制视频
+
+- (void)stopRecoder {
+
+    [self.recordEngine pauseCapture];
+    if (self.recordEngine.videoPath.length>0) {
+        
+        [self.recordEngine stopCaptureHandler:^(UIImage *movieImage) {
+            [self setDoingState:YES];
+            [self andEndView];
+            [self stopTimer];
+            self.recorderTitle.text = @"直播";
+        }];
+    }
+  
+    [[UIApplication sharedApplication] setIdleTimerDisabled:NO];
+
+}
+
+#pragma mark - 设置录制状态
+
+- (void)setDoingState:(BOOL) hidden {
+    self.playBtn.selected = !hidden;
+    self.redDot.hidden = hidden;
+    self.recorderTime.hidden = hidden;
+    self.backBtn.hidden = !hidden;
+
+}
 
 #pragma mark - create timer
+
 - (void)createTimer {
     seconds = 0;
+    self.recorderTime.text = @"00:00:00";
     if (timer) {
         [timer fire];
         return;
@@ -265,129 +336,114 @@ static NSString *cellID = @"cellId";
     int hourse = seconds/pow(60, 2);
     int second = seconds%60;
     
-//    self.CView.shotingTimeLable.text = [NSString stringWithFormat:@"%02d:%02d:%02d",hourse,minutes,second];
+    self.recorderTime.text = [NSString stringWithFormat:@"%02d:%02d:%02d",hourse,minutes,second];
+    self.redDot.hidden = !self.redDot.hidden;
+    
 //    double rate = [self.model.session getCurrentUploadBandwidthKbps];
 //    rate = rate < 0.0?0.0:rate;
 //    self.CView.rateLabel.textColor = rate >50?[UIColor whiteColor]:[UIColor redColor];
 //    
 //    self.CView.rateLabel.text = [NSString stringWithFormat:@"%.lf %@",rate,@"kb"];
   
-    if (siglePlaying || self.userClassInfo.count>1) {
-//        self.CView.redDotImage.hidden = !self.CView.redDotImage.hidden;
-    }
     
 //    if (rate == 0) {
 //        noDataCount++;
 //    }
     
     if (seconds/20&&seconds%20==0) {
-        noDataCount = 0;
     }
-    if (noDataCount>10) {
-
-        [self toastTip:@"创建班级直播失败，请稍后重试！"];
-    }
+  
 }
 
 - (void)stopTimer {
-    
-    
     [timer invalidate];
     timer = nil;
 }
 
-- (void)continueTimer {
-    [timer setFireDate:[NSDate date]];
-}
+#pragma mark - and end View
 
-- (void)pauseTimer {
-    [timer setFireDate:[NSDate distantFuture]];
-}
+- (void)andEndView {
 
-- (void)viewDidDisappear:(BOOL)animated {
-    [super viewDidDisappear:animated];
-    if (timer) {
-
-    }
+    RecordingEndView *endView = [[NSBundle mainBundle] loadNibNamed:@"RecordingEndView" owner:self options:nil].lastObject;
+    endView.frame = self.view.bounds;
+    [self.view addSubview:endView];
+    @WeakObj(endView)
+    endView.endViewBtnBlock = ^(EndViewBtnType type){
     
-    [[NSNotificationCenter defaultCenter] removeObserver:self];
-}
-
-- (void)viewDidAppear:(BOOL)animated {
-    [super viewWillAppear:animated];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onAudioSessionEvent:) name:AVAudioSessionInterruptionNotification object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onAppDidEnterBackGround:) name:UIApplicationDidEnterBackgroundNotification object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onAppWillEnterForeground:) name:UIApplicationWillEnterForegroundNotification object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onAppDidBecomeActive:) name:UIApplicationDidBecomeActiveNotification object:nil];
-    
-    
-    [self setShowItem];
-    [self createCLassNamePickerView];
-    [self initNeedData];
-    [self showClassInfoTable:YES];
-    
-}
-
-
-/***************notice**************/
-//在低系统（如7.1.2）可能收不到这个回调，请在onAppDidEnterBackGround和onAppWillEnterForeground里面处理打断逻辑
-- (void) onAudioSessionEvent: (NSNotification *) notification {
-    NSDictionary *info = notification.userInfo;
-    AVAudioSessionInterruptionType type = [info[AVAudioSessionInterruptionTypeKey] unsignedIntegerValue];
-    if (type == AVAudioSessionInterruptionTypeBegan) {
-        
-    } else {
-        AVAudioSessionInterruptionOptions options = [info[AVAudioSessionInterruptionOptionKey] unsignedIntegerValue];
-        if (options == AVAudioSessionInterruptionOptionShouldResume) {
+        if (type == EndViewBtnTypeBack) {//返回录制页面
+            [self saveRecoderVideoClasses];
             
+        } else if (type == EndViewBtnTypeRemove) {//删除视频
+            [self removeHistoryRecoder:self.recordEngine.videoPath];
+            
+        } else if (type == EndViewBtnTypeUpload) {//上传视频
+            [self saveRecoderVideoClasses];
+            
+        }
+        [endViewWeak removeFromSuperview];
+    };
+}
+
+- (void)removeHistoryRecoder:(NSString *)recoderPath {
+    NSError *error;
+    NSFileManager *filerManager = [NSFileManager defaultManager];
+    if ([filerManager fileExistsAtPath:recoderPath]) {
+        BOOL result = [filerManager removeItemAtPath:recoderPath error:&error];
+        if (result) {
+            NSLog(@"_______视频删除成功————————");
+            [[SaveDataManager shareSaveRecoder] removeRecoderVideoWithVideoId:@""];
+        } else {
+            [Progress progressShowcontent:@"删除失败了" currView:self.view];
         }
     }
 }
 
-- (void)onAppDidEnterBackGround:(UIApplication*)app {
+- (void)saveRecoderVideoClasses {
+    NSString *videoPath = self.recordEngine.videoPath;
+    if (videoPath.length>0) {
+        NSString *videoName = [videoPath componentsSeparatedByString:@"/"].lastObject;
+        if (videoName.length>0) {
+            NSString *videoId = [videoName componentsSeparatedByString:@"."].firstObject;
+            [[SaveDataManager shareSaveRecoder] saveRecoderVodeoClass:selClassArr withVideoId:videoId];
+            [[SaveDataManager shareSaveRecoder] saveRecoderTitle:playTitle withVideoId:videoId];
+
+        } else {
+            [Progress progressShowcontent:@"视频保存失败了" currView:self.view];
+        }
+    } else {
+        [Progress progressShowcontent:@"视频保存失败了" currView:self.view];
+    }
     
 }
 
-- (void)onAppWillEnterForeground:(UIApplication*)app {
-    
-}
-
-- (void)onAppDidBecomeActive:(UIApplication*)app {
-    
-}
 
 /*******************create class name pickerview*****************/
 
 - (void)createCLassNamePickerView {
     _classView = [[NSBundle mainBundle] loadNibNamed:@"RecordClassNameView" owner:self options:nil].lastObject;
     _classView.hidden = YES;
-    _classView.classInfo = [NSDictionary safeDictionary:[self.userClassInfo firstObject]];
     _classView.userClassInfo = self.userClassInfo;
     _classView.userRole = self.userRole;
-    
+    _classView.proTitle = playTitle;
     @WeakObj(self)
-    _classView.getClassInfo = ^(BOOL success, NSDictionary *userInfo){
+    @WeakObj(selClassArr)
+    _classView.getClassInfo = ^(BOOL success, NSArray *selClassesArr, NSString *titleStr){
         
+        [selClassArrWeak removeAllObjects];
         if (success) {
-            playTitle = _classView.classTitleTextFeild.text;
-            
-            NSString *CId = [NSString safeNumber:userInfo[@"classId"]];
-            NSString *CName = [NSString safeString:userInfo[@"className"]];
-            classId = CId;
-            className = CName.length == 0?@"未命名班级":CName;
-            
-            if (CId.length != 0) {//ceshi
-                selfWeak.classView.classTitleTextFeild.textColor = MAIN_LIGHT_WHITE_TEXTFEILD;
-                
-                
-            } else {
-                [Progress progressShowcontent:@"此班级不存在" currView:self.view];
+            playTitle = titleStr;
+            selfWeak.recorderTitle.text = titleStr;
+            for (NSDictionary *classDic in selClassesArr) {
+                NSDictionary *classInfo = @{@"title":titleStr,
+                                            @"classId":classDic[@"classId"],
+                                            @"className":classDic[@"className"]};
+                [selClassArrWeak addObject:classInfo];
             }
+            
+            [selfWeak startRecoder];
         } else {
             [selfWeak showClassInfoTable:NO];
-            if (timer) {
 
-            }
         }
     };
     [self.view addSubview:_classView];
@@ -416,86 +472,82 @@ static NSString *cellID = @"cellId";
     
     [UIView animateWithDuration:0.01 animations:^{
         _classView.frame = frame;
-        _classView.center = CGPointMake(WIDTH/2, HEIGHT/2);
+        _classView.center = CGPointMake(SCREEN_WIDTH/2, SCREEN_HEIGHT/2);
     }];
 }
 
+////开关闪光灯
+//- (IBAction)flashLightAction:(id)sender {
+//    if (self.changeCameraBT.selected == NO) {
+//        self.flashLightBT.selected = !self.flashLightBT.selected;
+//        if (self.flashLightBT.selected == YES) {
+//            [self.recordEngine openFlashLight];
+//        }else {
+//            [self.recordEngine closeFlashLight];
+//        }
+//    }
+//}
 
-- (void)alertViewMessage:(NSString *)messageStr alertType:(AlertViewType)type {
-    
-    UIAlertController *alert = [UIAlertController alertControllerWithTitle:nil message:messageStr preferredStyle:UIAlertControllerStyleAlert];
-    
-    //修改标题的内容，字号，颜色。使用的key值是“attributedTitle”
-    NSMutableAttributedString *hogan = [[NSMutableAttributedString alloc] initWithString:messageStr];
-    [hogan addAttribute:NSFontAttributeName value:[UIFont systemFontOfSize:15] range:NSMakeRange(0, [[hogan string] length])];
-    //    [hogan addAttribute:NSForegroundColorAttributeName value:MAIN_DACK_BLUE_ALERT range:NSMakeRange(0, [[hogan string] length])];
-    [alert setValue:hogan forKey:@"attributedMessage"];
-    
-    //修改按钮的颜色，同上可以使用同样的方法修改内容，样式
-    UIAlertAction *defaultAction = [UIAlertAction actionWithTitle:@"是" style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
-        if (type == AlertViewTypeStopPlay) {
 
-        } else if (type == AlertViewTypeSendParents) {
-            //            [self startRtmp];
-            //            [self groupSendMassage];
-        } else {
+- (void)playVideo {
 
-            AppDelegate * app = [UIApplication sharedApplication].delegate;
-            app.shouldChangeOrientation = NO;
+    if (_recordEngine.videoPath.length > 0) {
+        __weak typeof(self) weakSelf = self;
+        [self.recordEngine stopCaptureHandler:^(UIImage *movieImage) {
+            weakSelf.playerVC = [[MPMoviePlayerViewController alloc] initWithContentURL:[NSURL fileURLWithPath:weakSelf.recordEngine.videoPath]];
+            [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(playVideoFinished:) name:MPMoviePlayerPlaybackDidFinishNotification object:[weakSelf.playerVC moviePlayer]];
+            [[weakSelf.playerVC moviePlayer] prepareToPlay];
             
-            [self dismissViewControllerAnimated:YES completion:nil];
-        }
-    }];
-    
-    [defaultAction setValue:MAIN_DACK_BLUE_ALERT forKey:@"_titleTextColor"];
-    
-    UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:@"否" style:UIAlertActionStyleCancel handler:^(UIAlertAction *action) {
-        //        if (type == AlertViewTypeSendParents) {
-        //            [self startRtmp];
-        //        }
-    }];
-    
-    [cancelAction setValue:MAIN_LIGHT_GRAY_ALERT forKey:@"_titleTextColor"];
-    
-    // 添加按钮
-    [alert addAction:defaultAction];
-    [alert addAction:cancelAction];
-    
-    [self presentViewController:alert animated:YES completion:nil];
+            [weakSelf presentMoviePlayerViewControllerAnimated:weakSelf.playerVC];
+            [[weakSelf.playerVC moviePlayer] play];
+        }];
+    }else {
+        NSLog(@"请先录制视频~");
+    }
+
 }
 
-#pragma mark - 提示文字
-
-- (void) toastTip:(NSString*)toastInfo {
-    
-    CGRect frameRC = [[UIScreen mainScreen] bounds];
-    
-    NSDictionary *attribute = @{NSFontAttributeName: [UIFont systemFontOfSize:15]};
-    CGRect rect = [toastInfo boundingRectWithSize:CGSizeMake(MAXFLOAT, MAXFLOAT)
-                                          options:NSStringDrawingUsesLineFragmentOrigin
-                                       attributes:attribute
-                                          context:nil];
-    
-    __block UILabel * toastView = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, rect.size.width+16, 28)];
-    toastView.font = [UIFont systemFontOfSize:15];
-    toastView.textColor = [UIColor whiteColor];
-    toastView.backgroundColor = [UIColor colorWithRed:0 green:0 blue:0 alpha:0.6];
-    toastView.text = toastInfo;
-    toastView.center = CGPointMake(frameRC.size.width/2, frameRC.size.height/2);
-    toastView.layer.cornerRadius = 3.0f;
-    toastView.layer.masksToBounds = YES;
-    toastView.textAlignment = NSTextAlignmentCenter;
-    
-    [self.view addSubview:toastView];
-    
-    dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, 2 * NSEC_PER_SEC);
-    
-    dispatch_after(popTime, dispatch_get_main_queue(), ^(){
-        [toastView removeFromSuperview];
-        toastView = nil;
-    });
+//当点击Done按键或者播放完毕时调用此函数
+- (void) playVideoFinished:(NSNotification *)theNotification {
+    MPMoviePlayerController *player = [theNotification object];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:MPMoviePlayerPlaybackDidFinishNotification object:player];
+    [player stop];
+    [self.playerVC dismissMoviePlayerViewControllerAnimated];
+    self.playerVC = nil;
 }
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+- (void)dealloc {
+    _recordEngine = nil;
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:MPMoviePlayerPlaybackDidFinishNotification object:[_playerVC moviePlayer]];
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
+
+- (BOOL) shouldAutorotate {
+    return YES;
+}
+
+-(UIInterfaceOrientationMask)supportedInterfaceOrientations {
+
+    return UIInterfaceOrientationMaskLandscapeRight;
+}
 
 - (BOOL)prefersStatusBarHidden {
     return YES;
@@ -507,18 +559,13 @@ static NSString *cellID = @"cellId";
     // Dispose of any resources that can be recreated.
 }
 
-- (void)dealloc {
-    [[NSNotificationCenter defaultCenter] removeObserver:self];
+
+
+- (void)viewWillAppear:(BOOL)animated {
+    [super viewWillAppear:animated];
+    [self.navigationController setNavigationBarHidden:YES animated:YES];
 }
 
--(BOOL)shouldAutorotate {
-    return YES;
-}
-
--(UIInterfaceOrientationMask)supportedInterfaceOrientations {
-    _iniIndicator.center = CGPointMake(WIDTH/2, HEIGHT/2);
-    return UIInterfaceOrientationMaskLandscapeRight;
-}
 
 
 @end

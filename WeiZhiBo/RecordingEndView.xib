@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="12118" systemVersion="16E195" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
+    <device id="retina4_7" orientation="portrait">
+        <adaptation id="fullscreen"/>
+    </device>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="12086"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <view contentMode="scaleToFill" id="iN0-l3-epB" customClass="RecordingEndView">
+            <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+            <subviews>
+                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="录制结束了" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="yr6-23-dmz">
+                    <rect key="frame" x="136" y="211.5" width="102" height="24"/>
+                    <fontDescription key="fontDescription" type="system" pointSize="20"/>
+                    <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                    <nil key="highlightedColor"/>
+                </label>
+                <button opaque="NO" tag="1" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="dfr-Qd-bpu">
+                    <rect key="frame" x="2" y="311.5" width="370" height="44"/>
+                    <color key="backgroundColor" red="0.13725490196078433" green="0.58823529411764708" blue="0.95294117647058818" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="44" id="geU-pA-aNf"/>
+                        <constraint firstAttribute="width" constant="370" id="v10-yu-Jui"/>
+                    </constraints>
+                    <fontDescription key="fontDescription" type="system" pointSize="18"/>
+                    <state key="normal" title="立即上传">
+                        <color key="titleColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                    </state>
+                    <state key="selected" title="立即上传"/>
+                    <connections>
+                        <action selector="btnAction:" destination="iN0-l3-epB" eventType="touchUpInside" id="ege-eS-HHG"/>
+                    </connections>
+                </button>
+                <button opaque="NO" tag="2" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="uwT-SQ-Plk">
+                    <rect key="frame" x="2" y="367.5" width="370" height="44"/>
+                    <constraints>
+                        <constraint firstAttribute="width" constant="370" id="fzZ-ad-TKC"/>
+                        <constraint firstAttribute="height" constant="44" id="qHA-G8-3zw"/>
+                    </constraints>
+                    <fontDescription key="fontDescription" type="system" pointSize="18"/>
+                    <state key="normal" title="删除视频">
+                        <color key="titleColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                    </state>
+                    <connections>
+                        <action selector="btnAction:" destination="iN0-l3-epB" eventType="touchUpInside" id="ZI8-39-USd"/>
+                    </connections>
+                </button>
+                <button opaque="NO" tag="3" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="LSp-cP-CmN">
+                    <rect key="frame" x="2" y="423" width="370" height="44"/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="44" id="Itd-as-omz"/>
+                        <constraint firstAttribute="width" constant="370" id="hSk-8K-N30"/>
+                    </constraints>
+                    <fontDescription key="fontDescription" type="system" pointSize="18"/>
+                    <state key="normal" title="返回录制">
+                        <color key="titleColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                    </state>
+                    <connections>
+                        <action selector="btnAction:" destination="iN0-l3-epB" eventType="touchUpInside" id="NVF-9C-5Lv"/>
+                    </connections>
+                </button>
+            </subviews>
+            <color key="backgroundColor" red="0.0" green="0.0" blue="0.0" alpha="0.61210402397260277" colorSpace="calibratedRGB"/>
+            <constraints>
+                <constraint firstItem="yr6-23-dmz" firstAttribute="centerX" secondItem="iN0-l3-epB" secondAttribute="centerX" id="IXv-dJ-NrY"/>
+                <constraint firstItem="uwT-SQ-Plk" firstAttribute="centerX" secondItem="iN0-l3-epB" secondAttribute="centerX" id="Mrz-F8-EEy"/>
+                <constraint firstItem="dfr-Qd-bpu" firstAttribute="centerX" secondItem="iN0-l3-epB" secondAttribute="centerX" id="NZB-m8-Fhv"/>
+                <constraint firstItem="dfr-Qd-bpu" firstAttribute="centerY" secondItem="iN0-l3-epB" secondAttribute="centerY" id="Q4b-eY-0S6"/>
+                <constraint firstItem="LSp-cP-CmN" firstAttribute="centerX" secondItem="iN0-l3-epB" secondAttribute="centerX" id="Tjb-9o-lad"/>
+                <constraint firstItem="dfr-Qd-bpu" firstAttribute="top" secondItem="yr6-23-dmz" secondAttribute="bottom" constant="76" id="czL-FI-qMG"/>
+                <constraint firstItem="uwT-SQ-Plk" firstAttribute="top" secondItem="dfr-Qd-bpu" secondAttribute="bottom" constant="12" id="jNJ-vv-nME"/>
+                <constraint firstItem="LSp-cP-CmN" firstAttribute="top" secondItem="uwT-SQ-Plk" secondAttribute="bottom" constant="12" id="kTw-Se-gJk"/>
+            </constraints>
+            <connections>
+                <outlet property="backRecoderBtn" destination="LSp-cP-CmN" id="8Pe-AR-QE2"/>
+                <outlet property="reomveBtn" destination="uwT-SQ-Plk" id="4Fa-AK-P6Z"/>
+                <outlet property="uploadBtn" destination="dfr-Qd-bpu" id="cVJ-ID-Cqx"/>
+            </connections>
+            <point key="canvasLocation" x="33.5" y="54.5"/>
+        </view>
+    </objects>
+</document>

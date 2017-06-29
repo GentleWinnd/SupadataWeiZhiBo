@@ -15,10 +15,10 @@
 #import "User.h"
 #import <WebKit/WebKit.h>
 #import "AppDelegate.h"
-#import "APPDeviceInfoManager.h"
 #import "TRDAnimationIndicator.h"
 #import <CoreMotion/CoreMotion.h>
 #import "StreamingViewModel.h"
+#import "RecorderViewController.h"
 
 @interface HeEducationH5ViewController ()<WKNavigationDelegate,WKUIDelegate,WKScriptMessageHandler, UINavigationControllerDelegate, UIScrollViewDelegate, TRDAnimationIndicatorDelegate>
 {
@@ -30,6 +30,7 @@
     TRDAnimationIndicator *loadIndicator;
     CMMotionManager *motionManager;
     UIDeviceOrientation _deviceOrientation;
+    UIButton *playBtn;
 }
 @property (assign, nonatomic) NSUInteger loadCount;
 
@@ -232,8 +233,8 @@
 
 - (void)startLoadWebView {
     
-//    NSURL *repURL = [NSURL URLWithString:[NSString stringWithFormat:@"%@resource/html/teacher/?user=%@#/tab/live",HOST_URL,self.userId]];
-    NSURL *repURL = [NSURL URLWithString:[NSString stringWithFormat:@"%@resource/html/teacher/?user=%@#/tab/live",@"http://pengxiuxiao.55555.io/ssm/",self.userId]];
+    NSURL *repURL = [NSURL URLWithString:[NSString stringWithFormat:@"%@resource/html/teacher/?user=%@#/tab/live",HOST_URL,self.userId]];
+//    NSURL *repURL = [NSURL URLWithString:[NSString stringWithFormat:@"%@resource/html/teacher/?user=%@#/tab/live",@"http://pengxiuxiao.55555.io/ssm/",self.userId]];
 
     NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:repURL];
     
@@ -443,9 +444,17 @@
         NSLog(@"%@", message.body);
         [self getSchoolId:message.body];
         
-    } else {
+    } else if ([message.name isEqualToString:@"userType"]) {
         NSLog(@"%@", message.body);
 
+        NSInteger userType = [message.body integerValue];
+        if (userType == 1) {
+            playBtn.hidden = NO;
+//            [Progress progressShowcontent:@"您是该校教师，可以进行直播哦。" currView:self.view];
+        } else {
+            [Progress progressShowcontent:@"您在该校不是教师身份，不能进行直播哦。" currView:self.view];
+            playBtn.hidden = YES;
+        }
     }
 }
 
@@ -473,7 +482,7 @@
 }
 
 - (void)connection:(NSURLConnection *)connection didFailWithError:(NSError *)error {
-    
+    [loadIndicator stopAnimation];
     if (theConnection) {
         //        SAFE_RELEASE(theConnection);
         NSLog(@"safe release connection");
@@ -523,7 +532,6 @@
         }
         
     } else {
-        
         [Progress progressShowcontent:@"未能获取学校" currView:self.view];
     }
 }
@@ -540,7 +548,7 @@
         [self hiddenVedioBtnView:YES];
     } else if (sender.tag == 3) {//录播按钮
         [self hiddenVedioBtnView:YES];
-    
+        [self recorderView];
     }
     
 }
@@ -552,6 +560,22 @@
     self.recordBtn.hidden = hidden;
 }
 
+- (void)recorderView {
+    AppDelegate *app = [UIApplication sharedApplication].delegate;
+    app.shouldChangeOrientation = YES;
+
+    RecorderViewController *recoderView = [[RecorderViewController  alloc] init];
+    recoderView.userClassInfo = classesArray;
+    recoderView.userRole = self.userRole;
+    recoderView.userId = self.userId;
+    
+    UINavigationController * nav = [[UINavigationController alloc] initWithRootViewController:recoderView];
+    nav.navigationBarHidden = YES;
+    [self presentViewController:nav animated:NO completion:^{
+    }];
+    
+}
+
 #pragma mark- 直播按钮事件
 
 - (void)liveBtnAction {
@@ -561,9 +585,7 @@
         
 
         StreamingViewModel* vmodel = [[StreamingViewModel alloc] initWithPushUrl:@""];
-
         AppDelegate *app = [UIApplication sharedApplication].delegate;
-        
         app.shouldChangeOrientation = YES;
         
         ViewController *VC = [board instantiateViewControllerWithIdentifier:@"ViewController"];
@@ -582,6 +604,8 @@
         [self presentViewController:nav animated:NO completion:^{
         }];
         
+    } else {
+        [Progress progressShowcontent:@"您在该校不是教师身份，不能进行直播哦。" currView:self.view];
     }
 }
 
