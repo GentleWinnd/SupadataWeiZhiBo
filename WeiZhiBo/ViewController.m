@@ -591,6 +591,7 @@ static NSString *cellID = @"cellId";
     [_webSocket close];
     _webSocket = nil;
 
+    [MobClick endLogPageView:@"cameraView"];
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
@@ -606,10 +607,13 @@ static NSString *cellID = @"cellId";
     [self setShowItem];
     [self createContentView];
     [self createCLassNamePickerView];
+    
     [self initNeedData];
     [self createInputView];
     [self createMessageView];
     [self showClassInfoTable:YES];
+    
+    [MobClick beginLogPageView:@"cameraView"];
 
 }
 

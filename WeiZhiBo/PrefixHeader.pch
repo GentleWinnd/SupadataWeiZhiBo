@@ -25,4 +25,6 @@
 #import "Header.h"
 #import "NSString+Extension.h"
 #import "APIHeader.h"
+#import "UMMobClick/MobClick.h"
+
 #endif /* PrefixHeader_pch */

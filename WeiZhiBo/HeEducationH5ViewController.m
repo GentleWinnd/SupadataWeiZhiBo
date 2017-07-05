@@ -788,6 +788,13 @@
 - (void)viewWillAppear:(BOOL)animated {
     self.navigationController.navigationBarHidden = NO;
     //    [WWebView.scrollView setContentOffset:CGPointMake(0, -32)];
+    [MobClick beginLogPageView:@"H5View"];
+}
+
+- (void)viewDidDisappear:(BOOL)animated {
+
+    [super viewDidDisappear:animated];
+    [MobClick endLogPageView:@"H5View"];
 }
 
 - (void)didReceiveMemoryWarning {

@@ -187,6 +187,10 @@
 		58C87C011E8BB7EB00A917FD /* zhibo@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 58C87BFF1E8BB7EB00A917FD /* zhibo@3x.png */; };
 		58C87C061E8CAD8500A917FD /* ReloadView.m in Sources */ = {isa = PBXBuildFile; fileRef = 58C87C051E8CAD8500A917FD /* ReloadView.m */; };
 		58C87C081E8CADAF00A917FD /* ReloadView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 58C87C071E8CADAF00A917FD /* ReloadView.xib */; };
+		58CD5E7B1F0B3DDC0068866C /* UMMobClick.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 58CD5E7A1F0B3DDC0068866C /* UMMobClick.framework */; };
+		58CD5E7C1F0B3E850068866C /* CoreTelephony.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 581683541E83AD72003F669F /* CoreTelephony.framework */; };
+		58CD5E7D1F0B3E8C0068866C /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 581683501E83AD5D003F669F /* libz.tbd */; };
+		58CD5E7F1F0B3EA80068866C /* libsqlite3.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 58CD5E7E1F0B3EA80068866C /* libsqlite3.tbd */; };
 		58CDBCD51EA4631800C9FE30 /* SRDelegateController.m in Sources */ = {isa = PBXBuildFile; fileRef = 58CDBCAF1EA4631800C9FE30 /* SRDelegateController.m */; };
 		58CDBCD61EA4631800C9FE30 /* SRIOConsumer.m in Sources */ = {isa = PBXBuildFile; fileRef = 58CDBCB21EA4631800C9FE30 /* SRIOConsumer.m */; };
 		58CDBCD71EA4631800C9FE30 /* SRIOConsumerPool.m in Sources */ = {isa = PBXBuildFile; fileRef = 58CDBCB41EA4631800C9FE30 /* SRIOConsumerPool.m */; };
@@ -532,6 +536,8 @@
 		58C87C041E8CAD8500A917FD /* ReloadView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ReloadView.h; sourceTree = "<group>"; };
 		58C87C051E8CAD8500A917FD /* ReloadView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ReloadView.m; sourceTree = "<group>"; };
 		58C87C071E8CADAF00A917FD /* ReloadView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ReloadView.xib; sourceTree = "<group>"; };
+		58CD5E7A1F0B3DDC0068866C /* UMMobClick.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = UMMobClick.framework; sourceTree = "<group>"; };
+		58CD5E7E1F0B3EA80068866C /* libsqlite3.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libsqlite3.tbd; path = usr/lib/libsqlite3.tbd; sourceTree = SDKROOT; };
 		58CDBCAE1EA4631800C9FE30 /* SRDelegateController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SRDelegateController.h; sourceTree = "<group>"; };
 		58CDBCAF1EA4631800C9FE30 /* SRDelegateController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SRDelegateController.m; sourceTree = "<group>"; };
 		58CDBCB11EA4631800C9FE30 /* SRIOConsumer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SRIOConsumer.h; sourceTree = "<group>"; };
@@ -601,12 +607,16 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				58CD5E7F1F0B3EA80068866C /* libsqlite3.tbd in Frameworks */,
+				58CD5E7D1F0B3E8C0068866C /* libz.tbd in Frameworks */,
+				58CD5E7C1F0B3E850068866C /* CoreTelephony.framework in Frameworks */,
 				586AD3811EAEE43E00D4FDCA /* WebKit.framework in Frameworks */,
 				58A18E5F1EA45E4A002E94AF /* libicucore.tbd in Frameworks */,
 				58A18E5D1EA45E1F002E94AF /* CFNetwork.framework in Frameworks */,
 				58A18E5B1EA45ADD002E94AF /* Security.framework in Frameworks */,
 				581D07B61E89245500CB537E /* AudioToolbox.framework in Frameworks */,
 				581683571E83AD7E003F669F /* SystemConfiguration.framework in Frameworks */,
+				58CD5E7B1F0B3DDC0068866C /* UMMobClick.framework in Frameworks */,
 				581683531E83AD68003F669F /* VideoToolbox.framework in Frameworks */,
 				5816834F1E83AD52003F669F /* CoreGraphics.framework in Frameworks */,
 				5816834D1E83AD45003F669F /* CoreMedia.framework in Frameworks */,
@@ -713,6 +723,7 @@
 		581683451E83AD22003F669F /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				58CD5E7E1F0B3EA80068866C /* libsqlite3.tbd */,
 				586AD3801EAEE43E00D4FDCA /* WebKit.framework */,
 				58A18E5E1EA45E4A002E94AF /* libicucore.tbd */,
 				58A18E5C1EA45E1F002E94AF /* CFNetwork.framework */,
@@ -875,6 +886,7 @@
 		5868511C1E83901B00115227 /* ThirdFrame */ = {
 			isa = PBXGroup;
 			children = (
+				58CD5E791F0B3DDC0068866C /* UMAnalysis */,
 				583544961EC93EDA00AEC08B /* MyUploading */,
 				5874A5501EB1F8C40006824D /* RealReachability */,
 				588BC03F1EA99EA100524C2A /* 3DESEnCrypt */,
@@ -1224,6 +1236,14 @@
 				58C87BFF1E8BB7EB00A917FD /* zhibo@3x.png */,
 			);
 			path = ImageFile;
+			sourceTree = "<group>";
+		};
+		58CD5E791F0B3DDC0068866C /* UMAnalysis */ = {
+			isa = PBXGroup;
+			children = (
+				58CD5E7A1F0B3DDC0068866C /* UMMobClick.framework */,
+			);
+			path = UMAnalysis;
 			sourceTree = "<group>";
 		};
 		58CDBCAB1EA4631800C9FE30 /* SocketRocket */ = {
@@ -1890,12 +1910,13 @@
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CODE_SIGN_IDENTITY = "iPhone Developer: youde wang (ZF7KM34YTL)";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				DEVELOPMENT_TEAM = "";
+				DEVELOPMENT_TEAM = 45EEG7H946;
 				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/WeiZhiBo/ThirdFrame/TenXunAXBSDK",
 					"$(PROJECT_DIR)/WeiZhiBo/ThirdFrame/BaiduDevelop",
+					"$(PROJECT_DIR)/WeiZhiBo/ThirdFrame/UMAnalysis",
 				);
 				GCC_PREFIX_HEADER = "$(SRCROOT)/WeiZhiBo/PrefixHeader.pch";
 				INFOPLIST_FILE = WeiZhiBo/Info.plist;
@@ -1919,12 +1940,13 @@
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CODE_SIGN_IDENTITY = "iPhone Distribution: Supadata (Beijing) Technology Co., Ltd. (45EEG7H946)";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				DEVELOPMENT_TEAM = "";
+				DEVELOPMENT_TEAM = 45EEG7H946;
 				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/WeiZhiBo/ThirdFrame/TenXunAXBSDK",
 					"$(PROJECT_DIR)/WeiZhiBo/ThirdFrame/BaiduDevelop",
+					"$(PROJECT_DIR)/WeiZhiBo/ThirdFrame/UMAnalysis",
 				);
 				GCC_PREFIX_HEADER = "$(SRCROOT)/WeiZhiBo/PrefixHeader.pch";
 				INFOPLIST_FILE = WeiZhiBo/Info.plist;

@@ -12,6 +12,7 @@
 #import "HeEducationH5ViewController.h"
 #import "RealReachability.h"
 
+
 @interface AppDelegate ()
 
 @end
@@ -28,7 +29,7 @@
     self.window.rootViewController = _MainVC;
     [self.window makeKeyAndVisible];
 
-//    [self AFNetNotificator];
+    [self setUMAnalysisTrace];//友盟统计
 
     [GLobalRealReachability startNotifier];
     [[NSNotificationCenter defaultCenter] addObserver:self
@@ -39,44 +40,14 @@
     return YES;
 }
 
-- (void)AFNetNotificator {
+#pragma mark - 友盟统计
 
-    AFNetworkReachabilityManager *manager = [AFNetworkReachabilityManager sharedManager];
-    
-    [manager setReachabilityStatusChangeBlock:^(AFNetworkReachabilityStatus status) {
-        if (self.startNteNotice == NO) {
-            return;
-        }
+- (void)setUMAnalysisTrace {
 
-        // 当网络状态改变时调用
-        switch (status) {
-            case AFNetworkReachabilityStatusUnknown:
-//                NSLog(@"未知网络");
-                [Progress progressShowcontent:@"当前网络不可用" ];
+    UMConfigInstance.appKey = @"595b03228630f56a600002d0";
 
-                break;
-            case AFNetworkReachabilityStatusNotReachable:
-//                NSLog(@"没有网络");
-                [Progress progressShowcontent:@"当前网络不可用" ];
-
-                break;
-            case AFNetworkReachabilityStatusReachableViaWWAN:
-//                NSLog(@"手机自带网络");
-                [Progress progressShowcontent:@"当前使用移动数据" ];
-
-                break;
-            case AFNetworkReachabilityStatusReachableViaWiFi:
-//                NSLog(@"WIFI");
-                [Progress progressShowcontent:@"当前使用WiFi" ];
-
-                break;
-        }
-    }];
-    
-    //开始监控
-    [manager startMonitoring];
+    [MobClick startWithConfigure:UMConfigInstance];//配置以上参数后调用此方法初始化SDK！
 }
-
 
 - (void)networkChanged:(NSNotification *)notification {
     
