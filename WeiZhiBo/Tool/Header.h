@@ -34,4 +34,16 @@
 
 
 
+
+#define NSLog(format, ...) do { \
+fprintf(stderr, " %s\n", \
+        [[[NSString stringWithUTF8String:__FILE__] lastPathComponent] UTF8String], \
+        __LINE__, __func__); \
+(NSLog)((format), ##__VA_ARGS__); \
+fprintf(stderr, "-------\n"); \
+} while (0)
+
+#define TICK   NSDate *startTime = [NSDate date]
+#define TOCK   NSLog(@"Time: %f", -[startTime timeIntervalSinceNow])
+
 #endif /* Header_h */

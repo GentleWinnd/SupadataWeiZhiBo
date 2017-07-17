@@ -596,7 +596,7 @@ static NSString *cellID = @"cellId";
 }
 
 - (void)viewDidAppear:(BOOL)animated {
-    [super viewWillAppear:animated];
+    [super viewDidAppear:animated];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onAudioSessionEvent:) name:AVAudioSessionInterruptionNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onAppDidEnterBackGround:) name:UIApplicationDidEnterBackgroundNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onAppWillEnterForeground:) name:UIApplicationWillEnterForegroundNotification object:nil];
@@ -684,7 +684,7 @@ static NSString *cellID = @"cellId";
             
             _pushUrl = [NSString safeString:reponseObject[@"data"][@"cameraPushUrl"]];
 //            _logPlayId.text = [NSString safeString:reponseObject[@"data"][@"cameraPlayUrl"]];
-            cameraDataId = [NSString safeString:reponseObject[@"data"][@"id"]];
+            cameraDataId = [NSString stringWithFormat:@"%@",reponseObject[@"data"][@"id"]];
             [self startRtmp];
             
         } else {
@@ -892,10 +892,10 @@ static NSString *cellID = @"cellId";
     _webSocket.delegate = nil;
     [_webSocket close];
     
-//    _webSocket = [[SRWebSocket alloc] initWithURL:[NSURL URLWithString:@"ws://live.sch.supadata.cn/ssm/websocket"]];
-    NSArray *urlContensArr = [HOST_URL componentsSeparatedByString:@"http"];
-    NSString *socketStr = [NSString stringWithFormat:@"ws%@websocket",urlContensArr.lastObject];
-    _webSocket = [[SRWebSocket alloc] initWithURL:[NSURL URLWithString:socketStr]];
+    _webSocket = [[SRWebSocket alloc] initWithURL:[NSURL URLWithString:@"ws://118.178.84.40:6980/ssm/websocket"]];
+//    NSArray *urlContensArr = [HOST_URL componentsSeparatedByString:@"http"];
+//    NSString *socketStr = [NSString stringWithFormat:@"ws%@websocket",urlContensArr.lastObject];
+//    _webSocket = [[SRWebSocket alloc] initWithURL:[NSURL URLWithString:socketStr]];
 
     _webSocket.delegate = self;
     [_webSocket open];

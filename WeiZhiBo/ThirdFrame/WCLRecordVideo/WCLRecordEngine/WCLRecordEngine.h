@@ -61,6 +61,8 @@
 - (void)openFlashLight;
 //关闭闪光灯
 - (void)closeFlashLight;
+//设置焦点
+- (void)focusAtPoint:(CGPoint)point;
 //切换前后置摄像头
 - (void)changeCameraInputDeviceisFront:(BOOL)isFront;
 //将mov的视频转成mp4

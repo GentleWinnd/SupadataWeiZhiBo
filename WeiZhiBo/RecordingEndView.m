@@ -24,6 +24,10 @@
     [self setBtnLayer:self.reomveBtn];
     [self setBtnLayer:self.backRecoderBtn];
     
+    self.topSpace.constant = HEIGHT_6_ZSCALE(72);
+    self.titleBottomgap.constant = HEIGHT_6_ZSCALE(72);
+    self.btnWidth.constant = WIDTH_6_ZSCALE(370);
+    self.btnHeight.constant = HEIGHT_6_ZSCALE(44);
     
 }
 

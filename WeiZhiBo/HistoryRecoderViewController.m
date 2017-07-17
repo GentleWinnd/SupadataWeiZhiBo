@@ -54,6 +54,8 @@ static NSString *cellId = @"cellIdentifiler";
 
     self.recoderTab.delegate = self;
     self.recoderTab.dataSource = self;
+    self.recoderTab.rowHeight = UITableViewAutomaticDimension;
+    self.recoderTab.estimatedRowHeight = 55;
     [self.recoderTab registerNib:[UINib nibWithNibName:@"HistoryRecoderTableViewCell" bundle:nil] forCellReuseIdentifier:cellId];
 
 }
@@ -66,9 +68,9 @@ static NSString *cellId = @"cellIdentifiler";
     return  _historyRecoderArr.count;
 }
 
-- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
-    return 66;
-}
+//- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
+//    return 55;
+//}
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
 
@@ -92,35 +94,60 @@ static NSString *cellId = @"cellIdentifiler";
     cell.dotBtn.selected = uploadState;
     cell.uploadBtn.selected = uploadState;
     cell.titleLabel.text = titleStr;
-    cell.classLabel.attributedText = [self getVideoClassesWithVideoId:videoId];
+    cell.classLabel.attributedText = [self getVideoClassesWithVideoId:videoId withLabelWidth:CGRectGetWidth(cell.classLabel.frame)];
     cell.cellBtnAction = ^(BOOL remove) {
-        if ( remove ) {
+        if ( remove ) {//视频删除
             [self removeHistoryRecoder:self.historyRecoderArr[indexPath.row]];
-        } else {
+            
+        } else {//视频上传
+            
         }
     };
+    
+    [self logVideoSize:videoPath];
     
     return cell;
 }
 
-- (NSMutableAttributedString *)getVideoClassesWithVideoId:(NSString *)videoId {
+- (void)logVideoSize:(NSString *)url {
+    NSData *video = [NSData dataWithContentsOfFile:url];
+    NSInteger MSize = video.length/(1024*1024);
+    NSLog(@"------=======%@",[NSNumber numberWithInteger:MSize]);
+    
+}
+
+- (NSMutableAttributedString *)getVideoClassesWithVideoId:(NSString *)videoId withLabelWidth:(CGFloat)width {
 
     NSArray *classArr = [NSArray arrayWithArray:[[SaveDataManager shareSaveRecoder] getVideoClassesWithVideoId:videoId]];
     NSString *titleStr = @"";
     
-    for (NSDictionary *classDic in classArr) {
-        titleStr = [NSString stringWithFormat:@"%@ %@",titleStr ,classDic[@"className"]];
+    if (classArr.count > 0) {
+        for (NSDictionary *classDic in classArr) {
+            titleStr = [NSString stringWithFormat:@"%@ %@",titleStr ,classDic[@"className"]];
+        }
     }
     
+    CGFloat lineSpace = 7;
+    
     NSMutableAttributedString *attributeString = [[NSMutableAttributedString alloc] initWithString:titleStr];
-    NSMutableParagraphStyle *paragraphStyle = [[NSMutableParagraphStyle alloc] init];
-    paragraphStyle.lineSpacing = 7;
-    [attributeString addAttribute:NSParagraphStyleAttributeName value:paragraphStyle range:NSMakeRange(0, titleStr.length)];
-    [attributeString addAttribute:NSFontAttributeName value:[UIFont systemFontOfSize:11] range:NSMakeRange(0, titleStr.length)];
-
+    
+    if ([self calculateRowWidth:titleStr]<width) {
+        NSMutableParagraphStyle *paragraphStyle = [[NSMutableParagraphStyle alloc] init];
+        paragraphStyle.lineSpacing = lineSpace;
+        [attributeString addAttribute:NSParagraphStyleAttributeName value:paragraphStyle range:NSMakeRange(0, titleStr.length)];
+        [attributeString addAttribute:NSFontAttributeName value:[UIFont systemFontOfSize:11] range:NSMakeRange(0, titleStr.length)];
+    }
     
     return attributeString;
 
+}
+
+- (CGFloat)calculateRowWidth:(NSString *)string {
+    NSDictionary *dic = @{NSFontAttributeName:[UIFont systemFontOfSize:11]};  //指定字号
+    CGRect rect = [string boundingRectWithSize:CGSizeMake(0, 15)/*计算宽度时要确定高度*/ options:NSStringDrawingUsesLineFragmentOrigin |
+                   NSStringDrawingUsesFontLeading attributes:dic context:nil];
+    
+    return rect.size.width;
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {

@@ -46,7 +46,7 @@
                 </button>
                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="gej-XI-j7E" userLabel="lineOne">
                     <rect key="frame" x="125" y="286" width="140" height="1"/>
-                    <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                    <color key="backgroundColor" white="1" alpha="0.40657106164383561" colorSpace="calibratedWhite"/>
                     <constraints>
                         <constraint firstAttribute="height" constant="1" id="px1-6f-U86"/>
                     </constraints>
@@ -76,20 +76,20 @@
                 </button>
                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="hfB-VT-CuF" userLabel="lineTwi">
                     <rect key="frame" x="125" y="356" width="140" height="1"/>
-                    <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                    <color key="backgroundColor" white="1" alpha="0.40012307363013699" colorSpace="calibratedWhite"/>
                     <constraints>
                         <constraint firstAttribute="height" constant="1" id="aBi-na-SKh"/>
                     </constraints>
                 </view>
                 <button opaque="NO" tag="11" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="tn4-xt-OgO">
-                    <rect key="frame" x="57" y="407" width="90" height="33"/>
-                    <state key="normal" image="classCancle.png"/>
+                    <rect key="frame" x="47" y="407" width="100" height="35"/>
+                    <state key="normal" image="cancle_recod.png"/>
                     <connections>
                         <action selector="cancelBtnAction:" destination="C90-wr-pcr" eventType="touchUpInside" id="Qnq-6L-GqQ"/>
                     </connections>
                 </button>
                 <button opaque="NO" tag="12" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Ntr-aT-VnB">
-                    <rect key="frame" x="165" y="406" width="100" height="35"/>
+                    <rect key="frame" x="165" y="407" width="100" height="35"/>
                     <state key="normal" image="start_record.png"/>
                     <connections>
                         <action selector="cancelBtnAction:" destination="C90-wr-pcr" eventType="touchUpInside" id="bmU-Hg-W0O"/>
@@ -114,10 +114,13 @@
                                         <constraint firstAttribute="width" constant="50" id="VYD-Oi-aaM"/>
                                         <constraint firstAttribute="height" constant="36" id="r1a-nO-4m2"/>
                                     </constraints>
+                                    <color key="tintColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                                     <state key="normal" title="全选">
                                         <color key="titleColor" red="0.13725490196078433" green="0.58823529411764708" blue="0.95294117647058818" alpha="1" colorSpace="calibratedRGB"/>
                                     </state>
-                                    <state key="selected" title="取消"/>
+                                    <state key="selected" title="取消">
+                                        <color key="titleColor" red="0.13725490196078433" green="0.58823529411764708" blue="0.95294117647058818" alpha="1" colorSpace="calibratedRGB"/>
+                                    </state>
                                     <connections>
                                         <action selector="selectedCLassBtnAction:" destination="C90-wr-pcr" eventType="touchUpInside" id="SN5-k2-okx"/>
                                     </connections>
@@ -231,7 +234,7 @@
     </objects>
     <resources>
         <image name="bianji.png" width="19" height="19"/>
-        <image name="classCancle.png" width="90" height="33"/>
+        <image name="cancle_recod.png" width="100" height="35"/>
         <image name="start_record.png" width="100" height="35"/>
         <image name="xiala.png" width="23" height="23"/>
     </resources>

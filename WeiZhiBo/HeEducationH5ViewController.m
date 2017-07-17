@@ -814,6 +814,7 @@
 
 
 - (void)viewWillAppear:(BOOL)animated {
+    [super viewWillAppear:animated];
     self.navigationController.navigationBarHidden = NO;
     //    [WWebView.scrollView setContentOffset:CGPointMake(0, -32)];
 }

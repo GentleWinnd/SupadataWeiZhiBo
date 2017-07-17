@@ -97,16 +97,20 @@ static NSString *CellIdOfClass = @"cellIdOfClass";
     ClassNameTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdOfClass forIndexPath:indexPath];
     NSDictionary *classInfo = [NSDictionary safeDictionary:self.userClassInfo[indexPath.row]];
     NSString *classN = [NSString safeString:classInfo[@"className"]];
+    @WeakObj(cell)
+    cell.selectedBtn.selected = YES;
+    cell.setSelected = ^(BOOL sel) {
+        [self setClassCellSelectedState:cellWeak classInfo:classInfo];
+    };
+    
     if (classN.length == 0) {
         cell.classNameLabel.text = @"未命名班级";
     } else {
         cell.classNameLabel.text = classN;
     }
+
     if (self.selectedArray.count == 0) {
         cell.selectedBtn.selected = NO;
-    } else {
-        [self setClassCellSelectedState:cell classInfo:classInfo];
-
     }
     
     return cell;
@@ -126,6 +130,8 @@ static NSString *CellIdOfClass = @"cellIdOfClass";
         [self setClassCellSelectedState:cell classInfo:classInfo];
     }
     
+    self.allSelBtn.selected = self.selectedArray.count == self.userClassInfo.count;
+        
 }
 
 - (void)setClassCellSelectedState:(ClassNameTableViewCell *)cell classInfo:(NSDictionary *)classInfo {
@@ -136,6 +142,9 @@ static NSString *CellIdOfClass = @"cellIdOfClass";
             [self.selectedArray removeObject:classDic];
             break;
         }
+    }
+    if (self.selectedArray.count == 0) {
+        self.allSelBtn.selected = NO;
     }
 }
 
@@ -213,15 +222,19 @@ static NSString *CellIdOfClass = @"cellIdOfClass";
     if (sender.tag == 118) {//全选
         sender.selected = !sender.selected;
         [self.selectedArray removeAllObjects];
-        [self.selectedArray addObjectsFromArray:self.userClassInfo];
+        if (sender.selected) {
+            [self.selectedArray addObjectsFromArray:self.userClassInfo];
+        }
         [self.classNameTab reloadData];
         
     } else {//确定
         
         [self hiddenClassNameTableView:YES];
-        NSString *firstName = [NSString safeString:[NSDictionary safeDictionary:self.selectedArray.firstObject][@"className"]];
-        NSString *classNameStr = [NSString stringWithFormat:@"%@ (%@)",firstName,@(self.selectedArray.count)];
-        self.classNameTextfeild.text = classNameStr;
+        if (self.selectedArray.count>0) {
+            NSString *firstName = [NSString safeString:[NSDictionary safeDictionary:self.selectedArray.firstObject][@"className"]];
+            NSString *classNameStr = [NSString stringWithFormat:@"%@ (%@)",firstName,@(self.selectedArray.count)];
+            self.classNameTextfeild.text = classNameStr;
+        }
     }
     
 }

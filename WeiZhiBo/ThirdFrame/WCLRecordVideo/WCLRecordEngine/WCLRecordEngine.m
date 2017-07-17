@@ -47,6 +47,7 @@
 @property (strong, nonatomic) AVCaptureDeviceInput       *backCameraInput;//后置摄像头输入
 @property (strong, nonatomic) AVCaptureDeviceInput       *frontCameraInput;//前置摄像头输入
 @property (strong, nonatomic) AVCaptureDeviceInput       *audioMicInput;//麦克风输入
+@property (strong, nonatomic) AVCaptureDevice            *currentdevice;//当前的设备
 @property (copy  , nonatomic) dispatch_queue_t           captureQueue;//录制的队列
 @property (strong, nonatomic) AVCaptureConnection        *audioConnection;//音频录制连接
 @property (strong, nonatomic) AVCaptureConnection        *videoConnection;//视频录制连接
@@ -80,7 +81,7 @@
 {
     self = [super init];
     if (self) {
-        self.maxRecordTime = 60.0f;
+        self.maxRecordTime = 300.0f;
     }
     return self;
 }
@@ -208,16 +209,22 @@
         if ([_recordSession canAddOutput:self.videoOutput]) {
             [_recordSession addOutput:self.videoOutput];
             //设置视频的分辨率
-            _cx = 1280;
-            _cy = 720;
+            _cx = 640;
+            _cy = 480;
         }
         //添加音频输出
         if ([_recordSession canAddOutput:self.audioOutput]) {
             [_recordSession addOutput:self.audioOutput];
         }
+        //添加防抖动功能
+        self.videoConnection = [self.videoOutput connectionWithMediaType:AVMediaTypeVideo];
+        if ([self.videoConnection isVideoStabilizationSupported]) {
+            self.videoConnection.preferredVideoStabilizationMode = AVCaptureVideoStabilizationModeAuto;//防抖模式
+        }
         //设置视频录制的方向
         self.videoConnection.videoOrientation = AVCaptureVideoOrientationLandscapeRight;
-        
+        _currentdevice = [self cameraWithPosition:AVCaptureDevicePositionBack];
+
     }
     return _recordSession;
 }
@@ -334,7 +341,7 @@
 #pragma -mark 将mov文件转为MP4文件
 - (void)changeMovToMp4:(NSURL *)mediaURL dataBlock:(void (^)(UIImage *movieImage))handler {
     AVAsset *video = [AVAsset assetWithURL:mediaURL];
-    AVAssetExportSession *exportSession = [AVAssetExportSession exportSessionWithAsset:video presetName:AVAssetExportPreset1280x720];
+    AVAssetExportSession *exportSession = [AVAssetExportSession exportSessionWithAsset:video presetName:AVAssetExportPreset640x480];
     exportSession.shouldOptimizeForNetworkUse = YES;
     exportSession.outputFileType = AVFileTypeMPEG4;
     NSString * basePath=[self getVideoCachePath];
@@ -366,6 +373,7 @@
         if ([self.recordSession canAddInput:self.frontCameraInput]) {
             [self changeCameraAnimation];
             [self.recordSession addInput:self.frontCameraInput];
+            _currentdevice = [self cameraWithPosition:AVCaptureDevicePositionFront];
         }
     }else {
         [self.recordSession stopRunning];
@@ -373,6 +381,7 @@
         if ([self.recordSession canAddInput:self.backCameraInput]) {
             [self changeCameraAnimation];
             [self.recordSession addInput:self.backCameraInput];
+            _currentdevice = [self cameraWithPosition:AVCaptureDevicePositionBack];
         }
     }
 }
@@ -409,6 +418,44 @@
         backCamera.flashMode = AVCaptureTorchModeOff;
         [backCamera unlockForConfiguration];
     }
+}
+
+//AVCaptureFlashMode 闪光灯
+//AVCaptureFocusMode 对焦
+//AVCaptureExposureMode 曝光
+//AVCaptureWhiteBalanceMode 白平衡
+//闪光灯和白平衡可以在生成相机时候设置
+//曝光要根据对焦点的光线状况而决定,所以和对焦一块写
+//point为点击的位置
+- (void)focusAtPoint:(CGPoint)point {
+    NSError *error;
+    if ([self.currentdevice lockForConfiguration:&error]) {
+        //对焦模式和对焦点
+        if ([self.currentdevice isFocusModeSupported:AVCaptureFocusModeAutoFocus]) {
+            [self.currentdevice setFocusPointOfInterest:point];
+            [self.currentdevice setFocusMode:AVCaptureFocusModeAutoFocus];
+        }
+        //曝光模式和曝光点
+        if ([self.currentdevice isExposureModeSupported:AVCaptureExposureModeAutoExpose ]) {
+            [self.currentdevice setExposurePointOfInterest:point];
+            [self.currentdevice setExposureMode:AVCaptureExposureModeAutoExpose];
+        }
+        
+        [self.currentdevice unlockForConfiguration];
+//        //设置对焦动画
+//        _focusView.center = point;
+//        _focusView.hidden = NO;
+//        [UIView animateWithDuration:0.3 animations:^{
+//            _focusView.transform = CGAffineTransformMakeScale(1.25, 1.25);
+//        }completion:^(BOOL finished) {
+//            [UIView animateWithDuration:0.5 animations:^{
+//                _focusView.transform = CGAffineTransformIdentity;
+//            } completion:^(BOOL finished) {
+//                _focusView.hidden = YES;
+//            }];
+//        }];
+    }
+    
 }
 
 //获得视频存放地址
@@ -542,6 +589,51 @@
     CMSampleBufferCreateCopyWithNewTiming(nil, sample, count, pInfo, &sout);
     free(pInfo);
     return sout;
+}
+
+
+- (void)deletedPhotoFromAlbum {
+
+    //首先获取相册的集合
+    PHFetchResult *collectonResuts = [PHAssetCollection fetchAssetCollectionsWithType:PHAssetCollectionTypeSmartAlbum subtype:PHAssetCollectionSubtypeAny options:[PHFetchOptions new]] ;
+    //对获取到集合进行遍历
+//    [collectonResuts enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+//        PHAssetCollection *assetCollection = obj;
+//        //Camera Roll是我们写入照片的相册
+//        if ([assetCollection.localizedTitle isEqualToString:@"Camera Roll"])  {
+//            [[PHPhotoLibrary sharedPhotoLibrary] performChanges:^{
+//                //请求创建一个Asset
+//                PHAssetChangeRequest *assetRequest = [PHAssetChangeRequest creationRequestForAssetFromImage:[UIImage imageNamed:@"pet"]];
+//                //请求编辑相册
+//                PHAssetCollectionChangeRequest *collectonRequest = [PHAssetCollectionChangeRequest changeRequestForAssetCollection:assetCollection];
+//                //为Asset创建一个占位符，放到相册编辑请求中
+//                PHObjectPlaceholder *placeHolder = [assetRequest placeholderForCreatedAsset ];
+//                //相册中添加照片
+//                [collectonRequest addAssets:@[placeHolder]];
+//            } completionHandler:^(BOOL success, NSError *error) {
+//                NSLog(@"Error:%@", error);
+//            }];
+//        }
+//
+//    }];
+    
+    
+    [collectonResuts enumerateObjectsUsingBlock:^(id _Nonnull obj, NSUInteger idx, BOOL *_Nonnull stop) {
+        PHAssetCollection *assetCollection = obj;
+        if ([assetCollection.localizedTitle isEqualToString:@"Camera Roll"])  {
+            PHFetchResult *assetResult = [PHAsset fetchAssetsInAssetCollection:assetCollection options:[PHFetchOptions new]];
+            [assetResult enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *_Nonnull stop) {
+                [[PHPhotoLibrary sharedPhotoLibrary] performChanges:^{
+                    //获取相册的最后一张照片
+                    if (idx == [assetResult count] - 1) {
+                        [PHAssetChangeRequest deleteAssets:@[obj]];
+                    }
+                } completionHandler:^(BOOL success, NSError *error) {
+                    NSLog(@"Error: %@", error);
+                }];
+            }];
+        }
+    }];
 }
 
 @end

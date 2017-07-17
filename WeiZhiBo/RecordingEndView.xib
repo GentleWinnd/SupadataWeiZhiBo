@@ -15,14 +15,14 @@
             <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
-                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="录制结束了" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="yr6-23-dmz">
-                    <rect key="frame" x="136" y="211.5" width="102" height="24"/>
-                    <fontDescription key="fontDescription" type="system" pointSize="20"/>
+                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="录制结束了" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="yr6-23-dmz" customClass="ChangeLineSpaceAndWordSpace">
+                    <rect key="frame" x="87" y="76" width="201.5" height="48"/>
+                    <fontDescription key="fontDescription" type="system" pointSize="40"/>
                     <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                     <nil key="highlightedColor"/>
                 </label>
                 <button opaque="NO" tag="1" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="dfr-Qd-bpu">
-                    <rect key="frame" x="2" y="311.5" width="370" height="44"/>
+                    <rect key="frame" x="2" y="200" width="370" height="44"/>
                     <color key="backgroundColor" red="0.13725490196078433" green="0.58823529411764708" blue="0.95294117647058818" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     <constraints>
                         <constraint firstAttribute="height" constant="44" id="geU-pA-aNf"/>
@@ -38,11 +38,7 @@
                     </connections>
                 </button>
                 <button opaque="NO" tag="2" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="uwT-SQ-Plk">
-                    <rect key="frame" x="2" y="367.5" width="370" height="44"/>
-                    <constraints>
-                        <constraint firstAttribute="width" constant="370" id="fzZ-ad-TKC"/>
-                        <constraint firstAttribute="height" constant="44" id="qHA-G8-3zw"/>
-                    </constraints>
+                    <rect key="frame" x="2" y="256" width="370" height="44"/>
                     <fontDescription key="fontDescription" type="system" pointSize="18"/>
                     <state key="normal" title="删除视频">
                         <color key="titleColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
@@ -52,11 +48,7 @@
                     </connections>
                 </button>
                 <button opaque="NO" tag="3" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="LSp-cP-CmN">
-                    <rect key="frame" x="2" y="423" width="370" height="44"/>
-                    <constraints>
-                        <constraint firstAttribute="height" constant="44" id="Itd-as-omz"/>
-                        <constraint firstAttribute="width" constant="370" id="hSk-8K-N30"/>
-                    </constraints>
+                    <rect key="frame" x="2" y="311.5" width="370" height="44"/>
                     <fontDescription key="fontDescription" type="system" pointSize="18"/>
                     <state key="normal" title="返回录制">
                         <color key="titleColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
@@ -71,15 +63,23 @@
                 <constraint firstItem="yr6-23-dmz" firstAttribute="centerX" secondItem="iN0-l3-epB" secondAttribute="centerX" id="IXv-dJ-NrY"/>
                 <constraint firstItem="uwT-SQ-Plk" firstAttribute="centerX" secondItem="iN0-l3-epB" secondAttribute="centerX" id="Mrz-F8-EEy"/>
                 <constraint firstItem="dfr-Qd-bpu" firstAttribute="centerX" secondItem="iN0-l3-epB" secondAttribute="centerX" id="NZB-m8-Fhv"/>
-                <constraint firstItem="dfr-Qd-bpu" firstAttribute="centerY" secondItem="iN0-l3-epB" secondAttribute="centerY" id="Q4b-eY-0S6"/>
+                <constraint firstItem="yr6-23-dmz" firstAttribute="top" secondItem="iN0-l3-epB" secondAttribute="top" constant="76" id="TUZ-kW-OMK"/>
                 <constraint firstItem="LSp-cP-CmN" firstAttribute="centerX" secondItem="iN0-l3-epB" secondAttribute="centerX" id="Tjb-9o-lad"/>
+                <constraint firstItem="uwT-SQ-Plk" firstAttribute="width" secondItem="dfr-Qd-bpu" secondAttribute="width" id="XhH-BH-tlj"/>
+                <constraint firstItem="uwT-SQ-Plk" firstAttribute="height" secondItem="dfr-Qd-bpu" secondAttribute="height" id="Z06-hf-zH0"/>
                 <constraint firstItem="dfr-Qd-bpu" firstAttribute="top" secondItem="yr6-23-dmz" secondAttribute="bottom" constant="76" id="czL-FI-qMG"/>
                 <constraint firstItem="uwT-SQ-Plk" firstAttribute="top" secondItem="dfr-Qd-bpu" secondAttribute="bottom" constant="12" id="jNJ-vv-nME"/>
                 <constraint firstItem="LSp-cP-CmN" firstAttribute="top" secondItem="uwT-SQ-Plk" secondAttribute="bottom" constant="12" id="kTw-Se-gJk"/>
+                <constraint firstItem="LSp-cP-CmN" firstAttribute="height" secondItem="dfr-Qd-bpu" secondAttribute="height" id="mad-9Q-Jj6"/>
+                <constraint firstItem="LSp-cP-CmN" firstAttribute="width" secondItem="dfr-Qd-bpu" secondAttribute="width" id="whq-QO-dFb"/>
             </constraints>
             <connections>
                 <outlet property="backRecoderBtn" destination="LSp-cP-CmN" id="8Pe-AR-QE2"/>
+                <outlet property="btnHeight" destination="geU-pA-aNf" id="4nB-PG-0jW"/>
+                <outlet property="btnWidth" destination="v10-yu-Jui" id="9VY-j2-CgT"/>
                 <outlet property="reomveBtn" destination="uwT-SQ-Plk" id="4Fa-AK-P6Z"/>
+                <outlet property="titleBottomgap" destination="czL-FI-qMG" id="qOA-jt-jbt"/>
+                <outlet property="topSpace" destination="TUZ-kW-OMK" id="cqe-1S-Fic"/>
                 <outlet property="uploadBtn" destination="dfr-Qd-bpu" id="cVJ-ID-Cqx"/>
             </connections>
             <point key="canvasLocation" x="33.5" y="54.5"/>

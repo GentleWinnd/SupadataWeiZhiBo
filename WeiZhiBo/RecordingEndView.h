@@ -23,6 +23,13 @@ typedef NS_ENUM(NSInteger, EndViewBtnType) {
 
 @property (strong, nonatomic) IBOutlet UIButton *backRecoderBtn;
 
+@property (strong, nonatomic) IBOutlet NSLayoutConstraint *topSpace;
+
+@property (strong, nonatomic) IBOutlet NSLayoutConstraint *titleBottomgap;
+@property (strong, nonatomic) IBOutlet NSLayoutConstraint *btnWidth;
+@property (strong, nonatomic) IBOutlet NSLayoutConstraint *btnHeight;
+
+
 
 @property (copy, nonatomic) void(^endViewBtnBlock)(EndViewBtnType type);
 
