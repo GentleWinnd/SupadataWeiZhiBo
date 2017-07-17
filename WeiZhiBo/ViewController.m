@@ -1499,16 +1499,6 @@ static NSString *CellIdOfClass = @"cellIdOfClass";
 
 
 
-//#pragma mark - unfold or fold cell
-//- (void)unFoldCell:(UIGestureRecognizer *)gesture {
-//    NSInteger section = gesture.view.tag;
-//    NSString *indexStr = [NSString stringWithFormat:@"%tu",section];
-//    BOOL fold = ![unfoldInfo[indexStr] boolValue];
-//    [unfoldInfo setValue:[NSNumber numberWithBool:fold] forKey:indexStr];
-//    [_classNameTable reloadData];
-//    
-//}
-
 
 @end
 

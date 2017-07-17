@@ -51,7 +51,7 @@
                                          success:(void(^)(id reponseObject))success
                                          failure:(void(^)(NSError *error))failure {
     
-    NSString *urlStr = @"rootSchool/getPhonePushUrl";
+    NSString *urlStr = @"camera/getPhonePushUrl";
     NSString *URLString = [NSString stringWithFormat:@"%@%@", HOST_URL, urlStr];
     [KTMWebService CMGetWithURL:URLString parameters:parameters sucess:^(id responseObject) {
         if (success) {
@@ -128,7 +128,7 @@
                                     success:(void(^)(id reponseObject))success
                                     failure:(void(^)(NSError *error))failure {
  
-    NSString *urlStr = [NSString stringWithFormat:@"rootSchool/liveNotice?id=%@&flag=%@&calssId=%@&sumTime=%@&userId=%@&liveTitle=%@&userName=%@&schoolId=%@&liveType=%@&count=%@",parameters[@"id"],parameters[@"flag"],parameters[@"classId"],parameters[@"sumTime"],parameters[@"userId"],parameters[@"liveTitle"],parameters[@"userName"],parameters[@"schoolId"],parameters[@"liveType"],parameters[@"count"]];
+    NSString *urlStr = [NSString stringWithFormat:@"camera/liveNotice?id=%@&flag=%@&calssId=%@&sumTime=%@&userId=%@&liveTitle=%@&userName=%@&schoolId=%@&liveType=%@&count=%@",parameters[@"id"],parameters[@"flag"],parameters[@"classId"],parameters[@"sumTime"],parameters[@"userId"],parameters[@"liveTitle"],parameters[@"userName"],parameters[@"schoolId"],parameters[@"liveType"],parameters[@"count"]];
     NSString *URLString = [NSString stringWithFormat:@"%@%@", HOST_URL, urlStr];
     NSString *URL = [URLString stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
 //    NSString *URLString = [NSString stringWithFormat:@"%@%@", HOST_URL,@"rootSchool/liveNotice"];
