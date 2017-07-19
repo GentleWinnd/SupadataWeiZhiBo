@@ -10,5 +10,8 @@
 
 @interface ClassNameTableViewCell : UITableViewCell
 @property (strong, nonatomic) IBOutlet UILabel *classNameLabel;
+@property (strong, nonatomic) IBOutlet UIButton *selectedBtn;
+@property (strong, nonatomic) void(^setSelected)(BOOL sel);
+
 
 @end

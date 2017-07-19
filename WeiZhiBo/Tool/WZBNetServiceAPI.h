@@ -24,7 +24,7 @@
                                 failure:(void(^)(NSError *error))failure;
 
 //注册直播手机
-+ (void)postRegisterPhoneMicroLiveWithParameters:(id)parameters
++ (void)getRegisterPhoneMicroLiveWithParameters:(id)parameters
                                          success:(void(^)(id reponseObject))success
                                          failure:(void(^)(NSError *error))failure;
 
