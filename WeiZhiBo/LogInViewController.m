@@ -211,7 +211,7 @@
         StreamingViewModel* vmodel = [[StreamingViewModel alloc] initWithPushUrl:@""];
         [vmodel setupSession:AVCaptureVideoOrientationLandscapeRight delegate:self];
 
-        
+        NSString *schoolId = [NSString stringWithFormat:@"%@",schoolInfo[@"schoolId"]];
         ViewController *VC = [board instantiateViewControllerWithIdentifier:@"ViewController"];
         VC.userClassInfo = [NSArray safeArray:schoolInfo[@"classes"]];
         VC.userId = responseObject[@"data"][@"user"][@"uId"];
@@ -222,6 +222,11 @@
         VC.schoolName = schoolInfo[@"schoolName"];
         VC.model = vmodel;
         
+        if (schoolId.length == 0) {
+            [Progress progressShowcontent:@"请选择学校" currView:self.view];
+            return;
+        }
+
         UINavigationController * nav = [[UINavigationController alloc] initWithRootViewController:VC];
         nav.navigationBarHidden = YES;
         [self presentViewController:nav animated:NO completion:^{
@@ -260,6 +265,17 @@
     _passwordField.secureTextEntry = sender.selected;
     sender.selected = !sender.selected;
     
+}
+
+- (void)viewDidDisappear:(BOOL)animated {
+    [super viewDidDisappear:animated];
+    [MobClick endLogPageView:@"LoginView"];
+}
+
+- (void)viewDidAppear:(BOOL)animated {
+    [super viewDidAppear: animated];
+    [MobClick beginLogPageView:@"LoginView"];
+
 }
 
 

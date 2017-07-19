@@ -7,25 +7,25 @@
 //
 
 typedef NS_ENUM(NSInteger, MessageType) {
-
+    
     MessageTypeOpen=1,
     MessageTypeSendMessage,
     MessageTypeClose
 };
 
 typedef NS_ENUM(NSInteger, AlertViewType) {
-
+    
     AlertViewTypeSendParents,
     AlertViewTypeQuitPlayView,
     AlertViewTypeStopPlay
-
+    
 };
 
 typedef NS_ENUM(NSInteger, MessageSocketType) {
     MessageSocketTypeDefualtMessage=1,
     MessageSocketTypeLivePeople,
     MessageSocketTypeThumbNumebr
-
+    
 };
 
 #import <UIKit/UIKit.h>
@@ -37,13 +37,13 @@ typedef NS_ENUM(NSInteger, MessageSocketType) {
 {
     BOOL         _isPreviewing;
     NSString   * _pushUrl;
-
+    
     unsigned long long  _startTime;
     unsigned long long  _lastTime;
     
     NSString*       _logMsg;
     NSString*       _tipsMsg;
-
+    
 }
 @property (strong, nonatomic) NSArray *userClassInfo;
 @property (strong, nonatomic) NSString *userId;

@@ -79,6 +79,7 @@
     UIAlertAction *defaultAction = [UIAlertAction actionWithTitle:@"是" style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
         if ([[UIApplication sharedApplication] canOpenURL:[NSURL  URLWithString:@"itms-apps://itunes.apple.com/app/id1221856921"]]){
             [[UIApplication sharedApplication] openURL:[NSURL URLWithString:@"itms-apps://itunes.apple.com/app/id1221856921"]];
+            [self deleteWebCache];
         } else {
             [Progress progressShowcontent:@"更新出现错误" currView:self.view];
         }
@@ -393,6 +394,42 @@
     decisionHandler(WKNavigationResponsePolicyAllow);
 }
 
+#pragma mark - 删除啊缓存
+- (void)deleteWebCache {
+    
+    if ([[UIDevice currentDevice].systemVersion floatValue] >= 9.0) {
+        
+        NSSet *websiteDataTypes
+        = [NSSet setWithArray:@[
+                                WKWebsiteDataTypeDiskCache,
+                                //WKWebsiteDataTypeOfflineWebApplicationCache,
+                                WKWebsiteDataTypeMemoryCache,
+                                //WKWebsiteDataTypeLocalStorage,
+                                //WKWebsiteDataTypeCookies,
+                                //WKWebsiteDataTypeSessionStorage,
+                                //WKWebsiteDataTypeIndexedDBDatabases,
+                                //WKWebsiteDataTypeWebSQLDatabases
+                                ]];
+        //// All kinds of data
+        //NSSet *websiteDataTypes = [WKWebsiteDataStore allWebsiteDataTypes];
+        //// Date from
+        NSDate *dateFrom = [NSDate dateWithTimeIntervalSince1970:0];
+        //// Execute
+        [[WKWebsiteDataStore defaultDataStore] removeDataOfTypes:websiteDataTypes modifiedSince:dateFrom completionHandler:^{
+            // Done
+        }];
+        
+    } else {
+        
+        NSString *libraryPath = [NSSearchPathForDirectoriesInDomains(NSLibraryDirectory, NSUserDomainMask, YES) objectAtIndex:0];
+        NSString *cookiesFolderPath = [libraryPath stringByAppendingString:@"/Cookies"];
+        NSError *errors;
+        [[NSFileManager defaultManager] removeItemAtPath:cookiesFolderPath error:&errors];
+        
+    }
+    
+}
+
 
 // 计算wkWebView进度条
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context {
@@ -598,6 +635,11 @@
         VC.schoolName = CSchoolName;
         VC.model = vmodel;
 //        [vmodel setupSession:AVCaptureVideoOrientationLandscapeRight delegate:VC];
+
+        if (CSchoolId.length == 0) {
+            [Progress progressShowcontent:@"请选择学校" currView:self.view];
+            return;
+        }
 
         UINavigationController * nav = [[UINavigationController alloc] initWithRootViewController:VC];
         nav.navigationBarHidden = YES;
@@ -817,6 +859,13 @@
     [super viewWillAppear:animated];
     self.navigationController.navigationBarHidden = NO;
     //    [WWebView.scrollView setContentOffset:CGPointMake(0, -32)];
+    [MobClick beginLogPageView:@"H5View"];
+}
+
+- (void)viewDidDisappear:(BOOL)animated {
+
+    [super viewDidDisappear:animated];
+    [MobClick endLogPageView:@"H5View"];
 }
 
 - (void)didReceiveMemoryWarning {

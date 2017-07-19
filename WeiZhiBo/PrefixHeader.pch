@@ -26,4 +26,6 @@
 #import "NSString+Extension.h"
 #import "APIHeader.h"
 #import "UILabel+ChangeLineSpaceAndWordSpace.h"
+#import "UMMobClick/MobClick.h"
+
 #endif /* PrefixHeader_pch */
