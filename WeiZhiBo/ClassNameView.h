@@ -8,7 +8,7 @@
 
 #import <UIKit/UIKit.h>
 
-@interface CLassNameView : UIView
+@interface ClassNameView : UIView
 
 @property (strong, nonatomic) NSArray *userClassInfo;
 @property (strong, nonatomic) IBOutlet UITableView *classNameTab;

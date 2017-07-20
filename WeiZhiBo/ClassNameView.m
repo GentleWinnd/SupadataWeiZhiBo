@@ -6,10 +6,10 @@
 //  Copyright © 2017年 YH. All rights reserved.
 //
 
-#import "CLassNameView.h"
+#import "ClassNameView.h"
 #import "ClassNameTableViewCell.h"
 
-@interface CLassNameView()<UITableViewDelegate, UITableViewDataSource, UITextFieldDelegate>
+@interface ClassNameView()<UITableViewDelegate, UITableViewDataSource, UITextFieldDelegate>
 
 @property (strong, nonatomic) IBOutlet UIButton *cancleBtn;
 @property (strong, nonatomic) IBOutlet UIButton *confirmBtn;
@@ -28,7 +28,7 @@
 static NSString *CellIdOfClass = @"cellIdOfClass";
 
 
-@implementation CLassNameView
+@implementation ClassNameView
 
 - (void)awakeFromNib {
     [super awakeFromNib];

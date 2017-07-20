@@ -66,7 +66,7 @@
 @property (strong, nonatomic) IBOutlet UIButton *playBtn;
 @property (strong, nonatomic) IBOutlet UIButton *traformCameraBtn;
 
-@property (strong, nonatomic) CLassNameView *classView;
+@property (strong, nonatomic) ClassNameView *classView;
 /********end******/
 
 @property (strong, nonatomic) UIActivityIndicatorView *iniIndicator;

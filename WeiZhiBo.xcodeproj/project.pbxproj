@@ -1434,9 +1434,9 @@
 		58CDBD411EA4D0AC00C9FE30 /* Views */ = {
 			isa = PBXGroup;
 			children = (
-				58FA06111E94D78400EFB656 /* ClassNameView.xib */,
 				58CA13881F1CA7D100FB8BC3 /* ClassNameView.h */,
 				58CA13891F1CA7D100FB8BC3 /* ClassNameView.m */,
+				58FA06111E94D78400EFB656 /* ClassNameView.xib */,
 				58C87C041E8CAD8500A917FD /* ReloadView.h */,
 				58C87C051E8CAD8500A917FD /* ReloadView.m */,
 				58C87C071E8CADAF00A917FD /* ReloadView.xib */,
