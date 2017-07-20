@@ -1,5 +1,5 @@
 //
-//  CLassNameView.m
+//  ClassNameView.m
 //  WeiZhiBo
 //
 //  Created by SUPADATA on 2017/6/15.

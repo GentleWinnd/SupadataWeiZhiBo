@@ -1,5 +1,5 @@
 //
-//  CLassNameView.h
+//  ClassNameView.h
 //  WeiZhiBo
 //
 //  Created by SUPADATA on 2017/6/15.
