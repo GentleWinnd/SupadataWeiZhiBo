@@ -878,9 +878,6 @@
 				585EF45F1E816EF600EC879F /* AppDelegate.m */,
 				585EF4611E816EF600EC879F /* ViewController.h */,
 				585EF4621E816EF600EC879F /* ViewController.m */,
-				58C901E51F1F522600800A7E /* HistoryRecoderTableViewCell.h */,
-				58C901E61F1F522600800A7E /* HistoryRecoderTableViewCell.m */,
-				58C901E71F1F522600800A7E /* HistoryRecoderTableViewCell.xib */,
 				58C901E81F1F522600800A7E /* HistoryRecoderViewController.h */,
 				58C901E91F1F522600800A7E /* HistoryRecoderViewController.m */,
 				58C901EA1F1F522600800A7E /* HistoryRecoderViewController.xib */,
@@ -1468,6 +1465,9 @@
 		58CDBD421EA4D0B700C9FE30 /* Cells */ = {
 			isa = PBXGroup;
 			children = (
+				58C901E51F1F522600800A7E /* HistoryRecoderTableViewCell.h */,
+				58C901E61F1F522600800A7E /* HistoryRecoderTableViewCell.m */,
+				58C901E71F1F522600800A7E /* HistoryRecoderTableViewCell.xib */,
 				58CA138B1F1CAAB600FB8BC3 /* ClassNameTableViewCell.h */,
 				58CA138C1F1CAAB600FB8BC3 /* ClassNameTableViewCell.m */,
 				58CA138D1F1CAAB600FB8BC3 /* ClassNameTableViewCell.xib */,
