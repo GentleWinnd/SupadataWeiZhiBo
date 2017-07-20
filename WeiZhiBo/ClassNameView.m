@@ -27,7 +27,6 @@
 @end
 static NSString *CellIdOfClass = @"cellIdOfClass";
 
-
 @implementation ClassNameView
 
 - (void)awakeFromNib {
