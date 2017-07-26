@@ -19,7 +19,6 @@
 
 - (IBAction)selectedBtnAction:(UIButton *)sender {
     
-    sender.selected = !sender.selected;
     if (self.setSelected) {
         self.setSelected(sender.selected);
     }
