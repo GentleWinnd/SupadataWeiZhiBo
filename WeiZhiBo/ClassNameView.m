@@ -104,8 +104,9 @@ static NSString *CellIdOfClass = @"cellIdOfClass";
     @WeakObj(cell)
     cell.selectedBtn.selected = YES;
     cell.setSelected = ^(BOOL sel) {
-        [self setClassCellSelectedState:cellWeak classInfo:classInfo];
+        [self tableView:tableView didSelectRowAtIndexPath:indexPath];
     };
+    
     
     if (classN.length == 0) {
         cell.classNameLabel.text = @"未命名班级";
@@ -199,7 +200,7 @@ static NSString *CellIdOfClass = @"cellIdOfClass";
     }
     if (self.selectedArray.count == 0) {
         self.allSelectedBtn.selected = NO;
-        self.classNameTextfeild.text = @"暂无班级数据";
+        self.classNameTextfeild.text = @"请选择直播班级";
     }
 }
 
@@ -227,18 +228,22 @@ static NSString *CellIdOfClass = @"cellIdOfClass";
         if (sender.selected) {
             [self.selectedArray addObjectsFromArray:self.userClassInfo];
         } else {
-            self.classNameTextfeild.text = @"暂无班级数据";
+            self.classNameTextfeild.text = @"请选择直播班级";
         }
         [self.classNameTab reloadData];
         
     } else {//确定
         
-        [self hiddenClassNameTableView:YES];
         if (self.selectedArray.count>0) {
             NSString *firstName = [NSString safeString:[NSDictionary safeDictionary:self.selectedArray.firstObject][@"className"]];
             NSString *classNameStr = [NSString stringWithFormat:@"%@ (%@)",firstName,@(self.selectedArray.count)];
             self.classNameTextfeild.text = classNameStr;
+
+        } else {
+            self.classNameTextfeild.text = @"请选择直播班级";
         }
+        [self hiddenClassNameTableView:YES];
+
     }
     
 }

@@ -196,6 +196,8 @@
 		58AC12051F160D9F00C1CDE1 /* masking_re_top@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 58AC12031F160D9F00C1CDE1 /* masking_re_top@2x.png */; };
 		58AC12061F160D9F00C1CDE1 /* masking_re_top@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 58AC12041F160D9F00C1CDE1 /* masking_re_top@3x.png */; };
 		58C3C1221F00EF9500CBB697 /* SaveDataManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 58C3C1211F00EF9500CBB697 /* SaveDataManager.m */; };
+		58C5113B1F3061A20088F178 /* OpenGLES.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 58C5113A1F3061A20088F178 /* OpenGLES.framework */; };
+		58C5113D1F3061B20088F178 /* CoreImage.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 58C5113C1F3061B20088F178 /* CoreImage.framework */; };
 		58C87C061E8CAD8500A917FD /* ReloadView.m in Sources */ = {isa = PBXBuildFile; fileRef = 58C87C051E8CAD8500A917FD /* ReloadView.m */; };
 		58C87C081E8CADAF00A917FD /* ReloadView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 58C87C071E8CADAF00A917FD /* ReloadView.xib */; };
 		58C901F11F1F522600800A7E /* HistoryRecoderTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 58C901E61F1F522600800A7E /* HistoryRecoderTableViewCell.m */; };
@@ -548,6 +550,8 @@
 		58AC12041F160D9F00C1CDE1 /* masking_re_top@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "masking_re_top@3x.png"; sourceTree = "<group>"; };
 		58C3C1201F00EF9500CBB697 /* SaveDataManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SaveDataManager.h; sourceTree = "<group>"; };
 		58C3C1211F00EF9500CBB697 /* SaveDataManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SaveDataManager.m; sourceTree = "<group>"; };
+		58C5113A1F3061A20088F178 /* OpenGLES.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGLES.framework; path = System/Library/Frameworks/OpenGLES.framework; sourceTree = SDKROOT; };
+		58C5113C1F3061B20088F178 /* CoreImage.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreImage.framework; path = System/Library/Frameworks/CoreImage.framework; sourceTree = SDKROOT; };
 		58C87C041E8CAD8500A917FD /* ReloadView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ReloadView.h; sourceTree = "<group>"; };
 		58C87C051E8CAD8500A917FD /* ReloadView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ReloadView.m; sourceTree = "<group>"; };
 		58C87C071E8CADAF00A917FD /* ReloadView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ReloadView.xib; sourceTree = "<group>"; };
@@ -630,6 +634,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				58C5113D1F3061B20088F178 /* CoreImage.framework in Frameworks */,
+				58C5113B1F3061A20088F178 /* OpenGLES.framework in Frameworks */,
 				58CD5E7F1F0B3EA80068866C /* libsqlite3.tbd in Frameworks */,
 				58CD5E7D1F0B3E8C0068866C /* libz.tbd in Frameworks */,
 				58CD5E7C1F0B3E850068866C /* CoreTelephony.framework in Frameworks */,
@@ -746,6 +752,8 @@
 		581683451E83AD22003F669F /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				58C5113C1F3061B20088F178 /* CoreImage.framework */,
+				58C5113A1F3061A20088F178 /* OpenGLES.framework */,
 				58CD5E7E1F0B3EA80068866C /* libsqlite3.tbd */,
 				586AD3801EAEE43E00D4FDCA /* WebKit.framework */,
 				58A18E5E1EA45E4A002E94AF /* libicucore.tbd */,

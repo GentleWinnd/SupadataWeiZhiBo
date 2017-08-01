@@ -27,8 +27,11 @@
 
 #import "WCLRecordEngine.h"
 #import "WCLRecordEncoder.h"
+#import "AppDelegate.h"
 #import <AVFoundation/AVFoundation.h>
 #import <Photos/Photos.h>
+
+
 
 @interface WCLRecordEngine ()<AVCaptureVideoDataOutputSampleBufferDelegate,AVCaptureAudioDataOutputSampleBufferDelegate, CAAnimationDelegate> {
     CMTime _timeOffset;//录制的偏移CMTime
@@ -44,6 +47,7 @@
 @property (strong, nonatomic) WCLRecordEncoder           *recordEncoder;//录制编码
 @property (strong, nonatomic) AVCaptureSession           *recordSession;//捕获视频的会话
 @property (strong, nonatomic) AVCaptureVideoPreviewLayer *previewLayer;//捕获到的视频呈现的layer
+@property (strong, nonatomic) GLKView *preView;
 @property (strong, nonatomic) AVCaptureDeviceInput       *backCameraInput;//后置摄像头输入
 @property (strong, nonatomic) AVCaptureDeviceInput       *frontCameraInput;//前置摄像头输入
 @property (strong, nonatomic) AVCaptureDeviceInput       *audioMicInput;//麦克风输入
@@ -58,6 +62,11 @@
 @property (atomic, assign) BOOL discont;//是否中断
 @property (atomic, assign) CMTime startTime;//开始录制的时间
 @property (atomic, assign) CGFloat currentRecordTime;//当前录制时间
+
+
+@property CIContext *ciContext;
+@property EAGLContext *eaglContext;
+@property CGRect cameraViewBounds;
 
 @end
 
@@ -81,6 +90,7 @@
 {
     self = [super init];
     if (self) {
+        //设置录制时长
         self.maxRecordTime = 300.0f;
     }
     return self;
@@ -96,6 +106,50 @@
     self.discont = NO;
     [self.recordSession startRunning];
 }
+
+#pragma mark - 设置record
+
+- (void)setPreView:(GLKView *)view {
+    if (_preView == nil) {
+        _preView = view;
+        // setup the GLKView for video/image preview
+        UIView *window = ((AppDelegate *)[UIApplication sharedApplication].delegate).window;
+        _eaglContext = [[EAGLContext alloc] initWithAPI:kEAGLRenderingAPIOpenGLES2];
+        _preView = [[GLKView alloc] initWithFrame:window.bounds context:_eaglContext];
+        _preView.enableSetNeedsDisplay = NO;
+        
+        // because the native video image from the back camera is in UIDeviceOrientationLandscapeLeft (i.e. the home button is on the right), we need to apply a clockwise 90 degree transform so that we can draw the video preview as if we were in a landscape-oriented view; if you're using the front camera and you want to have a mirrored preview (so that the user is seeing themselves in the mirror), you need to apply an additional horizontal flip (by concatenating CGAffineTransformMakeScale(-1.0, 1.0) to the rotation transform)
+        _preView.transform = CGAffineTransformMakeRotation(M_PI_2);
+        _preView.frame = window.bounds;
+        
+        
+        // bind the frame buffer to get the frame buffer width and height;
+        // the bounds used by CIContext when drawing to a GLKView are in pixels (not points),
+        // hence the need to read from the frame buffer's width and height;
+        // in addition, since we will be accessing the bounds in another queue (_captureSessionQueue),
+        // we want to obtain this piece of information so that we won't be
+        // accessing _cameraView's properties from another thread/queue
+        [_preView bindDrawable];
+        _cameraViewBounds = CGRectZero;
+        _cameraViewBounds.size.width = _preView.drawableWidth;
+        _cameraViewBounds.size.height = _preView.drawableHeight;
+        
+        
+        // create the CIContext instance, note that this must be done after _cameraView is properly set up
+        _ciContext = [CIContext contextWithEAGLContext:_eaglContext options:@{kCIContextWorkingColorSpace : [NSNull null]} ];
+        
+        if ([[AVCaptureDevice devicesWithMediaType:AVMediaTypeVideo] count] > 0) {
+            
+        }
+        else {
+            NSLog(@"No device with AVMediaTypeVideo");
+        }
+
+    }
+    
+    
+}
+
 //关闭录制功能
 - (void)shutdown {
     _startTime = CMTimeMake(0, 0);
@@ -565,7 +619,62 @@
     // 进行数据编码
     [self.recordEncoder encodeFrame:sampleBuffer isVideo:isVideo];
     CFRelease(sampleBuffer);
+    
+    //添加滤镜
+    CVImageBufferRef imageBuffer = CMSampleBufferGetImageBuffer(sampleBuffer);
+    CIImage *sourceImage = [CIImage imageWithCVPixelBuffer:(CVPixelBufferRef)imageBuffer options:nil];
+    CGRect sourceExtent = sourceImage.extent;
+
+    // Image processing
+    CIFilter * vignetteFilter = [CIFilter filterWithName:@"CIVignetteEffect"];
+    [vignetteFilter setValue:sourceImage forKey:kCIInputImageKey];
+    [vignetteFilter setValue:[CIVector vectorWithX:sourceExtent.size.width/2 Y:sourceExtent.size.height/2] forKey:kCIInputCenterKey];
+    [vignetteFilter setValue:@(sourceExtent.size.width/2) forKey:kCIInputRadiusKey];
+    CIImage *filteredImage = [vignetteFilter outputImage];
+    
+    CIFilter *effectFilter = [CIFilter filterWithName:@"CIPhotoEffectInstant"];
+    [effectFilter setValue:filteredImage forKey:kCIInputImageKey];
+    filteredImage = [effectFilter outputImage];
+    
+    
+    CGFloat sourceAspect = sourceExtent.size.width / sourceExtent.size.height;
+    CGFloat previewAspect = 0;
+    
+    // we want to maintain the aspect radio of the screen size, so we clip the video image
+    CGRect drawRect = sourceExtent;
+    if (sourceAspect > previewAspect)
+    {
+        // use full height of the video image, and center crop the width
+        drawRect.origin.x += (drawRect.size.width - drawRect.size.height * previewAspect) / 2.0;
+        drawRect.size.width = drawRect.size.height * previewAspect;
+    }
+    else
+    {
+        // use full width of the video image, and center crop the height
+        drawRect.origin.y += (drawRect.size.height - drawRect.size.width / previewAspect) / 2.0;
+        drawRect.size.height = drawRect.size.width / previewAspect;
+    }
+    
+    [_preView bindDrawable];
+    
+    if (_eaglContext != [EAGLContext currentContext])
+        [EAGLContext setCurrentContext:_eaglContext];
+    
+    // clear eagl view to grey
+    glClearColor(0.5, 0.5, 0.5, 1.0);
+    glClear(GL_COLOR_BUFFER_BIT);
+    
+    // set the blend mode to "source over" so that CI will use that
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
+    
+    if (filteredImage)
+        [_ciContext drawImage:filteredImage inRect:_cameraViewBounds fromRect:drawRect];
+    
+    [_preView display];
+
 }
+
 
 //设置音频格式
 - (void)setAudioFormat:(CMFormatDescriptionRef)fmt {

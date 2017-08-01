@@ -18,6 +18,8 @@
 
 #import "NSString+Extension.h"
 #import "SaveDataManager.h"
+#import <CoreImage/CoreImage.h>
+#import <GLKit/GLKit.h>
 
 //视频录播
 #import "WCLRecordEngine.h"
@@ -38,7 +40,7 @@ typedef NS_ENUM(NSUInteger, UploadVieoStyle) {
 @property (strong, nonatomic) IBOutlet UITapGestureRecognizer *doubleTapGesture;//双击手势
 
 @property (strong, nonatomic) IBOutlet UIView *backView;
-@property (strong, nonatomic) IBOutlet UIView *cameraView;
+@property (strong, nonatomic) IBOutlet GLKView *cameraView;
 
 @property (strong, nonatomic) IBOutlet NSLayoutConstraint *backViewHeight;
 @property (strong, nonatomic) IBOutlet NSLayoutConstraint *backViewWidth;
@@ -77,7 +79,6 @@ typedef NS_ENUM(NSUInteger, UploadVieoStyle) {
 @property (assign, nonatomic) UploadVieoStyle         videoStyle;//视频的类型
 @property (strong, nonatomic) UIImagePickerController *moviePicker;//视频选择器
 @property (strong, nonatomic) MPMoviePlayerViewController *playerVC;
-
 
 @end
 
@@ -129,10 +130,10 @@ static NSString *cellID = @"cellId";
 
 }
 
-#pragma mark - 设置record
 
 - (void)readyRecorder {
     if (_recordEngine == nil) {
+        [self.recordEngine setPreView:self.cameraView];
         [self.recordEngine previewLayer].frame = self.cameraView.bounds;
         [self.cameraView.layer insertSublayer:[self.recordEngine previewLayer] atIndex:0];
     }

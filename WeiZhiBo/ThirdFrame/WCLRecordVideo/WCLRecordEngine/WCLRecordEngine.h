@@ -28,6 +28,9 @@
 #import <UIKit/UIKit.h>
 #import <AVFoundation/AVCaptureVideoPreviewLayer.h>
 
+#import <CoreImage/CoreImage.h>
+#import <GLKit/GLKit.h>
+
 @protocol WCLRecordEngineDelegate <NSObject>
 
 - (void)recordProgress:(CGFloat)progress;
@@ -45,6 +48,9 @@
 
 //捕获到的视频呈现的layer
 - (AVCaptureVideoPreviewLayer *)previewLayer;
+//捕获视频的view
+- (void)setPreView:(GLKView *)view;
+
 //启动录制功能
 - (void)startUp;
 //关闭录制功能
