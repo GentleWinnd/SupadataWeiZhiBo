@@ -119,18 +119,96 @@ static NSString *cellId = @"cellIdentifiler";
 //    NSDictionary *paramater =@{@"resourceId":@"32010020170815150513130106xpz6q2",
 //                               @"uploadType":@"vodFile,short1",
 //                               @"prefix":@"20170815150513173"};
-     NSString *url = @"http://apk.139jy.cn:8006/short?resourceId=32010020170815150513130106xpz6q2&uploadType=vodFile,short1&prefix=20170815150513173";
+     NSString *url = @"http://apk.139jy.cn:8006/short?resourceId=32010020170816104844475106h6zw3s&uploadType=vodFile,short1&prefix=20170816104844515";
     NSData *data = [NSData dataWithContentsOfFile:filePath];
-    [WZBNetServiceAPI postUploadFileWithURL:url paramater:nil fileData:data nameOfData:@"video" nameOfFile:@"test" mimeOfType:@"video/mp4" progress:^(NSProgress *uploadProgress) {
-        NSLog(@"upload-progress===%@",[uploadProgress description]);
-    } sucess:^(id responseObject) {
-        NSLog(@"_________uploaded success______/n %@",responseObject);
-    } failure:^(NSError *error) {
-        NSLog(@"_________uploaded filad______ /n  %@",[error description]);
-        
+//    [WZBNetServiceAPI postUploadFileWithURL:url paramater:nil fileData:data nameOfData:@"video" nameOfFile:@"test" mimeOfType:@"video/mp4" progress:^(NSProgress *uploadProgress) {
+//        NSLog(@"upload-progress===%@",[uploadProgress description]);
+//    } sucess:^(id responseObject) {
+//        NSLog(@"_________uploaded success______/n %@",responseObject);
+//    } failure:^(NSError *error) {
+//        NSLog(@"_________uploaded filad______ /n  %@",[error description]);
+//        
+//    }];
+    [self upload:url filename:@"video" mimeType:@"video/mp4" data:data];
+}
+
+
+- (void)upload:(NSString *)name filename:(NSString *)filename mimeType:(NSString *)mimeType data:(NSData *)fileData {
+
+    /** * post的上传文件，不同于普通的数据上传， * 普通上传，只是将数据转换成二进制放置在请求体中，进行上传，有响应体得到结果。 * post上传，当上传文件是， 请求体中会多一部分东西， Content——Type，这是在请求体中必须要书写的，而且必须要书写正确，不能有一个标点符号的错误。负责就会请求不上去，或者出现请求的错误（无名的问题等） * 其中在post 请求体中加入的格式有{1、边界 2、参数 3、换行 4、具体数据 5、换行 6、边界 7、换行 8、对象 9、结束符} */
+
+    NSURLSession *session = [NSURLSession sharedSession];
+    NSURL *url = [NSURL URLWithString:@"http://apk.139jy.cn:8006/short?resourceId=32010020170816104844475106h6zw3s&uploadType=vodFile,short1&prefix=20170816104844515"];
+    NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:url];
+    // 设置请求头数据 。 boundary：边界
+    [request setValue:@"multipart/form-data; boundary=----WebKitFormBoundaryftnnT7s3iF7wV5q6" forHTTPHeaderField:@"Content-Type"];
+    // 给请求头加入固定格式数据
+    NSMutableData *data = [NSMutableData data];
+    /****************文件参数相关设置*********************/
+    // 设置边界 注：必须和请求头数据设置的边界 一样， 前面多两个“-”；（字符串 转 data 数据）
+//    [data appendData:[@"------WebKitFormBoundaryftnnT7s3iF7wV5q6" dataUsingEncoding:NSUTF8StringEncoding]];
+//    [data appendData:[@"\r\n" dataUsingEncoding:NSUTF8StringEncoding]];
+//    // 设置传入数据的基本属性， 包括有 传入方式 data ，传入的类型（名称） ，传入的文件名， 。
+//    [data appendData:[@"Content-Disposition: form-data; name=\"mp4\"; filename=\"video\"" dataUsingEncoding:NSUTF8StringEncoding]];
+//    [data appendData:[@"\r\n" dataUsingEncoding:NSUTF8StringEncoding]];
+//    // 设置 内容的类型 “文件类型/扩展名” MIME中的
+    [data appendData:[@"Content-Type: mp4" dataUsingEncoding:NSUTF8StringEncoding]];
+    [data appendData:[@"\r\n" dataUsingEncoding:NSUTF8StringEncoding]];
+    // 加入数据内容
+    [data appendData:fileData];
+    [data appendData:[@"\r\n" dataUsingEncoding:NSUTF8StringEncoding]];
+    [data appendData:[@"\r\n" dataUsingEncoding:NSUTF8StringEncoding]];
+    // 设置边界
+//    [data appendData:[@"------WebKitFormBoundaryftnnT7s3iF7wV5q6" dataUsingEncoding:NSUTF8StringEncoding]];
+//    [data appendData:[@"\r\n" dataUsingEncoding:NSUTF8StringEncoding]];
+//    /******************非文件参数相关设置**********************/
+//    // 设置传入的类型（名称）
+//    [data appendData:[@"Content-Disposition: form-data; name=\"username\"" dataUsingEncoding:NSUTF8StringEncoding]];
+//    [data appendData:[@"\r\n" dataUsingEncoding:NSUTF8StringEncoding]];
+//    [data appendData:[@"\r\n" dataUsingEncoding:NSUTF8StringEncoding]];
+//    // 传入的名称username = lxl
+//    [data appendData:[@"lxl" dataUsingEncoding:NSUTF8StringEncoding]];
+//    [data appendData:[@"\r\n" dataUsingEncoding:NSUTF8StringEncoding]];
+//    // 退出边界
+//    [data appendData:[@"------WebKitFormBoundaryftnnT7s3iF7wV5q6--" dataUsingEncoding:NSUTF8StringEncoding]];
+//    [data appendData:[@"\r\n" dataUsingEncoding:NSUTF8StringEncoding]];
+    
+    request.HTTPBody = data;
+    request.HTTPMethod = @"POST";
+    NSURLSessionUploadTask *task = [session uploadTaskWithRequest:request fromData:data completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
+
+        if (!error) {
+            NSDictionary *dict = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingMutableLeaves error:nil];
+            NSLog(@"%@", dict);
+
+        } else {
+
+            NSLog(@"@%%%%%%文件上传失败--------");
+        }
+
+        NSLog(@"%@",[[NSString alloc]initWithData:data encoding:NSUTF8StringEncoding]);
     }];
+    [task resume];
+    NSLog(@"+++++++++++++");
 
 }
+
+
+#pragma mark - NSURLSessionTaskDelegate
+/** * 监听上传进度 * * @param session * @param task 上传任务 * @param bytesSent 当前这次发送的数据 * @param totalBytesSent 已经发送的总数据 * @param totalBytesExpectedToSend 期望发送的总数据 */
+- (void)URLSession:(NSURLSession *)session task:(NSURLSessionTask *)task didSendBodyData:(int64_t)bytesSent totalBytesSent:(int64_t)totalBytesSent totalBytesExpectedToSend:(int64_t)totalBytesExpectedToSend {
+    
+    float progress = (float)1.0*totalBytesSent / totalBytesExpectedToSend;
+    NSLog(@"%f",progress);
+    
+}
+- (void)URLSession:(NSURLSession *)session task:(NSURLSessionTask *)task didCompleteWithError:(NSError *)error {
+    
+    NSLog(@"%s",__func__);
+    
+}
+
+
 
 - (void)fileUploadingState:(BOOL)state fileName:(NSString *)fileName{//fileuploaderdelegate function
     
