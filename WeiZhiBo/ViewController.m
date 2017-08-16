@@ -101,6 +101,7 @@ static NSString *cellID = @"cellId";
     BOOL uploadFinished;
     BOOL havedSendPlayState;
     NSInteger requestCount;
+    NSInteger closeRtmpCount;
     
 }
 
@@ -133,6 +134,7 @@ static NSString *cellID = @"cellId";
     textMessgeHeight = 42;
     noDataCount = 0;
     requestCount = 1;
+    closeRtmpCount = 30;
     messageArr = [NSMutableArray arrayWithCapacity:0];
     uploadFinished = NO;
     havedSendPlayState = NO;
@@ -373,8 +375,9 @@ static NSString *cellID = @"cellId";
             break;
         }
         case VCErrorCodeUnknownStreamingError:{//推流过程中，遇到未知错误导致推流失败
-            if (timer) {
+            if (timer && closeRtmpCount == 30) {
                 [self toastTip:@"信息异常，直播断开，请稍后重试！"];
+                closeRtmpCount = 0;
             }
             [self stopRtmp];
             
@@ -395,7 +398,8 @@ static NSString *cellID = @"cellId";
              * 推流过程中，遇到服务器网络错误导致推流失败
              * 收到此错误后，建议调用endRtmpSession立即停止推流，并在服务恢复后再重新推流
              */
-            if (timer) {
+            if (timer && closeRtmpCount == 30) {
+                closeRtmpCount = 0;
                 [self toastTip:@"网络无法连接，直播断开，请稍后重试！"];
             }
             
@@ -410,7 +414,8 @@ static NSString *cellID = @"cellId";
              * 收到此错误后，建议提示用户检查网络连接，然后调用endRtmpSession立即停止推流
              */
             NSLog(@"****************%@^^^^^^^^^^^^^^^^^",@"当前网络不稳定003");
-            if (timer) {
+            if (timer && closeRtmpCount == 30) {
+                closeRtmpCount = 0;
                 [self toastTip:@"网络无法连接，直播断开，请稍后重试！"];
             }
             
@@ -533,6 +538,11 @@ static NSString *cellID = @"cellId";
     if (seconds/20&&seconds%20==0) {
         noDataCount = 0;
     }
+    
+    if (closeRtmpCount < 30) {
+        closeRtmpCount ++;
+    }
+    
     if (noDataCount>10) {
         noDataCount = 0;
         [self stopRtmp];
