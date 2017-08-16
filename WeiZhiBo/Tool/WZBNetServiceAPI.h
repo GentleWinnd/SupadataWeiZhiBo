@@ -54,4 +54,15 @@
 + (void)getAPPVersionWithParameters:(id)parameters
                             success:(void(^)(id reponseObject))success
                             failure:(void(^)(NSError *error))failure;
+// 上传小型文件
+
++ (void)postUploadFileWithURL:(NSString *)URLString
+                    paramater:(NSDictionary *)paramater
+                     fileData:(NSData *)fileData
+                   nameOfData:(NSString *)name
+                   nameOfFile:(NSString *)fileName
+                   mimeOfType:(NSString *)mineType
+                     progress:(void (^) (NSProgress *uploadProgress))progress
+                       sucess:(void(^)(id responseObject))success
+                      failure:(void(^)(NSError *error))failure;
 @end

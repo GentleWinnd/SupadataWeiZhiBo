@@ -115,7 +115,7 @@
         // setup the GLKView for video/image preview
         UIView *window = ((AppDelegate *)[UIApplication sharedApplication].delegate).window;
         _eaglContext = [[EAGLContext alloc] initWithAPI:kEAGLRenderingAPIOpenGLES2];
-        _preView = [[GLKView alloc] initWithFrame:window.bounds context:_eaglContext];
+        _preView.context =  _eaglContext;
         _preView.enableSetNeedsDisplay = NO;
         
         // because the native video image from the back camera is in UIDeviceOrientationLandscapeLeft (i.e. the home button is on the right), we need to apply a clockwise 90 degree transform so that we can draw the video preview as if we were in a landscape-oriented view; if you're using the front camera and you want to have a mirrored preview (so that the user is seeing themselves in the mirror), you need to apply an additional horizontal flip (by concatenating CGAffineTransformMakeScale(-1.0, 1.0) to the rotation transform)
@@ -123,6 +123,9 @@
         _preView.frame = window.bounds;
         
         
+        [window addSubview:_preView];
+        [window sendSubviewToBack:_preView];
+
         // bind the frame buffer to get the frame buffer width and height;
         // the bounds used by CIContext when drawing to a GLKView are in pixels (not points),
         // hence the need to read from the frame buffer's width and height;
@@ -139,7 +142,7 @@
         _ciContext = [CIContext contextWithEAGLContext:_eaglContext options:@{kCIContextWorkingColorSpace : [NSNull null]} ];
         
         if ([[AVCaptureDevice devicesWithMediaType:AVMediaTypeVideo] count] > 0) {
-            
+            [self startUp];
         }
         else {
             NSLog(@"No device with AVMediaTypeVideo");
@@ -537,6 +540,61 @@
 
 #pragma mark - 写入数据
 - (void) captureOutput:(AVCaptureOutput *)captureOutput didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer fromConnection:(AVCaptureConnection *)connection {
+
+    //添加滤镜
+    CVImageBufferRef imageBuffer = CMSampleBufferGetImageBuffer(sampleBuffer);
+    CIImage *sourceImage = [CIImage imageWithCVPixelBuffer:(CVPixelBufferRef)imageBuffer options:nil];
+    CGRect sourceExtent = sourceImage.extent;
+    
+    // Image processing
+    CIFilter * vignetteFilter = [CIFilter filterWithName:@"CIVignetteEffect"];
+    [vignetteFilter setValue:sourceImage forKey:kCIInputImageKey];
+    [vignetteFilter setValue:[CIVector vectorWithX:sourceExtent.size.width/2 Y:sourceExtent.size.height/2] forKey:kCIInputCenterKey];
+    [vignetteFilter setValue:@(sourceExtent.size.width/2) forKey:kCIInputRadiusKey];
+    CIImage *filteredImage = [vignetteFilter outputImage];
+    
+    CIFilter *effectFilter = [CIFilter filterWithName:@"CIPhotoEffectInstant"];
+    [effectFilter setValue:filteredImage forKey:kCIInputImageKey];
+    filteredImage = [effectFilter outputImage];
+    
+    
+    CGFloat sourceAspect = sourceExtent.size.width / sourceExtent.size.height;
+    CGFloat previewAspect = 0;
+    
+    // we want to maintain the aspect radio of the screen size, so we clip the video image
+    CGRect drawRect = sourceExtent;
+    if (sourceAspect > previewAspect)
+    {
+        // use full height of the video image, and center crop the width
+        drawRect.origin.x += (drawRect.size.width - drawRect.size.height * previewAspect) / 2.0;
+        drawRect.size.width = drawRect.size.height * previewAspect;
+    }
+    else
+    {
+        // use full width of the video image, and center crop the height
+        drawRect.origin.y += (drawRect.size.height - drawRect.size.width / previewAspect) / 2.0;
+        drawRect.size.height = drawRect.size.width / previewAspect;
+    }
+    
+    [_preView bindDrawable];
+    
+    if (_eaglContext != [EAGLContext currentContext])
+        [EAGLContext setCurrentContext:_eaglContext];
+    
+    // clear eagl view to grey
+    glClearColor(0.5, 0.5, 0.5, 1.0);
+    glClear(GL_COLOR_BUFFER_BIT);
+    
+    // set the blend mode to "source over" so that CI will use that
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
+    
+    if (filteredImage)
+        [_ciContext drawImage:filteredImage inRect:_cameraViewBounds fromRect:drawRect];
+    
+    [_preView display];
+
+    
     BOOL isVideo = YES;
     @synchronized(self) {
         if (!self.isCapturing  || self.isPaused) {
@@ -620,59 +678,7 @@
     [self.recordEncoder encodeFrame:sampleBuffer isVideo:isVideo];
     CFRelease(sampleBuffer);
     
-    //添加滤镜
-    CVImageBufferRef imageBuffer = CMSampleBufferGetImageBuffer(sampleBuffer);
-    CIImage *sourceImage = [CIImage imageWithCVPixelBuffer:(CVPixelBufferRef)imageBuffer options:nil];
-    CGRect sourceExtent = sourceImage.extent;
-
-    // Image processing
-    CIFilter * vignetteFilter = [CIFilter filterWithName:@"CIVignetteEffect"];
-    [vignetteFilter setValue:sourceImage forKey:kCIInputImageKey];
-    [vignetteFilter setValue:[CIVector vectorWithX:sourceExtent.size.width/2 Y:sourceExtent.size.height/2] forKey:kCIInputCenterKey];
-    [vignetteFilter setValue:@(sourceExtent.size.width/2) forKey:kCIInputRadiusKey];
-    CIImage *filteredImage = [vignetteFilter outputImage];
-    
-    CIFilter *effectFilter = [CIFilter filterWithName:@"CIPhotoEffectInstant"];
-    [effectFilter setValue:filteredImage forKey:kCIInputImageKey];
-    filteredImage = [effectFilter outputImage];
-    
-    
-    CGFloat sourceAspect = sourceExtent.size.width / sourceExtent.size.height;
-    CGFloat previewAspect = 0;
-    
-    // we want to maintain the aspect radio of the screen size, so we clip the video image
-    CGRect drawRect = sourceExtent;
-    if (sourceAspect > previewAspect)
-    {
-        // use full height of the video image, and center crop the width
-        drawRect.origin.x += (drawRect.size.width - drawRect.size.height * previewAspect) / 2.0;
-        drawRect.size.width = drawRect.size.height * previewAspect;
-    }
-    else
-    {
-        // use full width of the video image, and center crop the height
-        drawRect.origin.y += (drawRect.size.height - drawRect.size.width / previewAspect) / 2.0;
-        drawRect.size.height = drawRect.size.width / previewAspect;
-    }
-    
-    [_preView bindDrawable];
-    
-    if (_eaglContext != [EAGLContext currentContext])
-        [EAGLContext setCurrentContext:_eaglContext];
-    
-    // clear eagl view to grey
-    glClearColor(0.5, 0.5, 0.5, 1.0);
-    glClear(GL_COLOR_BUFFER_BIT);
-    
-    // set the blend mode to "source over" so that CI will use that
-    glEnable(GL_BLEND);
-    glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
-    
-    if (filteredImage)
-        [_ciContext drawImage:filteredImage inRect:_cameraViewBounds fromRect:drawRect];
-    
-    [_preView display];
-
+   
 }
 
 

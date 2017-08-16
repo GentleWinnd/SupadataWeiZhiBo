@@ -9,16 +9,16 @@
 #import "HistoryRecoderViewController.h"
 #import "HistoryRecoderTableViewCell.h"
 #import "SaveDataManager.h"
-
+#import "FileUploader.h"
 
 #import <MobileCoreServices/MobileCoreServices.h>
 #import <MediaPlayer/MediaPlayer.h>
 
-@interface HistoryRecoderViewController ()<UITableViewDelegate, UITableViewDataSource>
+@interface HistoryRecoderViewController ()<UITableViewDelegate, UITableViewDataSource, FileUploaderDelegate>
 @property (strong, nonatomic) IBOutlet UITableView *recoderTab;
 @property (strong, nonatomic) IBOutlet UILabel *noDataLable;
 @property (strong, nonatomic) MPMoviePlayerViewController *playerVC;
-
+@property (strong, nonatomic) FileUploader *uploader;
 @end
 
 static NSString *cellId = @"cellIdentifiler";
@@ -100,7 +100,7 @@ static NSString *cellId = @"cellIdentifiler";
             [self removeHistoryRecoder:self.historyRecoderArr[indexPath.row]];
             
         } else {//视频上传
-            
+            [self uploadVideo:videoPath];
         }
     };
     
@@ -108,6 +108,45 @@ static NSString *cellId = @"cellIdentifiler";
     
     return cell;
 }
+
+#pragma mark - 上传视频
+
+- (void)uploadVideo:(NSString *) filePath {
+//    _uploader = [FileUploader shareFileUploader];
+//    _uploader.delegate = self;
+//    [_uploader uploadFileAtPath:filePath];
+   
+//    NSDictionary *paramater =@{@"resourceId":@"32010020170815150513130106xpz6q2",
+//                               @"uploadType":@"vodFile,short1",
+//                               @"prefix":@"20170815150513173"};
+     NSString *url = @"http://apk.139jy.cn:8006/short?resourceId=32010020170815150513130106xpz6q2&uploadType=vodFile,short1&prefix=20170815150513173";
+    NSData *data = [NSData dataWithContentsOfFile:filePath];
+    [WZBNetServiceAPI postUploadFileWithURL:url paramater:nil fileData:data nameOfData:@"video" nameOfFile:@"test" mimeOfType:@"video/mp4" progress:^(NSProgress *uploadProgress) {
+        NSLog(@"upload-progress===%@",[uploadProgress description]);
+    } sucess:^(id responseObject) {
+        NSLog(@"_________uploaded success______/n %@",responseObject);
+    } failure:^(NSError *error) {
+        NSLog(@"_________uploaded filad______ /n  %@",[error description]);
+        
+    }];
+
+}
+
+- (void)fileUploadingState:(BOOL)state fileName:(NSString *)fileName{//fileuploaderdelegate function
+    
+    if (fileName.length>0) {//修改文件上传的额状态
+        NSString *videoName = [fileName componentsSeparatedByString:@"/"].lastObject;
+        if (videoName.length>0) {
+            NSString *videoId = [videoName componentsSeparatedByString:@"."].firstObject;
+            [[SaveDataManager shareSaveRecoder] saveRecoderUploadState:state withVideoId:videoId];
+        } else {
+            [Progress progressShowcontent:@"视频保存失败了" currView:self.view];
+        }
+    } else {
+        [Progress progressShowcontent:@"视频保存失败了" currView:self.view];
+    }
+}
+
 
 - (void)logVideoSize:(NSString *)url {
     NSData *video = [NSData dataWithContentsOfFile:url];

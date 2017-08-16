@@ -164,6 +164,34 @@
     }];
 }
 
+// 上传小型文件
++ (void)postUploadFileWithURL:(NSString *)URLString
+                    paramater:(NSDictionary *)paramater
+                     fileData:(NSData *)fileData
+                   nameOfData:(NSString *)name
+                   nameOfFile:(NSString *)fileName
+                   mimeOfType:(NSString *)mineType
+                     progress:(void (^) (NSProgress *uploadProgress))progress
+                       sucess:(void(^)(id responseObject))success
+                      failure:(void(^)(NSError *error))failure {
+
+    [KTMWebService postUploadFileWithURL:URLString paramater:paramater fileData:fileData nameOfData:name nameOfFile:fileName mimeOfType:mineType progress:^(NSProgress *uploadProgress) {
+        if (progress) {
+            progress(uploadProgress);
+        }
+    } sucess:^(id responseObject) {
+        if (success) {
+            success(responseObject);
+        }
+    } failure:^(NSError *error) {
+        if (failure) {
+            failure(error);
+        }
+    }];
+    
+    
+
+}
 
 
 @end

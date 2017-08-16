@@ -13,6 +13,7 @@
 #import "RecorderViewController.h"
 #import "RecordClassNameView.h"
 #import "RecordingEndView.h"
+#import "FileUploader.h"
 #import "AppDelegate.h"
 #import "UserData.h"
 
@@ -33,7 +34,7 @@ typedef NS_ENUM(NSUInteger, UploadVieoStyle) {
     VideoLocation,
 };
 
-@interface RecorderViewController ()
+@interface RecorderViewController ()<FileUploaderDelegate>
 //手势
 @property (strong, nonatomic) IBOutlet UIPinchGestureRecognizer *pinchGesture;//缩放手势
 @property (strong, nonatomic) IBOutlet UITapGestureRecognizer *tapGesture;//点击手势
@@ -99,7 +100,6 @@ static NSString *cellID = @"cellId";
   
     //旋转背景容器view
     self.cameraView.transform = CGAffineTransformMakeRotation(- M_PI_2);
-
     [self begainFullScreen];
     [self initNeedData];
     [self setShowItem];
@@ -110,7 +110,6 @@ static NSString *cellID = @"cellId";
 
 - (void)showClassView {
     [self showClassInfoTable:YES];
-
 }
 
 - (void)viewDidDisappear:(BOOL)animated {
@@ -127,13 +126,11 @@ static NSString *cellID = @"cellId";
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
     [self readyRecorder];
-
 }
-
 
 - (void)readyRecorder {
     if (_recordEngine == nil) {
-        [self.recordEngine setPreView:self.cameraView];
+//        [self.recordEngine setPreView:self.cameraView];
         [self.recordEngine previewLayer].frame = self.cameraView.bounds;
         [self.cameraView.layer insertSublayer:[self.recordEngine previewLayer] atIndex:0];
     }
@@ -393,13 +390,51 @@ static NSString *cellID = @"cellId";
             
         } else if (type == EndViewBtnTypeUpload) {//上传视频
             [self saveRecoderVideoClasses];
-            
+            [self uploadVideo];
+
         }
         [endViewWeak removeFromSuperview];
         
         [self hiddenTopViewItem:YES];
         [self setBottomViewItemHidden:NO];
     };
+}
+
+#pragma mark - 上传视频
+
+- (void)uploadVideo {
+    FileUploader *uploader = [FileUploader shareFileUploader];
+    uploader.delegate = self;
+    [uploader uploadFileAtPath:self.recordEngine.videoPath];
+//    NSData *data = [NSData dataWithContentsOfFile:self.recordEngine.videoPath];
+//    NSString *url = @"http://112.4.28.208:38080/media21";
+//    NSDictionary *paramater =@{@"resourceId":@"32010020170815115026716106shxxkm",
+//                               @"uploadType":@"vodFile,short1",
+//                               @"prefix":@"20170815115026765"};
+//    
+//    [WZBNetServiceAPI postUploadFileWithURL:url paramater:paramater fileData:data nameOfData:@"video/mp4" nameOfFile:@"test" mimeOfType:@"video" progress:^(NSProgress *uploadProgress) {
+//        NSLog(@"upload-progress===%@",[uploadProgress description]);
+//    } sucess:^(id responseObject) {
+//        NSLog(@"_________uploaded success______/n %@",responseObject);
+//    } failure:^(NSError *error) {
+//        NSLog(@"_________uploaded filad______ /n  %@",[error description]);
+//        
+//    }];
+}
+
+- (void)fileUploadingState:(BOOL)state fileName:(NSString *)fileName{//fileuploaderdelegate function
+    
+    if (fileName.length>0) {//修改文件上传的额状态
+        NSString *videoName = [fileName componentsSeparatedByString:@"/"].lastObject;
+        if (videoName.length>0) {
+            NSString *videoId = [videoName componentsSeparatedByString:@"."].firstObject;
+            [[SaveDataManager shareSaveRecoder] saveRecoderUploadState:state withVideoId:videoId];
+        } else {
+            [Progress progressShowcontent:@"视频保存失败了" currView:self.view];
+        }
+    } else {
+        [Progress progressShowcontent:@"视频保存失败了" currView:self.view];
+    }
 }
 
 - (void)removeHistoryRecoder:(NSString *)recoderPath {
@@ -431,7 +466,6 @@ static NSString *cellID = @"cellId";
     } else {
         [Progress progressShowcontent:@"视频保存失败了" currView:self.view];
     }
-    
 }
 
 
@@ -605,29 +639,29 @@ static NSString *cellID = @"cellId";
 }
 
 
-
-
-
-
 - (void)dealloc {
     _recordEngine = nil;
     [[NSNotificationCenter defaultCenter] removeObserver:self name:MPMoviePlayerPlaybackDidFinishNotification object:[_playerVC moviePlayer]];
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
-- (BOOL) shouldAutorotate {
-    return YES;
-}
-
--(UIInterfaceOrientationMask)supportedInterfaceOrientations {
-
-    return UIInterfaceOrientationMaskLandscapeRight;
-}
-
-- (BOOL)prefersStatusBarHidden {
-    return YES;
-}
-
+//- (BOOL) shouldAutorotate {
+//    return YES;
+//}
+//
+//-(UIInterfaceOrientationMask)supportedInterfaceOrientations {
+//
+//    return UIInterfaceOrientationMaskLandscapeRight;
+//}
+//
+//- (BOOL)prefersStatusBarHidden {
+//    return YES;
+//}
+//
+//- (UIInterfaceOrientation)preferredInterfaceOrientationForPresentation {
+//    
+//    return UIInterfaceOrientationLandscapeLeft;
+//}
 
 
 - (void)didReceiveMemoryWarning {

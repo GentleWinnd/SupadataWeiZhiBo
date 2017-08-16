@@ -198,24 +198,24 @@
     [dataTask resume];
 }
 
-// 新版本上传图片
-+ (void)postUploadImageWithURL:(NSString *)URLString
-                     imageData:(NSData *)imageData
-                   nameOfImage:(NSString *)name
-                    fileOfName:(NSString *)fileName
-                    mimeOfType:(NSString *)mineType
-                      progress:(void (^) (NSProgress *uploadProgress))progress
-                        sucess:(void(^)(id responseObject))success
-                       failure:(void(^)(NSError *error))failure {
+// 上传小型文件
++ (void)postUploadFileWithURL:(NSString *)URLString
+                    paramater:(NSDictionary *)paramater
+                     fileData:(NSData *)fileData
+                   nameOfData:(NSString *)name
+                   nameOfFile:(NSString *)fileName
+                   mimeOfType:(NSString *)mineType
+                     progress:(void (^) (NSProgress *uploadProgress))progress
+                       sucess:(void(^)(id responseObject))success
+                      failure:(void(^)(NSError *error))failure {
     
-//    NSDictionary *parameter = @{@"AccessToken":[self getAccessToken]};
-
     AFHTTPSessionManager *manager = [[AFHTTPSessionManager alloc] init];
     manager.requestSerializer  = [AFJSONRequestSerializer serializer];
-    [manager.requestSerializer setValue:@"application/json; charset=utf-8" forHTTPHeaderField:@"Content-Type"];
-    [manager POST:URLString parameters:nil constructingBodyWithBlock:^(id <AFMultipartFormData> formData) {
+    manager.responseSerializer.acceptableContentTypes = [NSSet setWithObject:@"application/xml"];
+//    [manager.requestSerializer setValue:@"application/json; charset=utf-8" forHTTPHeaderField:@"Content-Type"];
+    [manager POST:URLString parameters:paramater constructingBodyWithBlock:^(id <AFMultipartFormData> formData) {
         
-        [formData appendPartWithFileData:imageData
+        [formData appendPartWithFileData:fileData
                                     name:name
                                 fileName:fileName
                                 mimeType:mineType];

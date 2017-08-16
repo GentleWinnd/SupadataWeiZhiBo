@@ -122,12 +122,19 @@
     
     
 }
+
+//- (BOOL)application:(UIApplication *)app openURL:(NSURL *)url options:(NSDictionary<UIApplicationOpenURLOptionsKey,id> *)options {
+//
+//
+//    return NO;
+//}
+
 - (BOOL)application:(UIApplication *)application openURL:(NSURL *)url sourceApplication:(NSString *)sourceApplication annotation:(id)annotation {
     NSString *urlStr = [url absoluteString];
     /*
      URL Schemes?appToken=&userType=
      */
-    if ([urlStr hasPrefix:@"jsLinkageHebaobei002://"] || [urlStr hasPrefix:@"JSHeEducationAppOpenThirdAppReservedMethod3://"]) {
+    if ([urlStr hasPrefix:@"jsLinkageHebaobei002://"]) {
 
         NSArray *paramArray = [urlStr componentsSeparatedByString:@"appToken="];
 //        NSLog(@"=====%@",paramArray);
