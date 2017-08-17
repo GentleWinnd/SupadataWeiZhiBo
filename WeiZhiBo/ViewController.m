@@ -101,7 +101,6 @@ static NSString *cellID = @"cellId";
     BOOL uploadFinished;
     BOOL havedSendPlayState;
     NSInteger requestCount;
-    NSInteger closeRtmpCount;
     
 }
 
@@ -114,6 +113,7 @@ static NSString *cellID = @"cellId";
     _iniIndicator.activityIndicatorViewStyle = UIActivityIndicatorViewStyleWhiteLarge;
     //    [self.view addSubview:_iniIndicator];
     [_iniIndicator startAnimating];
+    
     //旋转背景容器view
     self.backView.transform = CGAffineTransformMakeRotation(- M_PI_2);
     //设置百度直播SDK
@@ -134,7 +134,6 @@ static NSString *cellID = @"cellId";
     textMessgeHeight = 42;
     noDataCount = 0;
     requestCount = 1;
-    closeRtmpCount = 30;
     messageArr = [NSMutableArray arrayWithCapacity:0];
     uploadFinished = NO;
     havedSendPlayState = NO;
@@ -347,20 +346,16 @@ static NSString *cellID = @"cellId";
     switch (error) {
         case VCErrorCodePrepareSessionFailed:{//准备session的过程出错
             NSLog(@"****************%@^^^^^^^^^^^^^^^^^",@"准备session的过程出错");
-            [self toastTip:@"开始直播出现错误，请稍后重试！！！"];
-            [self stopRtmp];
+            
             break;
         }
         case VCErrorCodeConnectToServerFailed:{//startRtmpSession过程中连接服务器出错
             NSLog(@"****************%@^^^^^^^^^^^^^^^^^",@"startRtmpSession过程中连接服务器出错");
-            [self toastTip:@"开始直播出现错误，请稍后重试！！！"];
-            [self stopRtmp];
             
             break;
         }
         case VCErrorCodeDisconnectFromServerFailed:{//endRtmpSession过程中出错
             NSLog(@"****************%@^^^^^^^^^^^^^^^^^",@"endRtmpSession过程中出错");
-            [self toastTip:@"关闭直播出现错误，请稍后重试！！！"];
             
             break;
         }
@@ -375,11 +370,6 @@ static NSString *cellID = @"cellId";
             break;
         }
         case VCErrorCodeUnknownStreamingError:{//推流过程中，遇到未知错误导致推流失败
-            if (timer && closeRtmpCount == 30) {
-                [self toastTip:@"信息异常，直播断开，请稍后重试！"];
-                closeRtmpCount = 0;
-            }
-            [self stopRtmp];
             
             break;
         }
@@ -398,12 +388,6 @@ static NSString *cellID = @"cellId";
              * 推流过程中，遇到服务器网络错误导致推流失败
              * 收到此错误后，建议调用endRtmpSession立即停止推流，并在服务恢复后再重新推流
              */
-            if (timer && closeRtmpCount == 30) {
-                closeRtmpCount = 0;
-                [self toastTip:@"网络无法连接，直播断开，请稍后重试！"];
-            }
-            
-            [self stopRtmp];
             NSLog(@"****************%@^^^^^^^^^^^^^^^^^",@"当前网络不稳定001，");
             
             break;
@@ -414,18 +398,17 @@ static NSString *cellID = @"cellId";
              * 收到此错误后，建议提示用户检查网络连接，然后调用endRtmpSession立即停止推流
              */
             NSLog(@"****************%@^^^^^^^^^^^^^^^^^",@"当前网络不稳定003");
-            if (timer && closeRtmpCount == 30) {
-                closeRtmpCount = 0;
-                [self toastTip:@"网络无法连接，直播断开，请稍后重试！"];
-            }
-            
-            [self stopRtmp];
             
             break;
         }
             
         default:
             break;
+    }
+    
+    if (timer) {
+        [self toastTip:@"信息异常，直播断开，请稍后重试！"];
+        [self stopRtmp];
     }
     
 }
@@ -516,11 +499,11 @@ static NSString *cellID = @"cellId";
     int second = seconds%60;
     
     self.CView.shotingTimeLable.text = [NSString stringWithFormat:@"%02d:%02d:%02d",hourse,minutes,second];
-    double rate = [self.model.session getCurrentUploadBandwidthKbps];
-    rate = rate < 0.0?0.0:rate;
-    self.CView.rateLabel.textColor = rate >50?[UIColor whiteColor]:[UIColor redColor];
+    double bandwidth = [self.model.session getCurrentUploadBandwidthKbps];
+    bandwidth = bandwidth < 0.0?0.0:bandwidth;
+    self.CView.rateLabel.textColor = bandwidth >50?[UIColor whiteColor]:[UIColor redColor];
     
-    self.CView.rateLabel.text = [NSString stringWithFormat:@"%.lf %@",rate,@"kb"];
+    self.CView.rateLabel.text = [NSString stringWithFormat:@"%.lf %@",bandwidth,@"kb/s"];
     if (seconds/90 && seconds%90==0 && !uploadFinished) {
         [self uploadZhiBoState:NO];
     }
@@ -531,22 +514,18 @@ static NSString *cellID = @"cellId";
         [_webSocket sendPing:nil error:nil];
     }
     
-    if (rate == 0) {
+    if (bandwidth == 0) {
         noDataCount++;
     }
     
-    if (seconds/20&&seconds%20==0) {
+    if (seconds%20==0) {
         noDataCount = 0;
-    }
-    
-    if (closeRtmpCount < 30) {
-        closeRtmpCount ++;
     }
     
     if (noDataCount>10) {
         noDataCount = 0;
         [self stopRtmp];
-        [self toastTip:@"创建班级直播失败，请稍后重试！"];
+        [self toastTip:seconds>30?@"信息异常，直播断开，请稍后重试！":@"创建班级直播失败，请稍后重试! "];
     }
 }
 
@@ -771,7 +750,6 @@ static NSString *cellID = @"cellId";
                 [selfWeak showClassInfoTable:NO];
                 
                 if (self.model.session.rtmpSessionState != VCSessionStateStarted) {
-//                    [selfWeak stopRtmp];
                     [selfWeak startRtmp];
                 }
                 
@@ -788,9 +766,6 @@ static NSString *cellID = @"cellId";
             }
         } else {
             [selfWeak showClassInfoTable:NO];
-            if (timer) {
-                [self stopRtmp];
-            }
         }
     };
     [self.view addSubview:_classView];

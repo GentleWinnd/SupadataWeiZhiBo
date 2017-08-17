@@ -205,12 +205,12 @@
     } else {
         
         NSDictionary *schoolInfo = [NSArray  safeArray:responseObject[@"data"][@"school"]].firstObject;
-        AppDelegate *app = [UIApplication sharedApplication].delegate;
+        AppDelegate *app = (AppDelegate *)[UIApplication sharedApplication].delegate;
         app.shouldChangeOrientation = YES;
         UIStoryboard *board = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
         StreamingViewModel* vmodel = [[StreamingViewModel alloc] initWithPushUrl:@""];
-        [vmodel setupSession:AVCaptureVideoOrientationLandscapeRight delegate:self];
 
+        
         NSString *schoolId = [NSString stringWithFormat:@"%@",schoolInfo[@"schoolId"]];
         ViewController *VC = [board instantiateViewControllerWithIdentifier:@"ViewController"];
         VC.userClassInfo = [NSArray safeArray:schoolInfo[@"classes"]];

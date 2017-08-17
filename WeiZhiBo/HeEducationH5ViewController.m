@@ -593,8 +593,7 @@
 
         StreamingViewModel* vmodel = [[StreamingViewModel alloc] initWithPushUrl:@""];
 
-        AppDelegate *app = [UIApplication sharedApplication].delegate;
-        
+        AppDelegate *app = (AppDelegate *)[UIApplication sharedApplication].delegate;
         app.shouldChangeOrientation = YES;
         
         ViewController *VC = [board instantiateViewControllerWithIdentifier:@"ViewController"];
@@ -606,7 +605,6 @@
         VC.schoolId = CSchoolId;
         VC.schoolName = CSchoolName;
         VC.model = vmodel;
-//        [vmodel setupSession:AVCaptureVideoOrientationLandscapeRight delegate:VC];
 
         if (CSchoolId.length == 0) {
             [Progress progressShowcontent:@"请选择学校" currView:self.view];
