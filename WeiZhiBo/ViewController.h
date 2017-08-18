@@ -34,17 +34,7 @@ typedef NS_ENUM(NSInteger, MessageSocketType) {
 @class StreamingViewModel;
 
 @interface ViewController : UIViewController
-{
-    BOOL         _isPreviewing;
-    NSString   * _pushUrl;
-    
-    unsigned long long  _startTime;
-    unsigned long long  _lastTime;
-    
-    NSString*       _logMsg;
-    NSString*       _tipsMsg;
-    
-}
+
 @property (strong, nonatomic) NSArray *userClassInfo;
 @property (strong, nonatomic) NSString *userId;
 @property (assign, nonatomic) UserRole userRole;
@@ -53,6 +43,9 @@ typedef NS_ENUM(NSInteger, MessageSocketType) {
 @property (nonatomic, strong) NSString *openId;
 @property (nonatomic, strong) NSString *schoolId;
 @property (nonatomic, strong) NSString *schoolName;
+@property (nonatomic, strong) NSString *cameraDataId;
+@property (nonatomic, strong) NSString *pushUrl;
+
 
 @property (nonatomic, strong) StreamingViewModel* model;
 

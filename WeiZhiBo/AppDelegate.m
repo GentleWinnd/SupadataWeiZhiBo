@@ -138,10 +138,6 @@
         HeEducationH5ViewController *h5View = [[HeEducationH5ViewController alloc] init];
         h5View.appToken = _apptoken;
         h5View.userRole = [[NSString safeString:contentsArr.lastObject] integerValue] == 0 ?1:[[NSString safeString:contentsArr.lastObject] integerValue];
-//        UINavigationController *navVC = [[UINavigationController alloc] initWithRootViewController:h5View];
-//    navVC.navigationBarHidden = YES;
-//        navVC.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;
-        _MainVC = h5View;
 
         self.window.rootViewController = _MainVC;
         [self.window makeKeyAndVisible];

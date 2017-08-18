@@ -203,37 +203,67 @@
        [self restoreRootViewController:heView];
 
     } else {
-        
         NSDictionary *schoolInfo = [NSArray  safeArray:responseObject[@"data"][@"school"]].firstObject;
-        AppDelegate *app = (AppDelegate *)[UIApplication sharedApplication].delegate;
-        app.shouldChangeOrientation = YES;
-        UIStoryboard *board = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
-        StreamingViewModel* vmodel = [[StreamingViewModel alloc] initWithPushUrl:@""];
-
-        
+        NSString *userID = responseObject[@"data"][@"user"][@"uId"];
         NSString *schoolId = [NSString stringWithFormat:@"%@",schoolInfo[@"schoolId"]];
-        ViewController *VC = [board instantiateViewControllerWithIdentifier:@"ViewController"];
-        VC.userClassInfo = [NSArray safeArray:schoolInfo[@"classes"]];
-        VC.userId = responseObject[@"data"][@"user"][@"uId"];
-        VC.userRole = UserRoleTeacher;
-        VC.accessToken = self.accessToken;
-        VC.openId = self.openId;
-        VC.schoolId = schoolInfo[@"schoolId"];
-        VC.schoolName = schoolInfo[@"schoolName"];
-        VC.model = vmodel;
+        NSString *schoolName = schoolInfo[@"schoolName"];
         
-        if (schoolId.length == 0) {
-            [Progress progressShowcontent:@"请选择学校" currView:self.view];
-            return;
-        }
-
-        UINavigationController * nav = [[UINavigationController alloc] initWithRootViewController:VC];
-        nav.navigationBarHidden = YES;
-        [self presentViewController:nav animated:NO completion:^{
-
+        NSDictionary *parameter = @{@"userId":userID,@"device":@"2",
+                                    @"school_id":schoolId,@"push_type":@"2",
+                                    @"liveName":@"IOS",
+                                    @"schoolName":schoolName,
+                                    @"schoolIp":@"",@"cameraId":@"",
+                                    @"schoolAdminName":@"",@"schoolAdminPhone":@"",
+                                    @"adminClassName":@"",@"cameraClassLocation":@""};
+        
+        [WZBNetServiceAPI getRegisterPhoneMicroLiveWithParameters:parameter success:^(id reponseObject) {
+            if ([reponseObject[@"status"] intValue] == 1) {
+                
+                NSString *pushUrl = [NSString safeString:reponseObject[@"data"][@"cameraPushUrl"]];
+                //            _logPlayId.text = [NSString safeString:reponseObject[@"data"][@"cameraPlayUrl"]];
+                NSString *cameraDataId = [NSString stringWithFormat:@"%@",reponseObject[@"data"][@"id"]];
+                [self gotoCameraVC:cameraDataId withPushURL:pushUrl userId:userID schoolId:schoolId schoolName:schoolName classes:schoolInfo[@"classes"]];
+            } else {
+                [Progress progressShowcontent:reponseObject[@"message"] currView:self.view];
+            }
+        } failure:^(NSError *error) {
+            [KTMErrorHint showNetError:error inView:self.view];
         }];
     }
 }
+
+
+- (void)gotoCameraVC:(NSString *)cameraID withPushURL:(NSString *)pushUrl userId:(NSString *)userId schoolId:(NSString *)schoolId schoolName:(NSString *)schoolName classes:(NSArray *)classArr {
+    
+    UIStoryboard *board = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
+    StreamingViewModel* vmodel = [[StreamingViewModel alloc] initWithPushUrl:pushUrl];
+    
+    AppDelegate *app = (AppDelegate *)[UIApplication sharedApplication].delegate;
+    app.shouldChangeOrientation = YES;
+    
+    ViewController *VC = [board instantiateViewControllerWithIdentifier:@"ViewController"];
+    VC.userClassInfo = classArr;
+    VC.userId = userId;
+    VC.accessToken = self.accessToken;
+    VC.openId = self.openId;
+    VC.schoolId = schoolId;
+    VC.schoolName = schoolName;
+    VC.model = vmodel;
+    VC.pushUrl = pushUrl;
+    
+    if (schoolId.length == 0) {
+        [Progress progressShowcontent:@"请选择学校" currView:self.view];
+        return;
+    }
+    
+    UINavigationController * nav = [[UINavigationController alloc] initWithRootViewController:VC];
+    nav.navigationBarHidden = YES;
+    [self presentViewController:nav animated:NO completion:^{
+    }];
+    
+    
+}
+
 
 
 // 登陆后淡入淡出更换rootViewController

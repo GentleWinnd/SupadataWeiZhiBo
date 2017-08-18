@@ -167,7 +167,6 @@
                                     </connections>
                                 </button>
                             </subviews>
-                            <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                             <constraints>
                                 <constraint firstItem="nKD-qg-k6k" firstAttribute="centerY" secondItem="3sh-zy-Oev" secondAttribute="centerY" id="3vQ-jG-9jz"/>
                                 <constraint firstItem="nKD-qg-k6k" firstAttribute="trailing" secondItem="3sh-zy-Oev" secondAttribute="trailingMargin" id="JxM-D8-Qtz"/>
@@ -203,6 +202,12 @@
                         <constraint firstItem="aXa-Cc-Vr1" firstAttribute="leading" secondItem="yYt-o6-1uz" secondAttribute="leading" id="yMb-7g-dIQ"/>
                         <constraint firstAttribute="trailing" secondItem="aXa-Cc-Vr1" secondAttribute="trailing" id="zjx-pK-MU2"/>
                     </constraints>
+                    <userDefinedRuntimeAttributes>
+                        <userDefinedRuntimeAttribute type="boolean" keyPath="masksToBounds" value="YES"/>
+                        <userDefinedRuntimeAttribute type="number" keyPath="cornerRadius">
+                            <integer key="value" value="3"/>
+                        </userDefinedRuntimeAttribute>
+                    </userDefinedRuntimeAttributes>
                 </view>
             </subviews>
             <constraints>
