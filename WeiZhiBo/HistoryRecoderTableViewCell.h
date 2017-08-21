@@ -16,5 +16,6 @@
 @property (strong, nonatomic) IBOutlet UIButton *removeBtn;
 @property (strong, nonatomic) IBOutlet UIButton *dotBtn;
 @property (copy, nonatomic) void(^cellBtnAction)(BOOL remove);
+@property (strong, nonatomic) IBOutlet UILabel *uploadRate;
 
 @end

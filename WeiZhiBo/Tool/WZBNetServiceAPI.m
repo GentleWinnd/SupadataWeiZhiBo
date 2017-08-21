@@ -164,6 +164,49 @@
     }];
 }
 
+//获取上传短视频的地址
+
++ (void)getShortVideoUplaodPathWithParameters:(id)parameters
+                                      success:(void(^)(id reponseObject))success
+                                      failure:(void(^)(NSError *error))failure {
+    
+    NSString *urlStr = [NSString stringWithFormat:@"vod/upload"];
+    NSString *URLString = [NSString stringWithFormat:@"%@%@", HOST_URL,urlStr];
+    
+    [KTMWebService CMGetWithURL:URLString parameters:parameters sucess:^(id responseObject) {
+        if (success) {
+            success(responseObject);
+        }
+    } failure:^(NSError *error) {
+        if (failure) {
+            failure(error);
+        }
+    }];
+}
+
+
+//上传短视频上传状态
+
++ (void)getUploadVideoUpStateWithParameters:(id)parameters
+                                    success:(void(^)(id reponseObject))success
+                                    failure:(void(^)(NSError *error))failure {
+    
+    NSString *urlStr = [NSString stringWithFormat:@"vod/callBack"];
+    NSString *URLString = [NSString stringWithFormat:@"%@%@", HOST_URL,urlStr];
+    
+    [KTMWebService CMGetWithURL:URLString parameters:parameters sucess:^(id responseObject) {
+        if (success) {
+            success(responseObject);
+        }
+    } failure:^(NSError *error) {
+        if (failure) {
+            failure(error);
+        }
+    }];
+}
+
+
+
 // 上传小型文件
 + (void)postUploadFileWithURL:(NSString *)URLString
                     paramater:(NSDictionary *)paramater

@@ -54,6 +54,18 @@
 + (void)getAPPVersionWithParameters:(id)parameters
                             success:(void(^)(id reponseObject))success
                             failure:(void(^)(NSError *error))failure;
+
+//获取上传短视频的地址
+
++ (void)getShortVideoUplaodPathWithParameters:(id)parameters
+                                      success:(void(^)(id reponseObject))success
+                                      failure:(void(^)(NSError *error))failure;
+
+//上传短视频上传状态
+
++ (void)getUploadVideoUpStateWithParameters:(id)parameters
+                                    success:(void(^)(id reponseObject))success
+                                    failure:(void(^)(NSError *error))failure;
 // 上传小型文件
 
 + (void)postUploadFileWithURL:(NSString *)URLString

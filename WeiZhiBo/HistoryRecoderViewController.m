@@ -95,12 +95,16 @@ static NSString *cellId = @"cellIdentifiler";
     cell.uploadBtn.selected = uploadState;
     cell.titleLabel.text = titleStr;
     cell.classLabel.attributedText = [self getVideoClassesWithVideoId:videoId withLabelWidth:CGRectGetWidth(cell.classLabel.frame)];
+    @WeakObj(cell)
     cell.cellBtnAction = ^(BOOL remove) {
         if ( remove ) {//视频删除
             [self removeHistoryRecoder:self.historyRecoderArr[indexPath.row]];
             
         } else {//视频上传
-            [self uploadVideo:videoPath];
+            if ( cellWeak.uploadBtn.selected) {
+                return ;
+            }
+            [self uploadVideo:videoPath withCell:cellWeak];
         }
     };
     
@@ -111,25 +115,34 @@ static NSString *cellId = @"cellIdentifiler";
 
 #pragma mark - 上传视频
 
-- (void)uploadVideo:(NSString *) filePath {
+- (void)uploadVideo:(NSString *) filePath withCell:(HistoryRecoderTableViewCell *)cell {
 //    _uploader = [FileUploader shareFileUploader];
 //    _uploader.delegate = self;
 //    [_uploader uploadFileAtPath:filePath];
    
-//    NSDictionary *paramater =@{@"resourceId":@"32010020170815150513130106xpz6q2",
-//                               @"uploadType":@"vodFile,short1",
-//                               @"prefix":@"20170815150513173"};
-     NSString *url = @"http://apk.139jy.cn:8006/short?resourceId=32010020170816170836272106abmkqz&uploadType=vodFile,short1&prefix=20170816170836311";
+    NSString *url = @"http://apk.139jy.cn:8006/short?resourceId=32010020170816170836272106abmkqz&uploadType=vodFile,short1&prefix=20170816170836311";
     NSData *data = [NSData dataWithContentsOfFile:filePath];
     NSString *fileStr = [filePath lastPathComponent];
+    cell.uploadRate.hidden = NO;
 
     [WZBNetServiceAPI postUploadFileWithURL:url paramater:nil fileData:data nameOfData:@"test" nameOfFile:fileStr mimeOfType:@"video/mp4" progress:^(NSProgress *uploadProgress) {
-        NSLog(@"upload-progress===%@",[uploadProgress description]);
+
+        NSString *rateStr = [NSString stringWithFormat:@"%.0f %%",uploadProgress.fractionCompleted*100];
+        dispatch_async(dispatch_get_main_queue(), ^{
+            cell.uploadRate.text = rateStr;
+        });
+//        NSLog(@"upload-progress===%@",[uploadProgress description]);
     } sucess:^(id responseObject) {
-        NSLog(@"_________uploaded success______/n %@",responseObject);
+//        NSLog(@"_________uploaded success______/n %@",responseObject);
+        cell.uploadRate.hidden = YES;
+        cell.uploadBtn.selected = YES;
+        cell.dotBtn.selected = YES;
+        [self fileUploadingState:YES fileName:filePath];
     } failure:^(NSError *error) {
-        NSLog(@"_________uploaded filad______ /n  %@",[error description]);
         
+//        NSLog(@"_________uploaded filad______ /n  %@",[error description]);
+        cell.uploadRate.hidden = YES;
+        [self fileUploadingState:NO fileName:filePath];
     }];
 //    [self upload:url filename:@"video" mimeType:@"video/mp4" data:data filePath:filePath];
 }
@@ -230,6 +243,7 @@ static NSString *cellId = @"cellIdentifiler";
         BOOL result = [filerManager removeItemAtPath:recoderPath error:&error];
         if (result) {
             NSLog(@"_______视频删除成功————————");
+            [Progress progressShowcontent:@"删除成功" currView:self.view];
             [self.historyRecoderArr removeObject:recoderPath];
             [[SaveDataManager shareSaveRecoder] removeRecoderVideoWithVideoId:@""];
             [self.recoderTab reloadData];

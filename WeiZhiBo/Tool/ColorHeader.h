@@ -36,5 +36,9 @@
 
 #define MAIN_LIGHT_WHITE_TEXTFEILD [@"#b6b6b7" toColor]
 
+#define CIRCLE_LIGHTBLUE_OUT [@"e5f3f6" toColor]
+#define CIRCLE_LIGHTBLUE_IN [@"14e2ec" toColor]
+#define CIRCLE_GREEN_IN [@"03dfd3" toColor]
+
 
 #endif /* ColorHeader_h */

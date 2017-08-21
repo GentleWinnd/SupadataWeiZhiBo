@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="12118" systemVersion="16E195" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="12121" systemVersion="16E195" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
     <device id="retina4_7" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="12086"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="12089"/>
         <capability name="Aspect ratio constraints" minToolsVersion="5.1"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -16,6 +16,7 @@
                 <outlet property="backImage" destination="pnQ-83-yuV" id="x9i-sa-oSW"/>
                 <outlet property="curveView" destination="xtZ-lK-RIa" id="Qq5-3V-FVx"/>
                 <outlet property="liveBtn" destination="X2u-e2-sBe" id="i7d-me-iLf"/>
+                <outlet property="overBtn" destination="Uaj-Vh-nLS" id="4Jt-BU-9tA"/>
                 <outlet property="recordBtn" destination="4Vm-ld-5Yi" id="3P7-GX-YpR"/>
                 <outlet property="vedioBackView" destination="HW3-my-FQL" id="3Pf-AT-dNd"/>
                 <outlet property="vedioBtn" destination="3xU-VU-KMK" id="AAl-QP-57x"/>
@@ -139,6 +140,13 @@
                         <constraint firstAttribute="trailing" secondItem="PuO-zl-7bC" secondAttribute="trailing" id="xyJ-xn-q91"/>
                     </constraints>
                 </view>
+                <button hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Uaj-Vh-nLS">
+                    <rect key="frame" x="0.0" y="64" width="375" height="603"/>
+                    <color key="backgroundColor" red="0.0" green="0.0" blue="0.0" alpha="0.58253959760273977" colorSpace="calibratedRGB"/>
+                    <connections>
+                        <action selector="overViewBtnAction:" destination="-1" eventType="touchUpInside" id="qas-3W-TKL"/>
+                    </connections>
+                </button>
                 <imageView hidden="YES" userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="rectangular_box.png" translatesAutoresizingMaskIntoConstraints="NO" id="HW3-my-FQL">
                     <rect key="frame" x="256" y="64" width="107" height="156"/>
                 </imageView>
@@ -165,17 +173,21 @@
             <constraints>
                 <constraint firstItem="RSq-Dn-gpQ" firstAttribute="top" secondItem="i5M-Pr-FkT" secondAttribute="top" id="1Al-dC-LNo"/>
                 <constraint firstItem="RSq-Dn-gpQ" firstAttribute="leading" secondItem="i5M-Pr-FkT" secondAttribute="leading" id="4eS-xY-Hc1"/>
+                <constraint firstAttribute="bottom" secondItem="Uaj-Vh-nLS" secondAttribute="bottom" id="4qo-y6-eXj"/>
                 <constraint firstItem="xtZ-lK-RIa" firstAttribute="top" secondItem="i5M-Pr-FkT" secondAttribute="top" id="4x0-Xm-Ijk"/>
                 <constraint firstAttribute="bottom" secondItem="xtZ-lK-RIa" secondAttribute="bottom" id="6fM-PZ-wqX"/>
                 <constraint firstItem="X2u-e2-sBe" firstAttribute="leading" secondItem="HW3-my-FQL" secondAttribute="leading" id="AiP-Oz-Npk"/>
                 <constraint firstItem="4Vm-ld-5Yi" firstAttribute="bottom" secondItem="HW3-my-FQL" secondAttribute="bottom" constant="-24" id="CvA-NY-Ek9"/>
+                <constraint firstAttribute="trailing" secondItem="Uaj-Vh-nLS" secondAttribute="trailing" id="Cxc-eD-9UR"/>
                 <constraint firstItem="X2u-e2-sBe" firstAttribute="top" secondItem="HW3-my-FQL" secondAttribute="top" constant="30" id="KNK-ME-BPN"/>
                 <constraint firstItem="xtZ-lK-RIa" firstAttribute="leading" secondItem="i5M-Pr-FkT" secondAttribute="leading" id="PTr-pz-swg"/>
                 <constraint firstAttribute="trailing" secondItem="xtZ-lK-RIa" secondAttribute="trailing" id="R2F-ef-5oW"/>
                 <constraint firstAttribute="trailing" secondItem="RSq-Dn-gpQ" secondAttribute="trailing" id="R2w-JJ-yeX"/>
                 <constraint firstItem="X2u-e2-sBe" firstAttribute="trailing" secondItem="HW3-my-FQL" secondAttribute="trailing" id="ZZv-4S-voL"/>
+                <constraint firstItem="Uaj-Vh-nLS" firstAttribute="leading" secondItem="i5M-Pr-FkT" secondAttribute="leading" id="a0U-SZ-1WC"/>
                 <constraint firstItem="3xU-VU-KMK" firstAttribute="trailing" secondItem="HW3-my-FQL" secondAttribute="trailing" id="dCy-PT-nSL"/>
                 <constraint firstItem="4Vm-ld-5Yi" firstAttribute="trailing" secondItem="HW3-my-FQL" secondAttribute="trailing" id="heZ-oP-W4n"/>
+                <constraint firstItem="Uaj-Vh-nLS" firstAttribute="top" secondItem="RSq-Dn-gpQ" secondAttribute="bottom" id="iT9-QG-U2m"/>
                 <constraint firstItem="4Vm-ld-5Yi" firstAttribute="leading" secondItem="HW3-my-FQL" secondAttribute="leading" id="n5A-B6-ejG"/>
                 <constraint firstItem="HW3-my-FQL" firstAttribute="top" secondItem="RSq-Dn-gpQ" secondAttribute="bottom" id="poa-ay-xNc"/>
             </constraints>

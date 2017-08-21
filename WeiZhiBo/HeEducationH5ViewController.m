@@ -11,6 +11,7 @@
 
 #import "LogInViewController.h"
 #import "ViewController.h"
+#import "XibWKWebView.h"
 #import "UserData.h"
 #import "User.h"
 #import <WebKit/WebKit.h>
@@ -33,6 +34,7 @@
     UIButton *playBtn;
 }
 @property (assign, nonatomic) NSUInteger loadCount;
+@property (strong, nonatomic) IBOutlet UIButton *overBtn;
 
 @property (strong, nonatomic) IBOutlet UIButton *backBtn;
 @property (strong, nonatomic) IBOutlet UIImageView *backImage;
@@ -44,6 +46,7 @@
 @property (strong, nonatomic) IBOutlet UIButton *liveBtn;
 @property (strong, nonatomic) IBOutlet UIButton *recordBtn;
 
+@property (strong, nonatomic) IBOutlet XibWKWebView *WWebView;
 
 @end
 
@@ -103,6 +106,8 @@
     // Do any additional setup after loading the view from its nib.
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(chanegsBackBtnActive) name:@"activeFromBack" object:nil];
 
+//    AppDelegate *appDe = (AppDelegate *)[UIApplication sharedApplication].delegate;
+//    appDe.shouldChangeOrientation = YES;
     self.view.backgroundColor = [UIColor whiteColor];
     self.navigationController.delegate = self;
     self.title = @"微直播";
@@ -211,7 +216,6 @@
 #pragma mark - 初始化webview
 
 - (void)initWKWebView {
-    
     WKWebViewConfiguration *config = [[WKWebViewConfiguration alloc] init];
     config.userContentController = [[WKUserContentController alloc] init];
     //    window.webkit.messageHandlers.Supadata.postMessage({body:'schoolId'})
@@ -221,7 +225,11 @@
     WKUserScript *wkUScript = [[WKUserScript alloc] initWithSource:jScript injectionTime:WKUserScriptInjectionTimeAtDocumentStart forMainFrameOnly:NO];
     [config.userContentController addUserScript:wkUScript];
     
+    // Set any configuration parameters here, e.g.
+    // myConfiguration.dataDetectorTypes = WKDataDetectorTypeAll;
+    
     WWebView = [[WKWebView alloc] initWithFrame:CGRectMake(0, 64, SCREEN_WIDTH, SCREEN_HEIGHT-64) configuration:config];
+
     WWebView.UIDelegate = self;
     WWebView.navigationDelegate = self;
     WWebView.allowsBackForwardNavigationGestures = NO;
@@ -572,6 +580,11 @@
         [Progress progressShowcontent:@"未能获取学校" currView:self.view];
     }
 }
+- (IBAction)overViewBtnAction:(UIButton *)sender {
+    [self hiddenVedioBtnView:YES];
+    sender.hidden = !sender.hidden;
+    self.vedioBtn.selected = !sender.hidden;
+}
 
 
 - (IBAction)vedioBtnAction:(UIButton *)sender {
@@ -587,6 +600,7 @@
         [self hiddenVedioBtnView:YES];
         [self recorderView];
     }
+    self.overBtn.hidden = sender.hidden;
     
 }
 
@@ -622,7 +636,7 @@
         
 
         StreamingViewModel* vmodel = [[StreamingViewModel alloc] initWithPushUrl:@""];
-        AppDelegate *app = [UIApplication sharedApplication].delegate;
+        AppDelegate *app = (AppDelegate *)[UIApplication sharedApplication].delegate;
         app.shouldChangeOrientation = YES;
         
         ViewController *VC = [board instantiateViewControllerWithIdentifier:@"ViewController"];

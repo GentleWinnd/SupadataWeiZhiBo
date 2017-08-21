@@ -13,6 +13,7 @@
 #import "RecorderViewController.h"
 #import "RecordClassNameView.h"
 #import "RecordingEndView.h"
+#import "UploadingView.h"
 #import "FileUploader.h"
 #import "AppDelegate.h"
 #import "UserData.h"
@@ -81,6 +82,8 @@ typedef NS_ENUM(NSUInteger, UploadVieoStyle) {
 @property (strong, nonatomic) UIImagePickerController *moviePicker;//视频选择器
 @property (strong, nonatomic) MPMoviePlayerViewController *playerVC;
 
+
+@property (strong, nonatomic) UploadingView *uploadingView;
 @end
 
 static NSString *cellID = @"cellId";
@@ -184,7 +187,7 @@ static NSString *cellID = @"cellId";
         
     } else {//返回
         if (timer) {
-            [self  alertViewMessage:@"是否退出当前视频录制"];
+            [self  alertViewMessage:@"是否退出当前视频录制" isUploading:NO];
 
         } else {
             AppDelegate * app = (AppDelegate *)[UIApplication sharedApplication].delegate;
@@ -390,6 +393,7 @@ static NSString *cellID = @"cellId";
             
         } else if (type == EndViewBtnTypeUpload) {//上传视频
             [self saveRecoderVideoClasses];
+            [self addUploadingView];
             [self uploadVideo];
 
         }
@@ -403,23 +407,39 @@ static NSString *cellID = @"cellId";
 #pragma mark - 上传视频
 
 - (void)uploadVideo {
-    FileUploader *uploader = [FileUploader shareFileUploader];
-    uploader.delegate = self;
-    [uploader uploadFileAtPath:self.recordEngine.videoPath];
+//    FileUploader *uploader = [FileUploader shareFileUploader];
+//    uploader.delegate = self;
+//    [uploader uploadFileAtPath:self.recordEngine.videoPath];
 //    NSData *data = [NSData dataWithContentsOfFile:self.recordEngine.videoPath];
 //    NSString *url = @"http://112.4.28.208:38080/media21";
 //    NSDictionary *paramater =@{@"resourceId":@"32010020170815115026716106shxxkm",
 //                               @"uploadType":@"vodFile,short1",
 //                               @"prefix":@"20170815115026765"};
 //    
-//    [WZBNetServiceAPI postUploadFileWithURL:url paramater:paramater fileData:data nameOfData:@"video/mp4" nameOfFile:@"test" mimeOfType:@"video" progress:^(NSProgress *uploadProgress) {
-//        NSLog(@"upload-progress===%@",[uploadProgress description]);
-//    } sucess:^(id responseObject) {
-//        NSLog(@"_________uploaded success______/n %@",responseObject);
-//    } failure:^(NSError *error) {
-//        NSLog(@"_________uploaded filad______ /n  %@",[error description]);
-//        
-//    }];
+    
+    NSString *filePath = self.recordEngine.videoPath;
+    NSString *url = @"http://apk.139jy.cn:8006/short?resourceId=32010020170816170836272106abmkqz&uploadType=vodFile,short1&prefix=20170816170836311";
+    NSData *data = [NSData dataWithContentsOfFile:filePath];
+    NSString *fileStr = [filePath lastPathComponent];
+    
+    [WZBNetServiceAPI postUploadFileWithURL:url paramater:nil fileData:data nameOfData:@"test" nameOfFile:fileStr mimeOfType:@"video/mp4" progress:^(NSProgress *uploadProgress) {
+        NSString *rateStr = [NSString stringWithFormat:@"%.0f %%",uploadProgress.fractionCompleted*100];
+
+        dispatch_async(dispatch_get_main_queue(), ^{
+            _uploadingView.ratelabel.text = rateStr;
+            [_uploadingView.circlProgress drawProgress:uploadProgress.fractionCompleted];
+        });
+        //        NSLog(@"upload-progress===%@",[uploadProgress description]);
+    } sucess:^(id responseObject) {
+        //        NSLog(@"_________uploaded success______/n %@",responseObject);
+        _uploadingView.ratelabel.text = @"100%";
+        _uploadingView.uploadStateLabel.text = @"上传成功";
+        [self fileUploadingState:YES fileName:filePath];
+    } failure:^(NSError *error) {
+        _uploadingView.uploadStateLabel.text = @"上传失败";
+        //        NSLog(@"_________uploaded filad______ /n  %@",[error description]);
+        [self fileUploadingState:NO fileName:filePath];
+    }];
 }
 
 - (void)fileUploadingState:(BOOL)state fileName:(NSString *)fileName{//fileuploaderdelegate function
@@ -468,6 +488,68 @@ static NSString *cellID = @"cellId";
     }
 }
 
+- (void)getUploadShortVideoPath {
+
+    NSDictionary *parameter = @{@"userId":[UserData getUser].userID,
+                                @"classIdList":@"",
+                                @"schoolId":@"",
+                                @"vodName":@"",
+                                @"vodDesc":@""};
+    
+    [WZBNetServiceAPI getShortVideoUplaodPathWithParameters:parameter success:^(id reponseObject) {
+        
+    } failure:^(NSError *error) {
+        
+    }];
+
+}
+
+- (void)uploadVideoUploadState {
+
+    NSDictionary *parameter = @{@"userId":[UserData getUser].userID,
+                                @"vodId":@""};
+    [WZBNetServiceAPI getUploadVideoUpStateWithParameters:parameter success:^(id reponseObject) {
+        
+    } failure:^(NSError *error) {
+        
+    }];
+
+}
+
+
+
+#pragma mark - 添加上传进度view
+
+- (void)addUploadingView {
+    int minutes = seconds/60;
+    int second = seconds%60;
+
+    _uploadingView = [[NSBundle mainBundle] loadNibNamed:@"UploadingView" owner:self options:nil].lastObject;
+    _uploadingView.frame = CGRectMake(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
+    _uploadingView.center = CGPointMake(SCREEN_WIDTH/2, SCREEN_HEIGHT/2);
+    _uploadingView.titleLabel.text = playTitle;
+    _uploadingView.nameLabel.text = [UserData getUser].nickName;
+    _uploadingView.allTime.text = [NSString stringWithFormat:@"%d分%d秒",minutes,second];
+//    _uploadingView.classNameLabel.text = @"";
+    @WeakObj(_uploadingView)
+    @WeakObj(self)
+    _uploadingView.cancleBtnBlock = ^() {
+    
+        if (![_uploadingViewWeak.uploadStateLabel.text isEqualToString:@"上传成功"]) {
+            [selfWeak alertViewMessage:@"是否取消上传" isUploading:YES];
+        } else {
+            [selfWeak removeUploadingView];
+        }
+    };
+    
+    [self.view addSubview:_uploadingView];
+}
+
+- (void)removeUploadingView {
+    [_uploadingView removeFromSuperview];
+    _uploadingView = nil;
+
+}
 
 /*******************create class name pickerview*****************/
 
@@ -577,7 +659,7 @@ static NSString *cellID = @"cellId";
 
 #pragma mmark - 提示框
 
-- (void)alertViewMessage:(NSString *)messageStr {
+- (void)alertViewMessage:(NSString *)messageStr isUploading:(BOOL)uploading {
     
     UIAlertController *alert = [UIAlertController alertControllerWithTitle:nil message:messageStr preferredStyle:UIAlertControllerStyleAlert];
     
@@ -589,12 +671,16 @@ static NSString *cellID = @"cellId";
     
     //修改按钮的颜色，同上可以使用同样的方法修改内容，样式
     UIAlertAction *defaultAction = [UIAlertAction actionWithTitle:@"是" style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
+        if (uploading) {
+            [self removeUploadingView];
+        } else {
             AppDelegate * app = (AppDelegate *)[UIApplication sharedApplication].delegate;
             app.shouldChangeOrientation = NO;
-        
+            
             [self.navigationController dismissViewControllerAnimated:YES completion:nil];
+
+        }
     }];
-    
     [defaultAction setValue:MAIN_DACK_BLUE_ALERT forKey:@"_titleTextColor"];
     
     UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:@"否" style:UIAlertActionStyleCancel handler:^(UIAlertAction *action) {
