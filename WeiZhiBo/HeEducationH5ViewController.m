@@ -113,8 +113,6 @@
     self.title = @"微直播";
     [self performSelector:@selector(startNetNotice) withObject:nil afterDelay:12.0f];
 
-//    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(begainFullScreen) name:UIWindowDidBecomeVisibleNotification object:nil];//进入全屏
-//    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(endFullScreen) name:UIWindowDidBecomeHiddenNotification object:nil];//退出全屏
     [self initWKWebView];
     [self createLoadIndicator];
     
@@ -267,6 +265,7 @@
     WKUserContentController *userCC = WWebView.configuration.userContentController;
     // 注入JS对象名称AppModel，当JS通过AppModel来调用时，
     // 我们可以在WKScriptMessageHandler代理中接收到
+    //可以注入多个APPmodel
     [userCC addScriptMessageHandler:self name:@"Supadata"];
     [userCC addScriptMessageHandler:self name:@"userType"];
 
@@ -515,8 +514,7 @@
         NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse*)response;
         if ((([httpResponse statusCode]/100) == 2)){
             NSLog(@"connection ok");
-        }
-        else{
+        } else {
             NSError *error = [NSError errorWithDomain:@"HTTP" code:[httpResponse statusCode] userInfo:nil];
             if ([error code] == 404){
                 NSLog(@"404");
@@ -553,7 +551,6 @@
         //do nothing
         NSLog(@"-1009");
 
-        
     }
 }
 
@@ -581,18 +578,14 @@
     }
 }
 - (IBAction)overViewBtnAction:(UIButton *)sender {
+   
     [self hiddenVedioBtnView:YES];
-    sender.hidden = !sender.hidden;
-    self.vedioBtn.selected = !sender.hidden;
 }
-
 
 - (IBAction)vedioBtnAction:(UIButton *)sender {
     
     if (sender.tag == 1) {//视频按钮
         [self hiddenVedioBtnView:sender.selected];
-        sender.selected = !sender.selected;
-
     } else if (sender.tag == 2) {//直播按钮
         [self liveBtnAction];
         [self hiddenVedioBtnView:YES];
@@ -600,11 +593,13 @@
         [self hiddenVedioBtnView:YES];
         [self recorderView];
     }
-    self.overBtn.hidden = sender.hidden;
     
 }
 
 - (void)hiddenVedioBtnView:(BOOL)hidden {
+
+    self.vedioBtn.selected = !hidden;
+    self.overBtn.hidden = hidden;
 
     self.vedioBackView.hidden = hidden;
     self.liveBtn.hidden = hidden;
@@ -612,13 +607,15 @@
 }
 
 - (void)recorderView {
-    AppDelegate *app = [UIApplication sharedApplication].delegate;
+    AppDelegate *app = (AppDelegate *)[UIApplication sharedApplication].delegate;
     app.shouldChangeOrientation = YES;
 
     RecorderViewController *recoderView = [[RecorderViewController  alloc] init];
     recoderView.userClassInfo = classesArray;
     recoderView.userRole = self.userRole;
     recoderView.userId = self.userId;
+    recoderView.schoolId = CSchoolId;
+    recoderView.schoolName = CSchoolName;
     
     UINavigationController * nav = [[UINavigationController alloc] initWithRootViewController:recoderView];
     nav.navigationBarHidden = YES;
@@ -630,40 +627,72 @@
 #pragma mark- 直播按钮事件
 
 - (void)liveBtnAction {
-    UIStoryboard *board = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
     
     if (classesArray.count >0) {
-        
-
-        StreamingViewModel* vmodel = [[StreamingViewModel alloc] initWithPushUrl:@""];
-        AppDelegate *app = (AppDelegate *)[UIApplication sharedApplication].delegate;
-        app.shouldChangeOrientation = YES;
-        
-        ViewController *VC = [board instantiateViewControllerWithIdentifier:@"ViewController"];
-        VC.userClassInfo = classesArray;
-        VC.userId = self.userId;
-        VC.userRole = self.userRole;
-        VC.accessToken = self.accessToken;
-        VC.openId = self.openId;
-        VC.schoolId = CSchoolId;
-        VC.schoolName = CSchoolName;
-        VC.model = vmodel;
-//        [vmodel setupSession:AVCaptureVideoOrientationLandscapeRight delegate:VC];
-
-        if (CSchoolId.length == 0) {
-            [Progress progressShowcontent:@"请选择学校" currView:self.view];
-            return;
-        }
-
-        UINavigationController * nav = [[UINavigationController alloc] initWithRootViewController:VC];
-        nav.navigationBarHidden = YES;
-        [self presentViewController:nav animated:NO completion:^{
-        }];
-        
+        [self getPushInfo];
     } else {
         [Progress progressShowcontent:@"您在该校不是教师身份，不能进行直播哦。" currView:self.view];
     }
 }
+
+#pragma mark- 获取班级信息数据
+
+- (void)getPushInfo {
+    
+    NSDictionary *parameter = @{@"userId":self.userId,@"device":@"2",
+                                @"school_id":CSchoolId,@"push_type":@"2",
+                                @"liveName":@"IOS",
+                                @"schoolName":CSchoolName,
+                                @"schoolIp":@"",@"cameraId":@"",
+                                @"schoolAdminName":@"",@"schoolAdminPhone":@"",
+                                @"adminClassName":@"",@"cameraClassLocation":@""};
+    
+    [WZBNetServiceAPI getRegisterPhoneMicroLiveWithParameters:parameter success:^(id reponseObject) {
+        if ([reponseObject[@"status"] intValue] == 1) {
+            
+            NSString *pushUrl = [NSString safeString:reponseObject[@"data"][@"cameraPushUrl"]];
+            //            _logPlayId.text = [NSString safeString:reponseObject[@"data"][@"cameraPlayUrl"]];
+            NSString *cameraDataId = [NSString stringWithFormat:@"%@",reponseObject[@"data"][@"id"]];
+            [self gotoCameraVC:cameraDataId withPushURL:pushUrl];
+        } else {
+            [Progress progressShowcontent:reponseObject[@"message"] currView:self.view];
+        }
+    } failure:^(NSError *error) {
+        [KTMErrorHint showNetError:error inView:self.view];
+    }];
+    
+}
+
+- (void)gotoCameraVC:(NSString *)cameraID withPushURL:(NSString *)pushUrl {
+    
+    UIStoryboard *board = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
+    StreamingViewModel* vmodel = [[StreamingViewModel alloc] initWithPushUrl:pushUrl];
+    
+    AppDelegate *app = (AppDelegate *)[UIApplication sharedApplication].delegate;
+    app.shouldChangeOrientation = YES;
+    
+    ViewController *VC = [board instantiateViewControllerWithIdentifier:@"ViewController"];
+    VC.userClassInfo = classesArray;
+    VC.userId = self.userId;
+    VC.userRole = self.userRole;
+    VC.accessToken = self.accessToken;
+    VC.openId = self.openId;
+    VC.schoolId = CSchoolId;
+    VC.schoolName = CSchoolName;
+    VC.model = vmodel;
+    VC.pushUrl = pushUrl;
+    
+    if (CSchoolId.length == 0) {
+        [Progress progressShowcontent:@"请选择学校" currView:self.view];
+        return;
+    }
+    
+    UINavigationController * nav = [[UINavigationController alloc] initWithRootViewController:VC];
+    nav.navigationBarHidden = YES;
+    [self presentViewController:nav animated:NO completion:^{
+    }];
+}
+
 
 #pragma mark - pangesturehandle
 
@@ -881,6 +910,11 @@
     [super viewDidDisappear:animated];
     [MobClick endLogPageView:@"H5View"];
 }
+
+-(BOOL)shouldAutorotate {
+    return YES;
+}
+
 
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];

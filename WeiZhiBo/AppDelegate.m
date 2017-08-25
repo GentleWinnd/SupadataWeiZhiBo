@@ -107,6 +107,9 @@
 - (void)applicationDidEnterBackground:(UIApplication *)application {
     // Use this method to release shared resources, save user data, invalidate timers, and store enough application state information to restore your application to its current state in case it is terminated later.
     // If your application supports background execution, this method is called instead of applicationWillTerminate: when the user quits.
+    
+    [[NSNotificationCenter defaultCenter] postNotificationName:@"enterBack" object:nil];
+
 }
 
 
@@ -145,10 +148,6 @@
         HeEducationH5ViewController *h5View = [[HeEducationH5ViewController alloc] init];
         h5View.appToken = _apptoken;
         h5View.userRole = [[NSString safeString:contentsArr.lastObject] integerValue] == 0 ?1:[[NSString safeString:contentsArr.lastObject] integerValue];
-//        UINavigationController *navVC = [[UINavigationController alloc] initWithRootViewController:h5View];
-//    navVC.navigationBarHidden = YES;
-//        navVC.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;
-        _MainVC = h5View;
 
         self.window.rootViewController = _MainVC;
         [self.window makeKeyAndVisible];

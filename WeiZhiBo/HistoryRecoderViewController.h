@@ -9,6 +9,12 @@
 #import <UIKit/UIKit.h>
 
 @interface HistoryRecoderViewController : UIViewController
-@property (strong, nonatomic) NSMutableArray *historyRecoderArr;
+@property (strong, nonatomic) NSMutableArray *historyRecoderArr;//历史视频记录
+
+@property (strong, nonatomic) NSString *userId;
+@property (assign, nonatomic) UserRole userRole;
+
+@property (nonatomic, strong) NSString *schoolId;
+@property (nonatomic, strong) NSString *schoolName;
 
 @end

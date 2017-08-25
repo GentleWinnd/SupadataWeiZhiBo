@@ -26,6 +26,7 @@
 - (void)saveRecoderVodeoClass:(NSArray *)classArr withVideoId:(NSString *)videoId;
 - (void)saveRecoderTitle:(NSString *)title withVideoId:(NSString *)videoId;
 - (void)saveRecoderUploadState:(BOOL )state withVideoId:(NSString *)videoId;
+- (void)saveRecoderTimeDate:(NSString *)dateStr withVideoId:(NSString *)videoId;
 /**
  获取录播视频对应的班级信息
 
@@ -35,6 +36,7 @@
 - (NSArray *)getVideoClassesWithVideoId:(NSString *)videoId;
 - (NSString *)getRecoderTitleWithVideoId:(NSString *)videoId;
 - (BOOL)getRecoderUploadStateWithVideoId:(NSString *)videoId;
+- (NSString *)getRecoderTimeDateWithVideoId:(NSString *)videoId;
 
 /**
   删除视频对应的班级信息

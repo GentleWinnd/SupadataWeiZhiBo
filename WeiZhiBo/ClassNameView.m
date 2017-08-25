@@ -30,7 +30,7 @@ static NSString *CellIdOfClass = @"cellIdOfClass";
 @implementation ClassNameView
 
 - (void)awakeFromNib {
-    [super awakeFromNib];
+    [super awakeFromNib]; 
     _firstEdite = YES;
     _classTitleTextFeild.delegate = self;
     self.selectedArray = [NSMutableArray arrayWithCapacity:0];
@@ -40,18 +40,14 @@ static NSString *CellIdOfClass = @"cellIdOfClass";
     [self customCLassNameTableView];
 }
 
-- (void)setUserRole:(UserRole)userRole {
+- (void)setUserRole:(UserRole)userRole {// 根据用户角色设置界面
+    self.noticeAllSchoolBtn.hidden = YES;
+    self.noticeAllSchoolLabel.hidden = YES;
+    self.sendMessageLeadingSpace.constant = 0;
     
-//    if (userRole == UserRoleKindergartenLeader) {
-//        
-//    } else {
-        self.noticeAllSchoolBtn.hidden = YES;
-        self.noticeAllSchoolLabel.hidden = YES;
-        self.sendMessageLeadingSpace.constant = 0;
-//    }
 }
 
-- (BOOL)textFieldShouldReturn:(UITextField *)textField {
+- (BOOL)textFieldShouldReturn:(UITextField *)textField {//return 时间回调
     [textField resignFirstResponder];
     self.clearBtn.hidden = NO;
     return YES;
@@ -63,7 +59,7 @@ static NSString *CellIdOfClass = @"cellIdOfClass";
     _classTitleTextFeild.textColor = [UIColor whiteColor];
 }
 
-- (void)setProTitle:(NSString *)proTitle {
+- (void)setProTitle:(NSString *)proTitle {//设置字体颜色
     _classTitleTextFeild.text = proTitle;
     _classTitleTextFeild.textColor = _firstEdite?MAIN_LIGHT_WHITE_TEXTFEILD:[UIColor whiteColor];
     _title = proTitle;
@@ -87,7 +83,7 @@ static NSString *CellIdOfClass = @"cellIdOfClass";
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
     
-    return self.userClassInfo.count == 1?0:self.userClassInfo.count;
+    return self.userClassInfo.count;
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -101,7 +97,6 @@ static NSString *CellIdOfClass = @"cellIdOfClass";
     ClassNameTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdOfClass forIndexPath:indexPath];
     NSDictionary *classInfo = [NSDictionary safeDictionary:self.userClassInfo[indexPath.row]];
     NSString *classN = [NSString safeString:classInfo[@"className"]];
-    @WeakObj(cell)
     cell.selectedBtn.selected = YES;
     cell.setSelected = ^(BOOL sel) {
         [self tableView:tableView didSelectRowAtIndexPath:indexPath];

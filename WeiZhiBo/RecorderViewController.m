@@ -8,6 +8,7 @@
 #define  KEY_BOARD_M_H 162
 #define  KEY_BOARD_H_H 193
 
+#define  UPLOAD_STATE_NOTICE @"videoUploadState"
 
 #import "HistoryRecoderViewController.h"
 #import "RecorderViewController.h"
@@ -17,6 +18,9 @@
 #import "FileUploader.h"
 #import "AppDelegate.h"
 #import "UserData.h"
+
+
+#import "NotificationManager.h"
 
 #import "NSString+Extension.h"
 #import "SaveDataManager.h"
@@ -94,7 +98,9 @@ static NSString *cellID = @"cellId";
     NSString *playTitle;
     
     NSTimer *timer;
+    NSString *videoId;
     int seconds;
+    BOOL uploading;
 }
 
 - (void)viewDidLoad {
@@ -109,6 +115,13 @@ static NSString *cellID = @"cellId";
     
     [self createCLassNamePickerView];
     [self performSelector:@selector(showClassView) withObject:nil afterDelay:1.0];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(appEnterBack) name:@"enterBack" object:nil];
+}
+
+- (void)appEnterBack {//app进入后台通知
+    if (uploading) {
+        [NotificationManager registerLocalNotificationAlertBody:@"您有短视频正在后台上传" description:@""];
+    }
 }
 
 - (void)showClassView {
@@ -187,7 +200,7 @@ static NSString *cellID = @"cellId";
         
     } else {//返回
         if (timer) {
-            [self  alertViewMessage:@"是否退出当前视频录制" isUploading:NO];
+            [self  alertViewMessage:@"关闭后视频将转到后台上传，确认关闭？" isUploading:NO];
 
         } else {
             AppDelegate * app = (AppDelegate *)[UIApplication sharedApplication].delegate;
@@ -220,6 +233,10 @@ static NSString *cellID = @"cellId";
     
         HistoryRecoderViewController *historyVC = [[HistoryRecoderViewController alloc] init];
         historyVC.historyRecoderArr = [self getVideoPathAtFilePath:[self.recordEngine getVideoCachePath]];
+        historyVC.schoolName = self.schoolName;
+        historyVC.schoolId = self.schoolId;
+        historyVC.userId = self.userId;
+        historyVC.userRole = self.userRole;
         
         [self.navigationController pushViewController:historyVC animated:YES];
     }
@@ -393,8 +410,9 @@ static NSString *cellID = @"cellId";
             
         } else if (type == EndViewBtnTypeUpload) {//上传视频
             [self saveRecoderVideoClasses];
+            [self getUploadShortVideoPath];
             [self addUploadingView];
-            [self uploadVideo];
+
 
         }
         [endViewWeak removeFromSuperview];
@@ -406,7 +424,7 @@ static NSString *cellID = @"cellId";
 
 #pragma mark - 上传视频
 
-- (void)uploadVideo {
+- (void)uploadVideo:(NSString *)url  {
 //    FileUploader *uploader = [FileUploader shareFileUploader];
 //    uploader.delegate = self;
 //    [uploader uploadFileAtPath:self.recordEngine.videoPath];
@@ -418,37 +436,48 @@ static NSString *cellID = @"cellId";
 //    
     
     NSString *filePath = self.recordEngine.videoPath;
-    NSString *url = @"http://apk.139jy.cn:8006/short?resourceId=32010020170816170836272106abmkqz&uploadType=vodFile,short1&prefix=20170816170836311";
     NSData *data = [NSData dataWithContentsOfFile:filePath];
     NSString *fileStr = [filePath lastPathComponent];
     
     [WZBNetServiceAPI postUploadFileWithURL:url paramater:nil fileData:data nameOfData:@"test" nameOfFile:fileStr mimeOfType:@"video/mp4" progress:^(NSProgress *uploadProgress) {
         NSString *rateStr = [NSString stringWithFormat:@"%.0f %%",uploadProgress.fractionCompleted*100];
-
+        uploading = YES;
         dispatch_async(dispatch_get_main_queue(), ^{
             _uploadingView.ratelabel.text = rateStr;
             [_uploadingView.circlProgress drawProgress:uploadProgress.fractionCompleted];
         });
-        //        NSLog(@"upload-progress===%@",[uploadProgress description]);
+                NSLog(@"upload-progress===%@",[uploadProgress description]);
     } sucess:^(id responseObject) {
         //        NSLog(@"_________uploaded success______/n %@",responseObject);
+        uploading = NO;
         _uploadingView.ratelabel.text = @"100%";
         _uploadingView.uploadStateLabel.text = @"上传成功";
         [self fileUploadingState:YES fileName:filePath];
+        [self uploadVideoUploadState];
+        if (_uploadingView) {
+            [Progress progressShowcontent:@"上传成功"];
+        }
+        
     } failure:^(NSError *error) {
+        uploading = NO;
         _uploadingView.uploadStateLabel.text = @"上传失败";
+        if (_uploadingView) {
+            [Progress progressShowcontent:@"上传失败"];
+        }
+
         //        NSLog(@"_________uploaded filad______ /n  %@",[error description]);
         [self fileUploadingState:NO fileName:filePath];
     }];
 }
+
 
 - (void)fileUploadingState:(BOOL)state fileName:(NSString *)fileName{//fileuploaderdelegate function
     
     if (fileName.length>0) {//修改文件上传的额状态
         NSString *videoName = [fileName componentsSeparatedByString:@"/"].lastObject;
         if (videoName.length>0) {
-            NSString *videoId = [videoName componentsSeparatedByString:@"."].firstObject;
-            [[SaveDataManager shareSaveRecoder] saveRecoderUploadState:state withVideoId:videoId];
+            NSString *videoTag = [videoName componentsSeparatedByString:@"."].firstObject;
+            [[SaveDataManager shareSaveRecoder] saveRecoderUploadState:state withVideoId:videoTag];
         } else {
             [Progress progressShowcontent:@"视频保存失败了" currView:self.view];
         }
@@ -463,8 +492,13 @@ static NSString *cellID = @"cellId";
     if ([filerManager fileExistsAtPath:recoderPath]) {
         BOOL result = [filerManager removeItemAtPath:recoderPath error:&error];
         if (result) {
+            NSString *videoName = [recoderPath componentsSeparatedByString:@"/"].lastObject;
+            if (videoName.length>0) {
+                NSString *videoTag = [videoName componentsSeparatedByString:@"."].firstObject;
+                [[SaveDataManager shareSaveRecoder] removeRecoderVideoWithVideoId:videoTag];
+
+            }
             NSLog(@"_______视频删除成功————————");
-            [[SaveDataManager shareSaveRecoder] removeRecoderVideoWithVideoId:@""];
         } else {
             [Progress progressShowcontent:@"删除失败了" currView:self.view];
         }
@@ -476,9 +510,10 @@ static NSString *cellID = @"cellId";
     if (videoPath.length>0) {
         NSString *videoName = [videoPath componentsSeparatedByString:@"/"].lastObject;
         if (videoName.length>0) {
-            NSString *videoId = [videoName componentsSeparatedByString:@"."].firstObject;
-            [[SaveDataManager shareSaveRecoder] saveRecoderVodeoClass:selClassArr withVideoId:videoId];
-            [[SaveDataManager shareSaveRecoder] saveRecoderTitle:playTitle withVideoId:videoId];
+            NSString *videoTag = [videoName componentsSeparatedByString:@"."].firstObject;
+            [[SaveDataManager shareSaveRecoder] saveRecoderVodeoClass:selClassArr withVideoId:videoTag];
+            [[SaveDataManager shareSaveRecoder] saveRecoderTitle:playTitle withVideoId:videoTag];
+            [[SaveDataManager shareSaveRecoder] saveRecoderTimeDate:[NSString stringFromCurrentDate] withVideoId:videoTag];
 
         } else {
             [Progress progressShowcontent:@"视频保存失败了" currView:self.view];
@@ -488,29 +523,58 @@ static NSString *cellID = @"cellId";
     }
 }
 
-- (void)getUploadShortVideoPath {
+- (void)getUploadShortVideoPath {//获取视频的上传路径
+    NSString *classIdStr = @"";
+    for (NSDictionary *classInfo in selClassArr) {
+        if (classIdStr.length == 0) {
+            classIdStr = [NSString stringWithFormat:@"%@",classInfo[@"classId"]];
+            
+        } else {
+            classIdStr = [NSString stringWithFormat:@"%@,%@",classIdStr, classInfo[@"classId"]];
+        }
+    }
 
     NSDictionary *parameter = @{@"userId":[UserData getUser].userID,
-                                @"classIdList":@"",
-                                @"schoolId":@"",
-                                @"vodName":@"",
-                                @"vodDesc":@""};
+                                @"classIdList":classIdStr,
+                                @"schoolId":self.schoolId,
+                                @"vodName":playTitle,
+                                @"vodDesc":@"录播小视频"};
     
     [WZBNetServiceAPI getShortVideoUplaodPathWithParameters:parameter success:^(id reponseObject) {
+        if ([reponseObject[@"status"] integerValue] == 1) {
+            videoId = [NSString safeString:reponseObject[@"data"][@"vodId"]];
+            NSString *url = [NSString safeString:reponseObject[@"data"][@"uploadUrl"]];
+            if (url.length>0) {
+                [self uploadVideo:url];
+            } else {
+                [self removeUploadingView];
+                [Progress progressShowcontent:@"视频上传失败，请稍后重试" currView:self.view];
+            }
+        } else {
+            [Progress progressShowcontent:reponseObject[@"message"] currView:self.view];
+        }
         
     } failure:^(NSError *error) {
+        [KTMErrorHint showNetError:error inView:self.view];
         
     }];
 
 }
 
-- (void)uploadVideoUploadState {
+- (void)uploadVideoUploadState {//上传视频上传的状态
 
     NSDictionary *parameter = @{@"userId":[UserData getUser].userID,
-                                @"vodId":@""};
+                                @"vodId":videoId};
     [WZBNetServiceAPI getUploadVideoUpStateWithParameters:parameter success:^(id reponseObject) {
         
+        if ([reponseObject[@"status"] integerValue]) {
+//            [Progress progressShowcontent:@"上传成功" currView:self.view];
+        } else {
+        
+            [Progress progressShowcontent:reponseObject[@"message"] currView:self.view];
+        }
     } failure:^(NSError *error) {
+        [KTMErrorHint showNetError:error inView:self.view];
         
     }];
 
@@ -524,13 +588,24 @@ static NSString *cellID = @"cellId";
     int minutes = seconds/60;
     int second = seconds%60;
 
+    NSString *classNameStr = @"";
+    for (NSDictionary *classInfo in selClassArr) {
+        if (classNameStr.length == 0) {
+            classNameStr = [NSString stringWithFormat:@"%@",classInfo[@"className"]];
+            
+        } else {
+            classNameStr = [NSString stringWithFormat:@"%@,%@",classNameStr, classInfo[@"className"]];
+        }
+
+        
+    }
     _uploadingView = [[NSBundle mainBundle] loadNibNamed:@"UploadingView" owner:self options:nil].lastObject;
     _uploadingView.frame = CGRectMake(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
     _uploadingView.center = CGPointMake(SCREEN_WIDTH/2, SCREEN_HEIGHT/2);
     _uploadingView.titleLabel.text = playTitle;
     _uploadingView.nameLabel.text = [UserData getUser].nickName;
     _uploadingView.allTime.text = [NSString stringWithFormat:@"%d分%d秒",minutes,second];
-//    _uploadingView.classNameLabel.text = @"";
+    _uploadingView.classNameLabel.text = classNameStr;
     @WeakObj(_uploadingView)
     @WeakObj(self)
     _uploadingView.cancleBtnBlock = ^() {
@@ -596,7 +671,7 @@ static NSString *cellID = @"cellId";
     if (show) {
         frame = CGRectMake(0, 0,SCREEN_WIDTH ,SCREEN_HEIGHT);
         if (playTitle.length == 0) {
-            _classView.proTitle = [NSString stringWithFormat:@"%@的直播",[UserData getUser].nickName];
+            _classView.proTitle = [NSString stringWithFormat:@"%@的小视频",[UserData getUser].nickName];
             _classView.classTitleTextFeild.textColor = MAIN_LIGHT_WHITE_TEXTFEILD;
         } else {
             _classView.proTitle = playTitle;
@@ -670,7 +745,7 @@ static NSString *cellID = @"cellId";
     [alert setValue:hogan forKey:@"attributedMessage"];
     
     //修改按钮的颜色，同上可以使用同样的方法修改内容，样式
-    UIAlertAction *defaultAction = [UIAlertAction actionWithTitle:@"是" style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
+    UIAlertAction *defaultAction = [UIAlertAction actionWithTitle:@"确认" style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
         if (uploading) {
             [self removeUploadingView];
         } else {
@@ -683,7 +758,7 @@ static NSString *cellID = @"cellId";
     }];
     [defaultAction setValue:MAIN_DACK_BLUE_ALERT forKey:@"_titleTextColor"];
     
-    UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:@"否" style:UIAlertActionStyleCancel handler:^(UIAlertAction *action) {
+    UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:@"取消" style:UIAlertActionStyleCancel handler:^(UIAlertAction *action) {
        
     
     }];
@@ -696,8 +771,6 @@ static NSString *cellID = @"cellId";
     
     [self presentViewController:alert animated:YES completion:nil];
 }
-
-
 
 
 #pragma - mark  进入全屏

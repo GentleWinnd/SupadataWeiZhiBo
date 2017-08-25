@@ -109,13 +109,10 @@
             self.alpha = 1;
         }];
     } else {
-        CGFloat width = proframe.size.width;
-        CGFloat height = proframe.size.height;
         UIImage *image = [UIImage imageNamed:@"jaizaishibai"];
         CGRect frame =  self.imageView.frame;
         self.imageView.frame = CGRectMake(frame.origin.x, frame.origin.y, image.size.width, image.size.height);
-        self.Infolabel.center = CGPointMake(width/2, height/2+60+20-30);
-
+        self.Infolabel.center = CGPointMake(image.size.width/2, image.size.height/2+60+20-30);
         
         [self.imageView stopAnimating];
         [self.imageView setImage:image];

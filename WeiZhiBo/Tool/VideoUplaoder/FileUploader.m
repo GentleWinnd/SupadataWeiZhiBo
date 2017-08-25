@@ -168,83 +168,83 @@ static FileUploader *uploader;
     }];
 }
 
-//- (void)upload:(NSString *)name filename:(NSString *)filename mimeType:(NSString *)mimeType data:(NSData *)fileData fileFragment:(FileFragment*)framgent {
-//    
-//    /** * post的上传文件，不同于普通的数据上传， * 普通上传，只是将数据转换成二进制放置在请求体中，进行上传，有响应体得到结果。 * post上传，当上传文件是， 请求体中会多一部分东西， Content——Type，这是在请求体中必须要书写的，而且必须要书写正确，不能有一个标点符号的错误。负责就会请求不上去，或者出现请求的错误（无名的问题等） * 其中在post 请求体中加入的格式有{1、边界 2、参数 3、换行 4、具体数据 5、换行 6、边界 7、换行 8、对象 9、结束符} */
-//    
-//    NSURLSession *session = [NSURLSession sharedSession];
-//    NSURL *url = [NSURL URLWithString:@"http://112.4.28.208:38080/media21?resourceId=32010020170814152151916103i5rthc&uploadType=vodFile,media21&prefix=20170814152151979"];
-//    NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:url];
-//    // 设置请求头数据 。 boundary：边界
-//    [request setValue:@"multipart/form-data; boundary=----WebKitFormBoundaryftnnT7s3iF7wV5q6" forHTTPHeaderField:@"Content-Type"];
-//    // 给请求头加入固定格式数据
-//    NSMutableData *data = [NSMutableData data];
-//    /****************文件参数相关设置*********************/
-//    // 设置边界 注：必须和请求头数据设置的边界 一样， 前面多两个“-”；（字符串 转 data 数据）
-//    [data appendData:[@"------WebKitFormBoundaryftnnT7s3iF7wV5q6" dataUsingEncoding:NSUTF8StringEncoding]];
-//    [data appendData:[@"\r\n" dataUsingEncoding:NSUTF8StringEncoding]];
-//    // 设置传入数据的基本属性， 包括有 传入方式 data ，传入的类型（名称） ，传入的文件名， 。
-//    [data appendData:[@"Content-Disposition: form-data; name=\"file\"; filename=\"video.MP4\"" dataUsingEncoding:NSUTF8StringEncoding]];
-//    [data appendData:[@"\r\n" dataUsingEncoding:NSUTF8StringEncoding]];
-//    // 设置 内容的类型 “文件类型/扩展名” MIME中的
-//    [data appendData:[@"Content-Type: video/mp4" dataUsingEncoding:NSUTF8StringEncoding]];
-//    [data appendData:[@"\r\n" dataUsingEncoding:NSUTF8StringEncoding]];
-//    // 加入数据内容
-//    [data appendData:fileData];
-//    [data appendData:[@"\r\n" dataUsingEncoding:NSUTF8StringEncoding]];
-//    [data appendData:[@"\r\n" dataUsingEncoding:NSUTF8StringEncoding]];
-//    // 设置边界
-//    [data appendData:[@"------WebKitFormBoundaryftnnT7s3iF7wV5q6" dataUsingEncoding:NSUTF8StringEncoding]];
-//    [data appendData:[@"\r\n" dataUsingEncoding:NSUTF8StringEncoding]];
-//    /******************非文件参数相关设置**********************/
-//    // 设置传入的类型（名称）
-//    [data appendData:[@"Content-Disposition: form-data; name=\"username\"" dataUsingEncoding:NSUTF8StringEncoding]];
-//    [data appendData:[@"\r\n" dataUsingEncoding:NSUTF8StringEncoding]];
-//    [data appendData:[@"\r\n" dataUsingEncoding:NSUTF8StringEncoding]];
-//    // 传入的名称username = lxl
-//    [data appendData:[@"lxl" dataUsingEncoding:NSUTF8StringEncoding]];
-//    [data appendData:[@"\r\n" dataUsingEncoding:NSUTF8StringEncoding]];
-//    // 退出边界
-//    [data appendData:[@"------WebKitFormBoundaryftnnT7s3iF7wV5q6--" dataUsingEncoding:NSUTF8StringEncoding]];
-//    [data appendData:[@"\r\n" dataUsingEncoding:NSUTF8StringEncoding]];
-//    request.HTTPBody = data;
-//    request.HTTPMethod = @"POST";
-//    NSURLSessionUploadTask *task = [session uploadTaskWithRequest:request fromData:data completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
-//        
-//        if (!error) {
-//            NSDictionary *dict = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingMutableLeaves error:nil];
-//            framgent.fragmentStatus = YES;
-//            currentFragment++;
-//            
-//            if ([self getUploadState]) {//文件全部上传完成
-//                NSLog(@"@%%%%%%上传成功-------");
-//                
-//                if ([self.delegate performSelector:@selector(fileUploadingState:fileName:)]) {
-//                    [self.delegate fileUploadingState:YES fileName:_filePath];
-//                }
-//                
-//                [self removeFileFragmentData];
-//            } else {//还有文件分片未上传
-//                [self uploadingFileFragment];
-//            }
-//            NSLog(@"%@", dict);
-//            
-//        } else {
-//            
-//            NSLog(@"@%%%%%%文件上传失败--------");
-//            if ([self.delegate performSelector:@selector(fileUploadingState:fileName:)]) {
-//                [self.delegate fileUploadingState:NO fileName:_filePath];
-//            }
-//            
-//            [self modifyFileFragmentMassage];
-//        }
-//
-//        NSLog(@"%@",[[NSString alloc]initWithData:data encoding:NSUTF8StringEncoding]);
-//    }];
-//    [task resume];
-//    NSLog(@"+++++++++++++");
-//
-//}
+- (void)upload:(NSString *)name fileName:(NSString *)filename mimeType:(NSString *)mimeType data:(NSData *)fileData fileFragment:(FileFragment*)framgent {
+    
+    /** * post的上传文件，不同于普通的数据上传， * 普通上传，只是将数据转换成二进制放置在请求体中，进行上传，有响应体得到结果。 * post上传，当上传文件是， 请求体中会多一部分东西， Content——Type，这是在请求体中必须要书写的，而且必须要书写正确，不能有一个标点符号的错误。负责就会请求不上去，或者出现请求的错误（无名的问题等） * 其中在post 请求体中加入的格式有{1、边界 2、参数 3、换行 4、具体数据 5、换行 6、边界 7、换行 8、对象 9、结束符} */
+    
+    NSURLSession *session = [NSURLSession sharedSession];
+    NSURL *url = [NSURL URLWithString:@"http://112.4.28.208:38080/media21?resourceId=32010020170814152151916103i5rthc&uploadType=vodFile,media21&prefix=20170814152151979"];
+    NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:url];
+    // 设置请求头数据 。 boundary：边界
+    [request setValue:@"multipart/form-data; boundary=----WebKitFormBoundaryftnnT7s3iF7wV5q6" forHTTPHeaderField:@"Content-Type"];
+    // 给请求头加入固定格式数据
+    NSMutableData *data = [NSMutableData data];
+    /****************文件参数相关设置*********************/
+    // 设置边界 注：必须和请求头数据设置的边界 一样， 前面多两个“-”；（字符串 转 data 数据）
+    [data appendData:[@"------WebKitFormBoundaryftnnT7s3iF7wV5q6" dataUsingEncoding:NSUTF8StringEncoding]];
+    [data appendData:[@"\r\n" dataUsingEncoding:NSUTF8StringEncoding]];
+    // 设置传入数据的基本属性， 包括有 传入方式 data ，传入的类型（名称） ，传入的文件名， 。
+    [data appendData:[@"Content-Disposition: form-data; name=\"file\"; filename=\"video.MP4\"" dataUsingEncoding:NSUTF8StringEncoding]];
+    [data appendData:[@"\r\n" dataUsingEncoding:NSUTF8StringEncoding]];
+    // 设置 内容的类型 “文件类型/扩展名” MIME中的
+    [data appendData:[@"Content-Type: video/mp4" dataUsingEncoding:NSUTF8StringEncoding]];
+    [data appendData:[@"\r\n" dataUsingEncoding:NSUTF8StringEncoding]];
+    // 加入数据内容
+    [data appendData:fileData];
+    [data appendData:[@"\r\n" dataUsingEncoding:NSUTF8StringEncoding]];
+    [data appendData:[@"\r\n" dataUsingEncoding:NSUTF8StringEncoding]];
+    // 设置边界
+    [data appendData:[@"------WebKitFormBoundaryftnnT7s3iF7wV5q6" dataUsingEncoding:NSUTF8StringEncoding]];
+    [data appendData:[@"\r\n" dataUsingEncoding:NSUTF8StringEncoding]];
+    /******************非文件参数相关设置**********************/
+    // 设置传入的类型（名称）
+    [data appendData:[@"Content-Disposition: form-data; name=\"username\"" dataUsingEncoding:NSUTF8StringEncoding]];
+    [data appendData:[@"\r\n" dataUsingEncoding:NSUTF8StringEncoding]];
+    [data appendData:[@"\r\n" dataUsingEncoding:NSUTF8StringEncoding]];
+    // 传入的名称username = lxl
+    [data appendData:[@"lxl" dataUsingEncoding:NSUTF8StringEncoding]];
+    [data appendData:[@"\r\n" dataUsingEncoding:NSUTF8StringEncoding]];
+    // 退出边界
+    [data appendData:[@"------WebKitFormBoundaryftnnT7s3iF7wV5q6--" dataUsingEncoding:NSUTF8StringEncoding]];
+    [data appendData:[@"\r\n" dataUsingEncoding:NSUTF8StringEncoding]];
+    request.HTTPBody = data;
+    request.HTTPMethod = @"POST";
+    NSURLSessionUploadTask *task = [session uploadTaskWithRequest:request fromData:data completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
+        
+        if (!error) {
+            NSDictionary *dict = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingMutableLeaves error:nil];
+            framgent.fragmentStatus = YES;
+            currentFragment++;
+            
+            if ([self getUploadState]) {//文件全部上传完成
+                NSLog(@"@%%%%%%上传成功-------");
+                
+                if ([self.delegate performSelector:@selector(fileUploadingState:fileName:)]) {
+                    [self.delegate fileUploadingState:YES fileName:_filePath];
+                }
+                
+                [self removeFileFragmentData];
+            } else {//还有文件分片未上传
+                [self uploadingFileFragment];
+            }
+            NSLog(@"%@", dict);
+            
+        } else {
+            
+            NSLog(@"@%%%%%%文件上传失败--------");
+            if ([self.delegate performSelector:@selector(fileUploadingState:fileName:)]) {
+                [self.delegate fileUploadingState:NO fileName:_filePath];
+            }
+            
+            [self modifyFileFragmentMassage];
+        }
+
+        NSLog(@"%@",[[NSString alloc]initWithData:data encoding:NSUTF8StringEncoding]);
+    }];
+    [task resume];
+    NSLog(@"+++++++++++++");
+
+}
 
 
 #pragma mark - NSURLSessionTaskDelegate

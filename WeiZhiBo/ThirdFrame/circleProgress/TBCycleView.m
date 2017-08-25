@@ -77,17 +77,17 @@
     
     //左侧渐变色
     CAGradientLayer *leftLayer = [CAGradientLayer layer];
-    leftLayer.frame = CGRectMake(0, 0, self.bounds.size.width / 2, self.bounds.size.height);    // 分段设置渐变色
+    leftLayer.frame = CGRectMake(0, 0, self.bounds.size.width, self.bounds.size.height);    // 分段设置渐变色
     leftLayer.locations = @[@0.3, @0.9, @1];
-    leftLayer.colors = @[(id)[UIColor yellowColor].CGColor, (id)[UIColor greenColor].CGColor];
+    leftLayer.colors = @[(id)CIRCLE_LIGHTBLUE_IN.CGColor, (id)CIRCLE_GREEN_IN.CGColor];
     [gradientLayer addSublayer:leftLayer];
     
-    //右侧渐变色
-    CAGradientLayer *rightLayer = [CAGradientLayer layer];
-    rightLayer.frame = CGRectMake(self.bounds.size.width / 2, 0, self.bounds.size.width / 2, self.bounds.size.height);
-    rightLayer.locations = @[@0.3, @0.9, @1];
-    rightLayer.colors = @[(id)[UIColor yellowColor].CGColor, (id)[UIColor redColor].CGColor];
-    [gradientLayer addSublayer:rightLayer];
+//    //右侧渐变色
+//    CAGradientLayer *rightLayer = [CAGradientLayer layer];
+//    rightLayer.frame = CGRectMake(self.bounds.size.width / 2, 0, self.bounds.size.width / 2, self.bounds.size.height);
+//    rightLayer.locations = @[@0.3, @0.9, @1];
+//    rightLayer.colors = @[(id)[UIColor yellowColor].CGColor, (id)[UIColor redColor].CGColor];
+//    [gradientLayer addSublayer:rightLayer];
     
     [gradientLayer setMask:_progressLayer]; //用progressLayer来截取渐变层
     [self.layer addSublayer:gradientLayer];

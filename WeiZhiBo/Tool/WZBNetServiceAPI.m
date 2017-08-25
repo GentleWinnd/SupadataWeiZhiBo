@@ -171,7 +171,7 @@
                                       failure:(void(^)(NSError *error))failure {
     
     NSString *urlStr = [NSString stringWithFormat:@"vod/upload"];
-    NSString *URLString = [NSString stringWithFormat:@"%@%@", HOST_URL,urlStr];
+    NSString *URLString = [NSString stringWithFormat:@"%@%@", @"http://pengxiuxiao.55555.io/ssm/",urlStr];
     
     [KTMWebService CMGetWithURL:URLString parameters:parameters sucess:^(id responseObject) {
         if (success) {
@@ -192,7 +192,7 @@
                                     failure:(void(^)(NSError *error))failure {
     
     NSString *urlStr = [NSString stringWithFormat:@"vod/callBack"];
-    NSString *URLString = [NSString stringWithFormat:@"%@%@", HOST_URL,urlStr];
+    NSString *URLString = [NSString stringWithFormat:@"%@%@", @"http://pengxiuxiao.55555.io/ssm/",urlStr];
     
     [KTMWebService CMGetWithURL:URLString parameters:parameters sucess:^(id responseObject) {
         if (success) {

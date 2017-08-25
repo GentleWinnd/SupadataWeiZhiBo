@@ -135,6 +135,8 @@
 		5874A5761EB1F8C40006824D /* PingFoundation.m in Sources */ = {isa = PBXBuildFile; fileRef = 5874A5681EB1F8C40006824D /* PingFoundation.m */; };
 		5874A5771EB1F8C40006824D /* PingHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 5874A56A1EB1F8C40006824D /* PingHelper.m */; };
 		5874A5781EB1F8C40006824D /* RealReachability.m in Sources */ = {isa = PBXBuildFile; fileRef = 5874A56C1EB1F8C40006824D /* RealReachability.m */; };
+		587B93251F4D60DE004C490F /* NSString+Date.m in Sources */ = {isa = PBXBuildFile; fileRef = 587B93241F4D60DE004C490F /* NSString+Date.m */; };
+		587B93281F4D6ECB004C490F /* NotificationManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 587B93271F4D6ECB004C490F /* NotificationManager.m */; };
 		588548481EB2DE5800CEC625 /* logoText.png in Resources */ = {isa = PBXBuildFile; fileRef = 588548471EB2DE5800CEC625 /* logoText.png */; };
 		588735E81EA7340B00ADA1DA /* InputView.m in Sources */ = {isa = PBXBuildFile; fileRef = 588735E71EA7340B00ADA1DA /* InputView.m */; };
 		588735EA1EA7341900ADA1DA /* InputView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 588735E91EA7341900ADA1DA /* InputView.xib */; };
@@ -201,6 +203,7 @@
 		58A7C01A1EFB69680027AAE8 /* RecordingEndView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 58A7C0191EFB69680027AAE8 /* RecordingEndView.xib */; };
 		58AC12051F160D9F00C1CDE1 /* masking_re_top@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 58AC12031F160D9F00C1CDE1 /* masking_re_top@2x.png */; };
 		58AC12061F160D9F00C1CDE1 /* masking_re_top@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 58AC12041F160D9F00C1CDE1 /* masking_re_top@3x.png */; };
+		58B61E4B1F4EC07300582F79 /* VideoUploader.m in Sources */ = {isa = PBXBuildFile; fileRef = 58B61E4A1F4EC07300582F79 /* VideoUploader.m */; };
 		58BB0B111F3AAACF00C022CF /* FileStreamOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = 58BB0B101F3AAACF00C022CF /* FileStreamOperation.m */; };
 		58C3C1221F00EF9500CBB697 /* SaveDataManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 58C3C1211F00EF9500CBB697 /* SaveDataManager.m */; };
 		58C5113B1F3061A20088F178 /* OpenGLES.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 58C5113A1F3061A20088F178 /* OpenGLES.framework */; };
@@ -512,6 +515,10 @@
 		5874A56A1EB1F8C40006824D /* PingHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PingHelper.m; sourceTree = "<group>"; };
 		5874A56B1EB1F8C40006824D /* RealReachability.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RealReachability.h; sourceTree = "<group>"; };
 		5874A56C1EB1F8C40006824D /* RealReachability.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RealReachability.m; sourceTree = "<group>"; };
+		587B93231F4D60DE004C490F /* NSString+Date.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString+Date.h"; sourceTree = "<group>"; };
+		587B93241F4D60DE004C490F /* NSString+Date.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString+Date.m"; sourceTree = "<group>"; };
+		587B93261F4D6ECB004C490F /* NotificationManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NotificationManager.h; sourceTree = "<group>"; };
+		587B93271F4D6ECB004C490F /* NotificationManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NotificationManager.m; sourceTree = "<group>"; };
 		588548471EB2DE5800CEC625 /* logoText.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = logoText.png; sourceTree = "<group>"; };
 		588735E61EA7340B00ADA1DA /* InputView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = InputView.h; sourceTree = "<group>"; };
 		588735E71EA7340B00ADA1DA /* InputView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = InputView.m; sourceTree = "<group>"; };
@@ -605,6 +612,8 @@
 		58A7C0191EFB69680027AAE8 /* RecordingEndView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = RecordingEndView.xib; sourceTree = "<group>"; };
 		58AC12031F160D9F00C1CDE1 /* masking_re_top@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "masking_re_top@2x.png"; sourceTree = "<group>"; };
 		58AC12041F160D9F00C1CDE1 /* masking_re_top@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "masking_re_top@3x.png"; sourceTree = "<group>"; };
+		58B61E491F4EC07300582F79 /* VideoUploader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VideoUploader.h; sourceTree = "<group>"; };
+		58B61E4A1F4EC07300582F79 /* VideoUploader.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = VideoUploader.m; sourceTree = "<group>"; };
 		58BB0B0F1F3AAACF00C022CF /* FileStreamOperation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FileStreamOperation.h; sourceTree = "<group>"; };
 		58BB0B101F3AAACF00C022CF /* FileStreamOperation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FileStreamOperation.m; sourceTree = "<group>"; };
 		58C3C1201F00EF9500CBB697 /* SaveDataManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SaveDataManager.h; sourceTree = "<group>"; };
@@ -1138,6 +1147,8 @@
 				58C3C1211F00EF9500CBB697 /* SaveDataManager.m */,
 				58E33AF11F4ACC0500592D03 /* XibWKWebView.h */,
 				58E33AF21F4ACC0500592D03 /* XibWKWebView.m */,
+				587B93261F4D6ECB004C490F /* NotificationManager.h */,
+				587B93271F4D6ECB004C490F /* NotificationManager.m */,
 			);
 			path = Tool;
 			sourceTree = "<group>";
@@ -1246,6 +1257,8 @@
 		589584FD1E84D05B00E4FAB7 /* SClassExtension */ = {
 			isa = PBXGroup;
 			children = (
+				587B93231F4D60DE004C490F /* NSString+Date.h */,
+				587B93241F4D60DE004C490F /* NSString+Date.m */,
 				589585171E85077F00E4FAB7 /* NSString+Extension.h */,
 				589585181E85077F00E4FAB7 /* NSString+Extension.m */,
 				589585041E84D07A00E4FAB7 /* NSArray+Extension.h */,
@@ -1656,6 +1669,8 @@
 				58D61FF11F14B6DB0089FAC1 /* FileManager.m */,
 				58064C561F37FAAF008D39E9 /* FileUploader.h */,
 				58064C571F37FAAF008D39E9 /* FileUploader.m */,
+				58B61E491F4EC07300582F79 /* VideoUploader.h */,
+				58B61E4A1F4EC07300582F79 /* VideoUploader.m */,
 			);
 			path = VideoUplaoder;
 			sourceTree = "<group>";
@@ -2028,10 +2043,12 @@
 				58CA138A1F1CA7D100FB8BC3 /* ClassNameView.m in Sources */,
 				5816832F1E83A079003F669F /* AFURLRequestSerialization.m in Sources */,
 				5874A56E1EB1F8C40006824D /* FSMEngine.m in Sources */,
+				587B93281F4D6ECB004C490F /* NotificationManager.m in Sources */,
 				585EF4FD1E817E1300EC879F /* LogInViewController.m in Sources */,
 				588BC0471EA99EA100524C2A /* GTMBase64.m in Sources */,
 				5898E3841E8644D600FC7CCB /* AppLogMgr.m in Sources */,
 				5874A5711EB1F8C40006824D /* ReachStateLoading.m in Sources */,
+				58B61E4B1F4EC07300582F79 /* VideoUploader.m in Sources */,
 				58CDBCE31EA4631800C9FE30 /* NSURLRequest+SRWebSocket.m in Sources */,
 				58CA138E1F1CAAB600FB8BC3 /* ClassNameTableViewCell.m in Sources */,
 				589584FC1E84CE1F00E4FAB7 /* UIColor+HexString.m in Sources */,
@@ -2040,6 +2057,7 @@
 				58C87C061E8CAD8500A917FD /* ReloadView.m in Sources */,
 				586851641E83903400115227 /* KTMErrorHint.m in Sources */,
 				58E33AF31F4ACC0500592D03 /* XibWKWebView.m in Sources */,
+				587B93251F4D60DE004C490F /* NSString+Date.m in Sources */,
 				581683421E83A144003F669F /* MBProgressHUD.m in Sources */,
 				589584F31E84CD2100E4FAB7 /* User.m in Sources */,
 				5874A5751EB1F8C40006824D /* ReachStateWWAN.m in Sources */,
@@ -2238,7 +2256,7 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				ONLY_ACTIVE_ARCH = NO;
-				OTHER_LIBTOOLFLAGS = "-all_load -ObjC XCTest -framework";
+				OTHER_LIBTOOLFLAGS = " -ObjC XCTest -framework";
 				PRODUCT_BUNDLE_IDENTIFIER = com.supadata.WeiZhiBo;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
@@ -2267,7 +2285,7 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				ONLY_ACTIVE_ARCH = NO;
-				OTHER_LIBTOOLFLAGS = "-all_load -ObjC XCTest -framework";
+				OTHER_LIBTOOLFLAGS = " -ObjC XCTest -framework";
 				PRODUCT_BUNDLE_IDENTIFIER = com.supadata.WeiZhiBo;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";

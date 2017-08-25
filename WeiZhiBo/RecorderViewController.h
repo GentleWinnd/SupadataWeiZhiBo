@@ -14,7 +14,8 @@
 
 @interface RecorderViewController : UIViewController
 
-@property (strong, nonatomic) NSArray *userClassInfo;
+@property (strong, nonatomic) NSArray *userClassInfo;//班级数据信息
+
 @property (strong, nonatomic) NSString *userId;
 @property (assign, nonatomic) UserRole userRole;
 

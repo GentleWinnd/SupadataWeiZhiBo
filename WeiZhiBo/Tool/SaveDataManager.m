@@ -8,6 +8,7 @@
 #define RECODER_CLASS_INFO @"recoderVideo"
 #define RECODER_UPLOAD_STATE @"uploadState"
 #define RECODER_TITLE @"recoderTitle"
+#define RECODER_TIMEDATE @"recoderTimedate"
 
 #define USER @"user"
 
@@ -130,6 +131,18 @@ static NSString *fileName = @"WeizhiboRecoderVideo.plist";
     [self saveRecoderClassInfo:userInfo];
 }
 
+- (void)saveRecoderTimeDate:(NSString *)dateStr withVideoId:(NSString *)videoId {//保存视频的录制日期
+    NSString *videoIdKey = [NSString stringWithFormat:@"%@",videoId];
+    NSMutableDictionary *userInfo  = [NSMutableDictionary dictionaryWithDictionary:[self getRecoderClassInfo]];
+    NSMutableDictionary *recoderInfo = [NSMutableDictionary dictionaryWithDictionary:userInfo[videoIdKey]];
+    
+    [recoderInfo setValue:dateStr forKey:RECODER_TIMEDATE];
+    
+    [userInfo setValue:recoderInfo forKey:videoIdKey];
+    [self saveRecoderClassInfo:userInfo];
+}
+
+
 
 #pragma mark - get recoder video data
 
@@ -158,6 +171,15 @@ static NSString *fileName = @"WeizhiboRecoderVideo.plist";
     NSDictionary *recoderInfo = [NSDictionary dictionaryWithDictionary:userInfo[videoIdKey]];
     return [recoderInfo valueForKey:RECODER_TITLE];
 }
+
+- (NSString *)getRecoderTimeDateWithVideoId:(NSString *)videoId {//获取视频的录制日期
+    NSString *videoIdKey = [NSString stringWithFormat:@"%@",videoId];
+    
+    NSDictionary *userInfo = [NSDictionary dictionaryWithDictionary:[self getRecoderClassInfo]];
+    NSDictionary *recoderInfo = [NSDictionary dictionaryWithDictionary:userInfo[videoIdKey]];
+    return [recoderInfo valueForKey:RECODER_TIMEDATE];
+}
+
 
 #pragma mark - remove recoder video class
 
