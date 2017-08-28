@@ -96,18 +96,8 @@ static NSString *cellId = @"cellIdentifiler";
 
     HistoryRecoderTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:cellId forIndexPath:indexPath];
     NSString *videoPath = self.historyRecoderArr[indexPath.row];
-    NSString *videoId;
-    if (videoPath.length>0) {
-        NSString *videoName = [videoPath componentsSeparatedByString:@"/"].lastObject;
-        if (videoName.length>0) {
-            videoId = [videoName componentsSeparatedByString:@"."].firstObject;
-        } else {
-            [Progress progressShowcontent:@"视频资源获取失败" currView:self.view];
-        }
-    } else {
-        [Progress progressShowcontent:@"视频资源获取失败了" currView:self.view];
-    }
-
+    NSString *videoId = [self getVideoIdWithVideoPath:videoPath];
+    
     NSString *titleStr = [[SaveDataManager shareSaveRecoder] getRecoderTitleWithVideoId:videoId];
     BOOL uploadState = [[SaveDataManager shareSaveRecoder] getRecoderUploadStateWithVideoId:videoId];
     NSArray *selClassArr = [[SaveDataManager shareSaveRecoder] getVideoClassesWithVideoId:videoId];
@@ -116,6 +106,8 @@ static NSString *cellId = @"cellIdentifiler";
     cell.uploadBtn.selected = uploadState;
     cell.titleLabel.text = titleStr;
     cell.classLabel.attributedText = [self getVideoClassesWithVideoId:videoId withLabelWidth:CGRectGetWidth(cell.classLabel.frame)];
+    [self getUploadShortVideoUrlWithClasses:selClassArr videoPath:videoPath playTitle:titleStr inCell:cell];
+
     @WeakObj(cell)
     cell.cellBtnAction = ^(BOOL remove) {
         if ( remove ) {//视频删除
@@ -125,8 +117,7 @@ static NSString *cellId = @"cellIdentifiler";
             if ( cellWeak.uploadBtn.selected) {
                 return ;
             }
-            
-            [self getUploadShortVideoUrlWithClasses:selClassArr videoPath:videoPath playTitle:titleStr inCell:cellWeak];
+            [self uploadVideoWithClasses:selClassArr videoPath:videoPath playTitle:titleStr inCell:cellWeak];
         }
     };
     
@@ -136,71 +127,36 @@ static NSString *cellId = @"cellIdentifiler";
 }
 
 
-#pragma mark - 上传视频
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
 
-- (void)uploadVideo:(NSString *)url videoPath:(NSString *) filePath withCell:(HistoryRecoderTableViewCell *)cell {
-//    _uploader = [FileUploader shareFileUploader];
-//    _uploader.delegate = self;
-//    [_uploader uploadFileAtPath:filePath];
-    
-    
-    NSData *data = [NSData dataWithContentsOfFile:filePath];
-    NSString *fileStr = [filePath lastPathComponent];
-    cell.uploadRate.hidden = NO;
-
-    [WZBNetServiceAPI postUploadFileWithURL:url paramater:nil fileData:data nameOfData:@"test" nameOfFile:fileStr mimeOfType:@"video/mp4" progress:^(NSProgress *uploadProgress) {
-        uploading = YES;
-        NSString *rateStr = [NSString stringWithFormat:@"%.0f %%",uploadProgress.fractionCompleted*100];
-        dispatch_async(dispatch_get_main_queue(), ^{
-            cell.uploadRate.text = rateStr;
-        });
-        NSLog(@"upload-progress===%@",[uploadProgress description]);
-    } sucess:^(id responseObject) {
-//        NSLog(@"_________uploaded success______/n %@",responseObject);
-        uploading = NO;
-        cell.uploadRate.hidden = YES;
-        cell.uploadBtn.selected = YES;
-        cell.dotBtn.selected = YES;
-        [self fileUploadingState:YES fileName:filePath];
-        NSArray *uploadArr = [_uploadingArr mutableCopy];
-        for (NSDictionary *videoInfo in uploadArr) {
-            if ([videoInfo[VIDEO_PATH] isEqualToString:filePath]) {
-                [self uploadVideoUploadState:videoInfo[VIDEO_ID]];
-                [_uploadingArr removeObject:videoInfo];
-                break;
-            }
-        }
-        
-    } failure:^(NSError *error) {
-        uploading = NO;
-//        NSLog(@"_________uploaded filad______ /n  %@",[error description]);
-        cell.uploadRate.hidden = YES;
-        [self fileUploadingState:NO fileName:filePath];
-    }];
-//    [self upload:url filename:@"video" mimeType:@"video/mp4" data:data filePath:filePath];
+    [self playVideo:self.historyRecoderArr[indexPath.row]];
+    [tableView deselectRowAtIndexPath:indexPath animated:YES];
 }
+
+/*********************视频数据处理模块*************************/
+
+#pragma mark 更新视频上传状态
 
 - (void)fileUploadingState:(BOOL)state fileName:(NSString *)fileName{//fileuploaderdelegate function
     
     if (fileName.length>0) {//修改文件上传的额状态
-        NSString *videoName = [fileName componentsSeparatedByString:@"/"].lastObject;
-        if (videoName.length>0) {
-            NSString *videoId = [videoName componentsSeparatedByString:@"."].firstObject;
-            [[SaveDataManager shareSaveRecoder] saveRecoderUploadState:state withVideoId:videoId];
-        } else {
-            [Progress progressShowcontent:@"视频保存失败了" currView:self.view];
-        }
+        [[SaveDataManager shareSaveRecoder] saveRecoderUploadState:state withVideoId:[self getVideoIdWithVideoPath:fileName]];
     } else {
         [Progress progressShowcontent:@"视频保存失败了" currView:self.view];
     }
 }
 
+#pragma mark 上传视频
 
+//监测视频是否正在上传
 - (void)getUploadShortVideoUrlWithClasses:(NSArray *)selClassArr videoPath:(NSString *)videopath playTitle:(NSString *)playTitle inCell:(HistoryRecoderTableViewCell *)cell {
     NSDictionary *videoInfo = @{VIDEO_PATH:videopath,
-                              UPLOAD_STATE:[NSNumber numberWithBool:NO]};
+                                UPLOAD_STATE:[NSNumber numberWithBool:NO]};
+    
     BOOL uploadState = [[VideoUploader shareUploader] uploadingOfVideo:videoInfo];
     if (uploadState) {
+        cell.uploadRate.hidden = NO;
+        cell.uploadBtn.hidden = YES;
         
         [VideoUploader shareUploader].uploadProgress = ^ (NSProgress *progress, NSDictionary *videoInfo) {
             uploading = YES;
@@ -213,15 +169,16 @@ static NSString *cellId = @"cellIdentifiler";
         [VideoUploader shareUploader].uploadResult = ^ (BOOL result, NSDictionary *videoInfo){
             uploading = NO;
             cell.uploadRate.hidden = YES;
+            cell.uploadBtn.hidden = NO;
+            
             cell.uploadBtn.selected = YES;
             cell.dotBtn.selected = YES;
             [self fileUploadingState:result fileName:videopath];
         };
-        
     }
-    
 }
 
+//开始上传视频
 - (void)uploadVideoWithClasses:(NSArray *)selClassArr videoPath:(NSString *)videopath playTitle:(NSString *)playTitle inCell:(HistoryRecoderTableViewCell *)cell {
     NSString *classIdStr = @"";
     for (NSDictionary *classInfo in selClassArr) {
@@ -232,20 +189,28 @@ static NSString *cellId = @"cellIdentifiler";
             classIdStr = [NSString stringWithFormat:@"%@,%@",classIdStr, classInfo[@"classId"]];
         }
     }
-
+    NSString *videoId = [self getVideoIdWithVideoPath:videopath];
+    
+    NSString *timeDate = [[SaveDataManager shareSaveRecoder] getRecoderTimeDateWithVideoId:videoId];
+    NSNumber *timeLegth = [[SaveDataManager shareSaveRecoder] getRecoderTimeLengthWithVideoId:videoId];
+    
     NSDictionary *videoInfo = @{VIDEO_PATH:videopath,
                                 UPLOAD_STATE:[NSNumber numberWithBool:NO]};
-    BOOL uploadState = [[VideoUploader shareUploader] uploadingOfVideo:videoInfo];
+    
     NSDictionary *parameter = @{@"userId":[UserData getUser].userID,
                                 @"classIdList":classIdStr,
                                 @"schoolId":self.schoolId,
                                 @"vodName":playTitle,
-                                @"vodDesc":@"录播小视频"};
+                                @"vodDesc":@"录播小视频",
+                                @"timeLength":timeLegth,
+                                @"screenTime":timeDate};
     
+    BOOL uploadState = [[VideoUploader shareUploader] uploadingOfVideo:videoInfo];
     [[VideoUploader shareUploader] getUploadShortVideoUrlWithParamater:parameter withVideoInfo:videoInfo];
     
     if (!uploadState) {
-        
+        cell.uploadRate.hidden = NO;
+        cell.uploadBtn.hidden = YES;
         [VideoUploader shareUploader].uploadProgress = ^ (NSProgress *progress, NSDictionary *videoInfo) {
             uploading = YES;
             NSString *rateStr = [NSString stringWithFormat:@"%.0f %%",progress.fractionCompleted*100];
@@ -257,65 +222,16 @@ static NSString *cellId = @"cellIdentifiler";
         [VideoUploader shareUploader].uploadResult = ^ (BOOL result, NSDictionary *videoInfo){
             uploading = NO;
             cell.uploadRate.hidden = YES;
-            cell.uploadBtn.selected = YES;
-            cell.dotBtn.selected = YES;
+            cell.uploadBtn.hidden = NO;
+            
+            cell.uploadBtn.selected = result;
+            cell.dotBtn.selected = result;
             [self fileUploadingState:result fileName:videopath];
         };
     }
-
 }
 
-
-- (void)getUploadShortVideoUrlWithClasses:(NSArray *)selClassArr videoPath:(NSString *)videopath playTitle:(NSString *)playTitle inCell:(HistoryRecoderTableViewCell *)cell{//获取视频的上传路径
-    NSString *classIdStr = @"";
-    for (NSDictionary *classInfo in selClassArr) {
-        if (classIdStr.length == 0) {
-            classIdStr = [NSString stringWithFormat:@"%@",classInfo[@"classId"]];
-
-        } else {
-            classIdStr = [NSString stringWithFormat:@"%@,%@",classIdStr, classInfo[@"classId"]];
-        }
-    }
-    
-    if (_uploadingArr.count == 5) {
-        [Progress progressShowcontent:@"同时最多只能上传五个视频" currView:self.view];
-        return;
-    }
-    
-    dispatch_async(_queue, ^{
-        NSDictionary *parameter = @{@"userId":[UserData getUser].userID,
-                                    @"classIdList":classIdStr,
-                                    @"schoolId":self.schoolId,
-                                    @"vodName":playTitle,
-                                    @"vodDesc":@"录播小视频"};
-        
-        [WZBNetServiceAPI getShortVideoUplaodPathWithParameters:parameter success:^(id reponseObject) {
-            if ([reponseObject[@"status"] integerValue] == 1) {
-                NSString *videoId = [NSString safeString:reponseObject[@"data"][@"vodId"]];
-                NSString *url = [NSString safeString:reponseObject[@"data"][@"uploadUrl"]];
-
-                if (url.length>0) {
-                    [_uploadingArr addObject:@{VIDEO_ID:videoId,
-                                               VIDEO_PATH:videopath,
-                                               UPLOAD_URL:url,
-                                               UPLOAD_STATE:[NSNumber numberWithBool:NO]}];
-
-                    [self uploadVideo:url videoPath:videopath withCell:cell];
-                } else {
-                    [Progress progressShowcontent:@"视频上传失败，请稍后重试" currView:self.view];
-                }
-            } else {
-                [Progress progressShowcontent:reponseObject[@"message"] currView:self.view];
-            }
-            
-        } failure:^(NSError *error) {
-            [KTMErrorHint showNetError:error inView:self.view];
-            
-        }];
- 
-    });
-}
-
+//上传视频上传状态到后台
 - (void)uploadVideoUploadState:(NSString *)videoId {//上传视频上传的状态
     
     NSDictionary *parameter = @{@"userId":[UserData getUser].userID,
@@ -334,7 +250,7 @@ static NSString *cellId = @"cellIdentifiler";
     }];
 }
 
-
+#pragma  mark 打印视频文件的大小
 - (void)logVideoSize:(NSString *)url {
     NSData *video = [NSData dataWithContentsOfFile:url];
     NSInteger MSize = video.length/(1024*1024);
@@ -343,7 +259,7 @@ static NSString *cellId = @"cellIdentifiler";
 }
 
 - (NSMutableAttributedString *)getVideoClassesWithVideoId:(NSString *)videoId withLabelWidth:(CGFloat)width {
-
+    
     NSArray *classArr = [NSArray arrayWithArray:[[SaveDataManager shareSaveRecoder] getVideoClassesWithVideoId:videoId]];
     NSString *titleStr = @"";
     
@@ -365,7 +281,7 @@ static NSString *cellId = @"cellIdentifiler";
     }
     
     return attributeString;
-
+    
 }
 
 - (CGFloat)calculateRowWidth:(NSString *)string {
@@ -376,16 +292,12 @@ static NSString *cellId = @"cellIdentifiler";
     return rect.size.width;
 }
 
-- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-
-    [self playVideo:self.historyRecoderArr[indexPath.row]];
-    [tableView deselectRowAtIndexPath:indexPath animated:YES];
-}
 
 - (IBAction)backBtnAction:(UIButton *)sender {
     [self.navigationController popViewControllerAnimated:YES];
 }
 
+#pragma mark - 播放视频
 
 - (void)playVideo:(NSString *) videoUrl {
     
@@ -417,17 +329,22 @@ static NSString *cellId = @"cellIdentifiler";
 //            NSLog(@"_______视频删除成功————————");
             [Progress progressShowcontent:@"删除成功" currView:self.view];
             [self.historyRecoderArr removeObject:recoderPath];
-            NSString *videoName = [recoderPath componentsSeparatedByString:@"/"].lastObject;
-            if (videoName.length>0) {
-                NSString *videoTag = [videoName componentsSeparatedByString:@"."].firstObject;
-                [[SaveDataManager shareSaveRecoder] removeRecoderVideoWithVideoId:videoTag];
-            }
+            [[SaveDataManager shareSaveRecoder] removeRecoderVideoWithVideoId:[self getVideoIdWithVideoPath:recoderPath]];
 
             [self.recoderTab reloadData];
         } else {
             [Progress progressShowcontent:@"删除失败了" currView:self.view];
         }
     }
+}
+
+#pragma mark - 通过videoPath获取videoID
+
+- (NSString *)getVideoIdWithVideoPath:(NSString *)videoPath {
+
+    NSString *videoName = [videoPath componentsSeparatedByString:@"/"].lastObject;
+    NSString *videoTag = [videoName componentsSeparatedByString:@"."].firstObject;
+    return videoTag;
 }
 
 

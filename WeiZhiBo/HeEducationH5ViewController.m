@@ -32,6 +32,9 @@
     CMMotionManager *motionManager;
     UIDeviceOrientation _deviceOrientation;
     UIButton *playBtn;
+    
+    BOOL noCurrentVC;
+    
 }
 @property (assign, nonatomic) NSUInteger loadCount;
 @property (strong, nonatomic) IBOutlet UIButton *overBtn;
@@ -45,8 +48,8 @@
 @property (strong, nonatomic) IBOutlet UIImageView *vedioBackView;
 @property (strong, nonatomic) IBOutlet UIButton *liveBtn;
 @property (strong, nonatomic) IBOutlet UIButton *recordBtn;
-
-@property (strong, nonatomic) IBOutlet XibWKWebView *WWebView;
+@property (strong, nonatomic) IBOutlet NSLayoutConstraint *topViewHeight;
+@property (strong, nonatomic) IBOutlet NSLayoutConstraint *topCenterSpace;
 
 @end
 
@@ -105,12 +108,13 @@
     [super viewDidLoad];
     // Do any additional setup after loading the view from its nib.
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(chanegsBackBtnActive) name:@"activeFromBack" object:nil];
-
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didOrientation:) name:@"UIApplicationDidChangeStatusBarOrientationNotification" object:nil];
 //    AppDelegate *appDe = (AppDelegate *)[UIApplication sharedApplication].delegate;
 //    appDe.shouldChangeOrientation = YES;
     self.view.backgroundColor = [UIColor whiteColor];
     self.navigationController.delegate = self;
     self.title = @"微直播";
+
     [self performSelector:@selector(startNetNotice) withObject:nil afterDelay:12.0f];
 
     [self initWKWebView];
@@ -129,6 +133,31 @@
     [self testAPPVersion];
     
 //    [self initDeviceOrientation];
+}
+
+- (void)didOrientation:(NSNotification *)notice {
+    NSInteger key = [notice.userInfo[@"UIApplicationStatusBarOrientationUserInfoKey"] integerValue];
+    CGFloat SWidth = SCREEN_WIDTH;
+    CGFloat SHight = SCREEN_HEIGHT - 64;
+    CGFloat YH = 64;
+    
+    if (key == 1) {
+        SWidth = SCREEN_WIDTH;
+        SHight = SCREEN_HEIGHT-44;
+        YH = 44;
+    }
+    
+    if (!noCurrentVC) {
+        WWebView.frame = CGRectMake(0, YH, SWidth, SHight);
+        if (key == 1) {
+            self.topViewHeight.constant = 44;
+            self.topCenterSpace.constant = 0;
+        } else {
+            self.topViewHeight.constant = 64;
+            self.topCenterSpace.constant = 10;
+        }
+    }
+    
 }
 
 - (void)chanegsBackBtnActive {
@@ -607,8 +636,9 @@
 }
 
 - (void)recorderView {
+    noCurrentVC = YES;
     AppDelegate *app = (AppDelegate *)[UIApplication sharedApplication].delegate;
-    app.shouldChangeOrientation = YES;
+    app.direction = SuportDirectionRight;
 
     RecorderViewController *recoderView = [[RecorderViewController  alloc] init];
     recoderView.userClassInfo = classesArray;
@@ -664,12 +694,12 @@
 }
 
 - (void)gotoCameraVC:(NSString *)cameraID withPushURL:(NSString *)pushUrl {
-    
+    noCurrentVC = YES;
     UIStoryboard *board = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
     StreamingViewModel* vmodel = [[StreamingViewModel alloc] initWithPushUrl:pushUrl];
     
     AppDelegate *app = (AppDelegate *)[UIApplication sharedApplication].delegate;
-    app.shouldChangeOrientation = YES;
+    app.direction = SuportDirectionRight;
     
     ViewController *VC = [board instantiateViewControllerWithIdentifier:@"ViewController"];
     VC.userClassInfo = classesArray;
@@ -770,6 +800,9 @@
             if (self.appToken) {
                 [self exitApplication];
             } else {
+                AppDelegate *app = (AppDelegate *)[UIApplication sharedApplication].delegate;
+                app.direction = SuportDirectionPortrait;
+
                 LogInViewController *logView = [[LogInViewController alloc] init];
                 [self restoreRootViewController:logView];
             }
@@ -859,7 +892,7 @@
 #pragma - mark  进入全屏
 -(void)begainFullScreen {
     AppDelegate *appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
-    appDelegate.shouldChangeOrientation = YES;
+    appDelegate.direction = SuportDirectionAll;
     
     [[UIDevice currentDevice] setValue:@"UIInterfaceOrientationLandscapeLeft" forKey:@"orientation"];
     
@@ -883,7 +916,7 @@
 -(void)endFullScreen {
     
     AppDelegate *appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
-    appDelegate.shouldChangeOrientation = NO;
+    appDelegate.direction = SuportDirectionAll;
     
     //强制归正：
     if ([[UIDevice currentDevice] respondsToSelector:@selector(setOrientation:)]) {
@@ -903,6 +936,7 @@
     self.navigationController.navigationBarHidden = NO;
     //    [WWebView.scrollView setContentOffset:CGPointMake(0, -32)];
     [MobClick beginLogPageView:@"H5View"];
+    noCurrentVC = NO;
 }
 
 - (void)viewDidDisappear:(BOOL)animated {

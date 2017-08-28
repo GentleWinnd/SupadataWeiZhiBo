@@ -28,7 +28,7 @@ static VideoUploader *uploader;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
         
-        uploader = [[VideoUploader alloc] init];
+        uploader = [super allocWithZone:zone];
     });
 
     return uploader;
@@ -43,6 +43,7 @@ static VideoUploader *uploader;
 }
 
 - (NSMutableArray *)uploadingArr {
+    
     if (!_uploadingArr) {
         _uploadingArr = [NSMutableArray arrayWithCapacity:5];
     }
@@ -52,7 +53,7 @@ static VideoUploader *uploader;
 
 - (void)getUploadShortVideoUrlWithParamater:(NSDictionary *)parameter withVideoInfo:(NSDictionary *)videoInfo {//获取视频的上传路径
     
-    if (_uploadingArr.count == 5) {
+    if (self.uploadingArr.count == 5) {
         [Progress progressShowcontent:@"同时最多只能上传五个视频"];
         return;
     }
@@ -69,17 +70,21 @@ static VideoUploader *uploader;
                                                 VIDEO_PATH:videoPath,
                                                 UPLOAD_URL:url,
                                                 UPLOAD_STATE:[NSNumber numberWithBool:NO]};
-                    [_uploadingArr addObject:videoDic];
+                    [self.uploadingArr addObject:videoDic];
                     [self uploadVideoWithVIdeoInfo:videoDic];
                 } else {
                     [Progress progressShowcontent:@"视频上传失败，请稍后重试"];
                 }
             } else {
+                if (self.uploadResult) {
+                    self.uploadResult(NO, videoInfo);
+                }
                 [Progress progressShowcontent:reponseObject[@"message"]];
             }
             
         } failure:^(NSError *error) {
             UIWindow *window = [UIApplication sharedApplication].keyWindow;
+            self.uploadResult(NO, videoInfo);
             [KTMErrorHint showNetError:error inView:window];
         }];
         
@@ -89,9 +94,8 @@ static VideoUploader *uploader;
 - (BOOL)uploadingOfVideo:(NSDictionary *)videoInfo {
     NSString *videoPath = videoInfo[VIDEO_PATH];
     
-    for (NSDictionary *videoDic in _uploadingArr) {
+    for (NSDictionary *videoDic in self.uploadingArr) {
         if ([videoDic[VIDEO_PATH] isEqualToString:videoPath]) {
-            [self uploadVideoWithVIdeoInfo:videoDic];
             return YES;
         }
     }
@@ -117,10 +121,10 @@ static VideoUploader *uploader;
         if (self.uploadResult) {
             self.uploadResult(YES, videoInfo);
         }
-        NSArray *uploadArr = [_uploadingArr mutableCopy];
+        NSArray *uploadArr = [self.uploadingArr mutableCopy];
         for (NSDictionary *videoInfo in uploadArr) {
             if ([videoInfo[VIDEO_PATH] isEqualToString:videoPath]) {
-                [_uploadingArr removeObject:videoInfo];
+                [self.uploadingArr removeObject:videoInfo];
                 break;
             }
         }
@@ -130,10 +134,10 @@ static VideoUploader *uploader;
         if (self.uploadResult) {
             self.uploadResult(NO, videoInfo);
         }
-        NSArray *uploadArr = [_uploadingArr mutableCopy];
+        NSArray *uploadArr = [self.uploadingArr mutableCopy];
         for (NSDictionary *videoInfo in uploadArr) {
             if ([videoInfo[VIDEO_PATH] isEqualToString:videoPath]) {
-                [_uploadingArr removeObject:videoInfo];
+                [self.uploadingArr removeObject:videoInfo];
                 break;
             }
         }

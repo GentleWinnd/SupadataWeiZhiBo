@@ -1046,7 +1046,7 @@
             
             dispatch_after(0.3, dispatch_get_main_queue(), ^{
                 AppDelegate * app = (AppDelegate *)[UIApplication sharedApplication].delegate;
-                app.shouldChangeOrientation = NO;
+                app.direction = SuportDirectionAll;
                 [self dismissViewControllerAnimated:YES completion:nil];
 
             });

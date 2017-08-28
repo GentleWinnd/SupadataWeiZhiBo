@@ -47,6 +47,14 @@ typedef NS_ENUM(NSInteger,SourceType) {
     SourceTypeOther
 };
 
+//source type
+typedef NS_ENUM(NSInteger,SuportDirection) {
+    SuportDirectionPortrait=0,
+    SuportDirectionRight,
+    SuportDirectionAll,
+   
+};
+
 
 
 #endif /* EnumHeader_h */

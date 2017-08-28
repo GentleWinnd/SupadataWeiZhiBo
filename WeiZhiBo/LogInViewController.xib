@@ -162,13 +162,13 @@
                     </constraints>
                 </scrollView>
                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Copyright © 2017 江苏移动 · 索普特" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="uRk-FY-wSM">
-                    <rect key="frame" x="10" y="645" width="355" height="12"/>
+                    <rect key="frame" x="103" y="645" width="169" height="12"/>
                     <fontDescription key="fontDescription" type="system" pointSize="10"/>
                     <color key="textColor" red="0.59999999999999998" green="0.59999999999999998" blue="0.59999999999999998" alpha="1" colorSpace="calibratedRGB"/>
                     <nil key="highlightedColor"/>
                 </label>
                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="V 1.7.1" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="r3W-Ia-unM">
-                    <rect key="frame" x="173.5" y="628" width="30" height="12"/>
+                    <rect key="frame" x="172.5" y="628" width="30" height="12"/>
                     <fontDescription key="fontDescription" type="system" pointSize="10"/>
                     <color key="textColor" red="0.59999999999999998" green="0.59999999999999998" blue="0.59999999999999998" alpha="1" colorSpace="calibratedRGB"/>
                     <nil key="highlightedColor"/>
@@ -177,12 +177,11 @@
             <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
             <constraints>
                 <constraint firstAttribute="trailing" secondItem="OeB-eR-FOD" secondAttribute="trailing" id="0VX-Xh-SNY"/>
-                <constraint firstAttribute="trailing" secondItem="uRk-FY-wSM" secondAttribute="trailing" constant="10" id="5oe-qN-1iz"/>
                 <constraint firstItem="uRk-FY-wSM" firstAttribute="top" secondItem="r3W-Ia-unM" secondAttribute="bottom" constant="5" id="GkW-nf-F8v"/>
                 <constraint firstAttribute="bottom" secondItem="uRk-FY-wSM" secondAttribute="bottom" constant="10" id="I4Z-Wy-ZcW"/>
                 <constraint firstAttribute="bottom" secondItem="OeB-eR-FOD" secondAttribute="bottom" id="KcZ-fF-4LD"/>
                 <constraint firstItem="OeB-eR-FOD" firstAttribute="top" secondItem="i5M-Pr-FkT" secondAttribute="top" id="Sue-ox-024"/>
-                <constraint firstItem="uRk-FY-wSM" firstAttribute="leading" secondItem="i5M-Pr-FkT" secondAttribute="leading" constant="10" id="e7D-U6-fVm"/>
+                <constraint firstItem="uRk-FY-wSM" firstAttribute="centerX" secondItem="i5M-Pr-FkT" secondAttribute="centerX" id="djo-oB-Pdz"/>
                 <constraint firstItem="OeB-eR-FOD" firstAttribute="leading" secondItem="i5M-Pr-FkT" secondAttribute="leading" id="kxd-V6-QSw"/>
                 <constraint firstItem="r3W-Ia-unM" firstAttribute="centerX" secondItem="i5M-Pr-FkT" secondAttribute="centerX" id="pUT-RJ-PoY"/>
             </constraints>

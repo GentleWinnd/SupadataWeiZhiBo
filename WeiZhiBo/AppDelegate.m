@@ -216,11 +216,15 @@
 
 - (UIInterfaceOrientationMask)application:(UIApplication *)application supportedInterfaceOrientationsForWindow:(UIWindow *)window {
     
-    if (self.shouldChangeOrientation == YES) {
+    if (self.direction == SuportDirectionRight) {
         return UIInterfaceOrientationMaskLandscapeRight;
-    } else {
+    } else if (self.direction == SuportDirectionPortrait){
         return UIInterfaceOrientationMaskPortrait;
+    } else {
+        return UIInterfaceOrientationMaskAll;
     }
+    
+    
 }
 
 

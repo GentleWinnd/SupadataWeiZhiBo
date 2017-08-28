@@ -193,12 +193,17 @@
 
     BOOL isOnline = [NSString safeNumber:responseObject[@"data"][@"isonline"]].boolValue;
     if (isOnline) {
+        AppDelegate *app = (AppDelegate *)[UIApplication sharedApplication].delegate;
+        app.direction = SuportDirectionAll;
+
+        
         HeEducationH5ViewController *heView = [[HeEducationH5ViewController alloc] init];
         heView.userClassInfo = [NSArray safeArray:responseObject[@"data"][@"school"]];
         heView.userId = responseObject[@"data"][@"user"][@"uId"];
         heView.accessToken = self.accessToken;
         heView.openId = self.openId;
         heView.userRole = UserRoleTeacher;
+        
         
        [self restoreRootViewController:heView];
 
@@ -239,7 +244,7 @@
     StreamingViewModel* vmodel = [[StreamingViewModel alloc] initWithPushUrl:pushUrl];
     
     AppDelegate *app = (AppDelegate *)[UIApplication sharedApplication].delegate;
-    app.shouldChangeOrientation = YES;
+    app.direction = SuportDirectionRight;
     
     ViewController *VC = [board instantiateViewControllerWithIdentifier:@"ViewController"];
     VC.userClassInfo = classArr;

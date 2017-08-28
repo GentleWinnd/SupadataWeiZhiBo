@@ -9,6 +9,7 @@
 #define RECODER_UPLOAD_STATE @"uploadState"
 #define RECODER_TITLE @"recoderTitle"
 #define RECODER_TIMEDATE @"recoderTimedate"
+#define RECODER_TIMELENGTH @"timelength"
 
 #define USER @"user"
 
@@ -142,6 +143,16 @@ static NSString *fileName = @"WeizhiboRecoderVideo.plist";
     [self saveRecoderClassInfo:userInfo];
 }
 
+- (void)saveRecoderTimeLength:(NSNumber *)timeLength withVideoId:(NSString *)videoId {//保存视频的录制时长
+    NSString *videoIdKey = [NSString stringWithFormat:@"%@",videoId];
+    NSMutableDictionary *userInfo  = [NSMutableDictionary dictionaryWithDictionary:[self getRecoderClassInfo]];
+    NSMutableDictionary *recoderInfo = [NSMutableDictionary dictionaryWithDictionary:userInfo[videoIdKey]];
+    
+    [recoderInfo setValue:timeLength forKey:RECODER_TIMELENGTH];
+    
+    [userInfo setValue:recoderInfo forKey:videoIdKey];
+    [self saveRecoderClassInfo:userInfo];
+}
 
 
 #pragma mark - get recoder video data
@@ -178,6 +189,14 @@ static NSString *fileName = @"WeizhiboRecoderVideo.plist";
     NSDictionary *userInfo = [NSDictionary dictionaryWithDictionary:[self getRecoderClassInfo]];
     NSDictionary *recoderInfo = [NSDictionary dictionaryWithDictionary:userInfo[videoIdKey]];
     return [recoderInfo valueForKey:RECODER_TIMEDATE];
+}
+
+- (NSNumber *)getRecoderTimeLengthWithVideoId:(NSString *)videoId {//获取视频的录制时长
+    NSString *videoIdKey = [NSString stringWithFormat:@"%@",videoId];
+    
+    NSDictionary *userInfo = [NSDictionary dictionaryWithDictionary:[self getRecoderClassInfo]];
+    NSDictionary *recoderInfo = [NSDictionary dictionaryWithDictionary:userInfo[videoIdKey]];
+    return [recoderInfo valueForKey:RECODER_TIMELENGTH];
 }
 
 

@@ -19,7 +19,7 @@
 #import "AppDelegate.h"
 #import "UserData.h"
 
-
+#import "VideoUploader.h"
 #import "NotificationManager.h"
 
 #import "NSString+Extension.h"
@@ -200,11 +200,11 @@ static NSString *cellID = @"cellId";
         
     } else {//返回
         if (timer) {
-            [self  alertViewMessage:@"关闭后视频将转到后台上传，确认关闭？" isUploading:NO];
+            [self  alertViewMessage:@"" isUploading:NO];
 
         } else {
             AppDelegate * app = (AppDelegate *)[UIApplication sharedApplication].delegate;
-            app.shouldChangeOrientation = NO;
+            app.direction = SuportDirectionAll;
             
             [self.navigationController dismissViewControllerAnimated:YES completion:nil];
 
@@ -424,63 +424,25 @@ static NSString *cellID = @"cellId";
 
 #pragma mark - 上传视频
 
-- (void)uploadVideo:(NSString *)url  {
-//    FileUploader *uploader = [FileUploader shareFileUploader];
-//    uploader.delegate = self;
-//    [uploader uploadFileAtPath:self.recordEngine.videoPath];
-//    NSData *data = [NSData dataWithContentsOfFile:self.recordEngine.videoPath];
-//    NSString *url = @"http://112.4.28.208:38080/media21";
-//    NSDictionary *paramater =@{@"resourceId":@"32010020170815115026716106shxxkm",
-//                               @"uploadType":@"vodFile,short1",
-//                               @"prefix":@"20170815115026765"};
+//- (void)uploadVideo:(NSString *)url  {
+////    FileUploader *uploader = [FileUploader shareFileUploader];
+////    uploader.delegate = self;
+////    [uploader uploadFileAtPath:self.recordEngine.videoPath];
+////    NSData *data = [NSData dataWithContentsOfFile:self.recordEngine.videoPath];
+////    NSString *url = @"http://112.4.28.208:38080/media21";
+////    NSDictionary *paramater =@{@"resourceId":@"32010020170815115026716106shxxkm",
+////                               @"uploadType":@"vodFile,short1",
+////                               @"prefix":@"20170815115026765"};
+////    
 //    
-    
-    NSString *filePath = self.recordEngine.videoPath;
-    NSData *data = [NSData dataWithContentsOfFile:filePath];
-    NSString *fileStr = [filePath lastPathComponent];
-    
-    [WZBNetServiceAPI postUploadFileWithURL:url paramater:nil fileData:data nameOfData:@"test" nameOfFile:fileStr mimeOfType:@"video/mp4" progress:^(NSProgress *uploadProgress) {
-        NSString *rateStr = [NSString stringWithFormat:@"%.0f %%",uploadProgress.fractionCompleted*100];
-        uploading = YES;
-        dispatch_async(dispatch_get_main_queue(), ^{
-            _uploadingView.ratelabel.text = rateStr;
-            [_uploadingView.circlProgress drawProgress:uploadProgress.fractionCompleted];
-        });
-                NSLog(@"upload-progress===%@",[uploadProgress description]);
-    } sucess:^(id responseObject) {
-        //        NSLog(@"_________uploaded success______/n %@",responseObject);
-        uploading = NO;
-        _uploadingView.ratelabel.text = @"100%";
-        _uploadingView.uploadStateLabel.text = @"上传成功";
-        [self fileUploadingState:YES fileName:filePath];
-        [self uploadVideoUploadState];
-        if (_uploadingView) {
-            [Progress progressShowcontent:@"上传成功"];
-        }
-        
-    } failure:^(NSError *error) {
-        uploading = NO;
-        _uploadingView.uploadStateLabel.text = @"上传失败";
-        if (_uploadingView) {
-            [Progress progressShowcontent:@"上传失败"];
-        }
-
-        //        NSLog(@"_________uploaded filad______ /n  %@",[error description]);
-        [self fileUploadingState:NO fileName:filePath];
-    }];
-}
+//}
 
 
 - (void)fileUploadingState:(BOOL)state fileName:(NSString *)fileName{//fileuploaderdelegate function
     
     if (fileName.length>0) {//修改文件上传的额状态
-        NSString *videoName = [fileName componentsSeparatedByString:@"/"].lastObject;
-        if (videoName.length>0) {
-            NSString *videoTag = [videoName componentsSeparatedByString:@"."].firstObject;
-            [[SaveDataManager shareSaveRecoder] saveRecoderUploadState:state withVideoId:videoTag];
-        } else {
-            [Progress progressShowcontent:@"视频保存失败了" currView:self.view];
-        }
+        [[SaveDataManager shareSaveRecoder] saveRecoderUploadState:state withVideoId:[self getVideoIdWithVideoPath:fileName]];
+    
     } else {
         [Progress progressShowcontent:@"视频保存失败了" currView:self.view];
     }
@@ -492,12 +454,7 @@ static NSString *cellID = @"cellId";
     if ([filerManager fileExistsAtPath:recoderPath]) {
         BOOL result = [filerManager removeItemAtPath:recoderPath error:&error];
         if (result) {
-            NSString *videoName = [recoderPath componentsSeparatedByString:@"/"].lastObject;
-            if (videoName.length>0) {
-                NSString *videoTag = [videoName componentsSeparatedByString:@"."].firstObject;
-                [[SaveDataManager shareSaveRecoder] removeRecoderVideoWithVideoId:videoTag];
-
-            }
+            [[SaveDataManager shareSaveRecoder] removeRecoderVideoWithVideoId:recoderPath];
             NSLog(@"_______视频删除成功————————");
         } else {
             [Progress progressShowcontent:@"删除失败了" currView:self.view];
@@ -508,16 +465,12 @@ static NSString *cellID = @"cellId";
 - (void)saveRecoderVideoClasses {
     NSString *videoPath = self.recordEngine.videoPath;
     if (videoPath.length>0) {
-        NSString *videoName = [videoPath componentsSeparatedByString:@"/"].lastObject;
-        if (videoName.length>0) {
-            NSString *videoTag = [videoName componentsSeparatedByString:@"."].firstObject;
-            [[SaveDataManager shareSaveRecoder] saveRecoderVodeoClass:selClassArr withVideoId:videoTag];
-            [[SaveDataManager shareSaveRecoder] saveRecoderTitle:playTitle withVideoId:videoTag];
-            [[SaveDataManager shareSaveRecoder] saveRecoderTimeDate:[NSString stringFromCurrentDate] withVideoId:videoTag];
-
-        } else {
-            [Progress progressShowcontent:@"视频保存失败了" currView:self.view];
-        }
+        NSString *videoTag = [self getVideoIdWithVideoPath:videoPath];
+        [[SaveDataManager shareSaveRecoder] saveRecoderVodeoClass:selClassArr withVideoId:videoTag];
+        [[SaveDataManager shareSaveRecoder] saveRecoderTitle:playTitle withVideoId:videoTag];
+        [[SaveDataManager shareSaveRecoder] saveRecoderTimeDate:[NSString stringFromCurrentDate] withVideoId:videoTag];
+        [[SaveDataManager shareSaveRecoder] saveRecoderTimeLength:[NSNumber numberWithInteger:seconds] withVideoId:videoTag];
+    
     } else {
         [Progress progressShowcontent:@"视频保存失败了" currView:self.view];
     }
@@ -525,6 +478,8 @@ static NSString *cellID = @"cellId";
 
 - (void)getUploadShortVideoPath {//获取视频的上传路径
     NSString *classIdStr = @"";
+    NSString *videoPath = self.recordEngine.videoPath;
+
     for (NSDictionary *classInfo in selClassArr) {
         if (classIdStr.length == 0) {
             classIdStr = [NSString stringWithFormat:@"%@",classInfo[@"classId"]];
@@ -533,32 +488,57 @@ static NSString *cellID = @"cellId";
             classIdStr = [NSString stringWithFormat:@"%@,%@",classIdStr, classInfo[@"classId"]];
         }
     }
-
+    
+    NSString *videoTag = [self getVideoIdWithVideoPath:videoPath];
+    
+    NSString *timeDate = [[SaveDataManager shareSaveRecoder] getRecoderTimeDateWithVideoId:videoTag];
+    NSNumber *timeLegth = [[SaveDataManager shareSaveRecoder] getRecoderTimeLengthWithVideoId:videoTag];
+    
+    NSDictionary *videoInfo = @{VIDEO_PATH:videoPath,
+                                UPLOAD_STATE:[NSNumber numberWithBool:NO]};
+    
     NSDictionary *parameter = @{@"userId":[UserData getUser].userID,
                                 @"classIdList":classIdStr,
                                 @"schoolId":self.schoolId,
                                 @"vodName":playTitle,
-                                @"vodDesc":@"录播小视频"};
+                                @"vodDesc":@"录播小视频",
+                                @"timeLength":timeLegth,
+                                @"screenTime":timeDate};
     
-    [WZBNetServiceAPI getShortVideoUplaodPathWithParameters:parameter success:^(id reponseObject) {
-        if ([reponseObject[@"status"] integerValue] == 1) {
-            videoId = [NSString safeString:reponseObject[@"data"][@"vodId"]];
-            NSString *url = [NSString safeString:reponseObject[@"data"][@"uploadUrl"]];
-            if (url.length>0) {
-                [self uploadVideo:url];
+    [[VideoUploader shareUploader] getUploadShortVideoUrlWithParamater:parameter withVideoInfo:videoInfo];
+    
+        [VideoUploader shareUploader].uploadProgress = ^ (NSProgress *progress, NSDictionary *videoInfo) {
+            NSString *rateStr = [NSString stringWithFormat:@"%.0f %%",progress.fractionCompleted*100];
+            uploading = YES;
+            dispatch_async(dispatch_get_main_queue(), ^{
+                _uploadingView.ratelabel.text = rateStr;
+                [_uploadingView.circlProgress drawProgress:progress.fractionCompleted];
+            });
+    };
+        
+    [VideoUploader shareUploader].uploadResult = ^ (BOOL result, NSDictionary *videoInfo){
+            uploading = NO;
+            if (result) {
+                _uploadingView.ratelabel.text = @"100%";
+                _uploadingView.uploadStateLabel.text = @"上传成功";
+                [self fileUploadingState:YES fileName:videoPath];
+                [self uploadVideoUploadState];
+                
+                if (_uploadingView) {
+                    [Progress progressShowcontent:@"上传成功"];
+                }
             } else {
+                _uploadingView.uploadStateLabel.text = @"上传失败";
+                if (_uploadingView) {
+                    [Progress progressShowcontent:@"上传失败,请稍后在历史列表重新上传"];
+                }
+                
+                [self fileUploadingState:result fileName:videoPath];
                 [self removeUploadingView];
-                [Progress progressShowcontent:@"视频上传失败，请稍后重试" currView:self.view];
             }
-        } else {
-            [Progress progressShowcontent:reponseObject[@"message"] currView:self.view];
-        }
-        
-    } failure:^(NSError *error) {
-        [KTMErrorHint showNetError:error inView:self.view];
-        
-    }];
-
+            
+            [self fileUploadingState:result fileName:videoPath];
+    };
 }
 
 - (void)uploadVideoUploadState {//上传视频上传的状态
@@ -596,8 +576,6 @@ static NSString *cellID = @"cellId";
         } else {
             classNameStr = [NSString stringWithFormat:@"%@,%@",classNameStr, classInfo[@"className"]];
         }
-
-        
     }
     _uploadingView = [[NSBundle mainBundle] loadNibNamed:@"UploadingView" owner:self options:nil].lastObject;
     _uploadingView.frame = CGRectMake(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
@@ -611,7 +589,7 @@ static NSString *cellID = @"cellId";
     _uploadingView.cancleBtnBlock = ^() {
     
         if (![_uploadingViewWeak.uploadStateLabel.text isEqualToString:@"上传成功"]) {
-            [selfWeak alertViewMessage:@"是否取消上传" isUploading:YES];
+            [selfWeak alertViewMessage:@"关闭后视频将转到后台上传，确认关闭？" isUploading:YES];
         } else {
             [selfWeak removeUploadingView];
         }
@@ -704,6 +682,15 @@ static NSString *cellID = @"cellId";
 //    }
 //}
 
+#pragma mark - 通过videoPath获取videoID
+
+- (NSString *)getVideoIdWithVideoPath:(NSString *)videoPath {
+    
+    NSString *videoName = [videoPath componentsSeparatedByString:@"/"].lastObject;
+    NSString *videoTag = [videoName componentsSeparatedByString:@"."].firstObject;
+    return videoTag;
+}
+
 
 - (void)playVideo {
 
@@ -750,7 +737,7 @@ static NSString *cellID = @"cellId";
             [self removeUploadingView];
         } else {
             AppDelegate * app = (AppDelegate *)[UIApplication sharedApplication].delegate;
-            app.shouldChangeOrientation = NO;
+            app.direction = SuportDirectionAll;
             
             [self.navigationController dismissViewControllerAnimated:YES completion:nil];
 
@@ -778,7 +765,7 @@ static NSString *cellID = @"cellId";
     
     
     AppDelegate *appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
-    appDelegate.shouldChangeOrientation = YES;
+    appDelegate.direction = SuportDirectionRight;
     
     [[UIDevice currentDevice] setValue:@"UIInterfaceOrientationLandscapeRight" forKey:@"orientation"];
     
