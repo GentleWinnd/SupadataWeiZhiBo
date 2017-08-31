@@ -38,11 +38,7 @@
 		5816834F1E83AD52003F669F /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5816834E1E83AD52003F669F /* CoreGraphics.framework */; };
 		581683531E83AD68003F669F /* VideoToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 581683521E83AD68003F669F /* VideoToolbox.framework */; };
 		581683571E83AD7E003F669F /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 581683561E83AD7E003F669F /* SystemConfiguration.framework */; };
-		581D07981E891F3600CB537E /* VideoCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 581D07971E891F3600CB537E /* VideoCore.framework */; };
 		581D07B61E89245500CB537E /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 581D07B51E89245500CB537E /* AudioToolbox.framework */; };
-		581D07B81E8926D800CB537E /* VideoCore.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 581D07971E891F3600CB537E /* VideoCore.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		581D07CE1E89272900CB537E /* Defines.m in Sources */ = {isa = PBXBuildFile; fileRef = 581D07BD1E89272900CB537E /* Defines.m */; };
-		581D07D61E89272900CB537E /* StreamingViewModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 581D07CD1E89272900CB537E /* StreamingViewModel.m */; };
 		581FA2951F1F55D100505924 /* cancle_recod@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 581FA27B1F1F55D100505924 /* cancle_recod@2x.png */; };
 		581FA2961F1F55D100505924 /* cancle_recod@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 581FA27C1F1F55D100505924 /* cancle_recod@3x.png */; };
 		581FA2971F1F55D100505924 /* fanhui@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 581FA27D1F1F55D100505924 /* fanhui@2x.png */; };
@@ -290,6 +286,11 @@
 		58D61FEE1F147D110089FAC1 /* UILabel+ChangeLineSpaceAndWordSpace.m in Sources */ = {isa = PBXBuildFile; fileRef = 58D61FED1F147D110089FAC1 /* UILabel+ChangeLineSpaceAndWordSpace.m */; };
 		58D61FF41F14B6DB0089FAC1 /* FileManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 58D61FF11F14B6DB0089FAC1 /* FileManager.m */; };
 		58E33AF31F4ACC0500592D03 /* XibWKWebView.m in Sources */ = {isa = PBXBuildFile; fileRef = 58E33AF21F4ACC0500592D03 /* XibWKWebView.m */; };
+		58E926AC1F53FF5500C67BDA /* c++.mm in Sources */ = {isa = PBXBuildFile; fileRef = 58E926A91F53FF5500C67BDA /* c++.mm */; };
+		58E926AD1F53FF5500C67BDA /* libanylive.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 58E926AA1F53FF5500C67BDA /* libanylive.a */; };
+		58E926AE1F53FF5500C67BDA /* libfaac.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 58E926AB1F53FF5500C67BDA /* libfaac.a */; };
+		58E926B01F53FF8100C67BDA /* libstdc++.6.0.9.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 58E926AF1F53FF8100C67BDA /* libstdc++.6.0.9.tbd */; };
+		58E926B31F54039300C67BDA /* AOKANLiveManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 58E926B21F54039300C67BDA /* AOKANLiveManager.m */; };
 		58FA06121E94D78400EFB656 /* ClassNameView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 58FA06111E94D78400EFB656 /* ClassNameView.xib */; };
 /* End PBXBuildFile section */
 
@@ -317,7 +318,6 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				581D07B81E8926D800CB537E /* VideoCore.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -388,12 +388,7 @@
 		581683541E83AD72003F669F /* CoreTelephony.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreTelephony.framework; path = System/Library/Frameworks/CoreTelephony.framework; sourceTree = SDKROOT; };
 		581683561E83AD7E003F669F /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
 		581683581E83AD9A003F669F /* libiconv.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libiconv.tbd; path = usr/lib/libiconv.tbd; sourceTree = SDKROOT; };
-		581D07971E891F3600CB537E /* VideoCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = VideoCore.framework; sourceTree = "<group>"; };
 		581D07B51E89245500CB537E /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
-		581D07BC1E89272900CB537E /* Defines.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Defines.h; sourceTree = "<group>"; };
-		581D07BD1E89272900CB537E /* Defines.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Defines.m; sourceTree = "<group>"; };
-		581D07CC1E89272900CB537E /* StreamingViewModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StreamingViewModel.h; sourceTree = "<group>"; };
-		581D07CD1E89272900CB537E /* StreamingViewModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = StreamingViewModel.m; sourceTree = "<group>"; };
 		581FA27B1F1F55D100505924 /* cancle_recod@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "cancle_recod@2x.png"; sourceTree = "<group>"; };
 		581FA27C1F1F55D100505924 /* cancle_recod@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "cancle_recod@3x.png"; sourceTree = "<group>"; };
 		581FA27D1F1F55D100505924 /* fanhui@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "fanhui@2x.png"; sourceTree = "<group>"; };
@@ -734,6 +729,13 @@
 		58D61FF11F14B6DB0089FAC1 /* FileManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FileManager.m; sourceTree = "<group>"; };
 		58E33AF11F4ACC0500592D03 /* XibWKWebView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XibWKWebView.h; sourceTree = "<group>"; };
 		58E33AF21F4ACC0500592D03 /* XibWKWebView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = XibWKWebView.m; sourceTree = "<group>"; };
+		58E926A81F53FF5500C67BDA /* __anyLive.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = __anyLive.h; sourceTree = "<group>"; };
+		58E926A91F53FF5500C67BDA /* c++.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = "c++.mm"; sourceTree = "<group>"; };
+		58E926AA1F53FF5500C67BDA /* libanylive.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libanylive.a; sourceTree = "<group>"; };
+		58E926AB1F53FF5500C67BDA /* libfaac.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libfaac.a; sourceTree = "<group>"; };
+		58E926AF1F53FF8100C67BDA /* libstdc++.6.0.9.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = "libstdc++.6.0.9.tbd"; path = "usr/lib/libstdc++.6.0.9.tbd"; sourceTree = SDKROOT; };
+		58E926B11F54039300C67BDA /* AOKANLiveManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AOKANLiveManager.h; sourceTree = "<group>"; };
+		58E926B21F54039300C67BDA /* AOKANLiveManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AOKANLiveManager.m; sourceTree = "<group>"; };
 		58FA06111E94D78400EFB656 /* ClassNameView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ClassNameView.xib; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -742,6 +744,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				58E926B01F53FF8100C67BDA /* libstdc++.6.0.9.tbd in Frameworks */,
+				58E926AE1F53FF5500C67BDA /* libfaac.a in Frameworks */,
+				58E926AD1F53FF5500C67BDA /* libanylive.a in Frameworks */,
 				58C5113D1F3061B20088F178 /* CoreImage.framework in Frameworks */,
 				58C5113B1F3061A20088F178 /* OpenGLES.framework in Frameworks */,
 				58CD5E7F1F0B3EA80068866C /* libsqlite3.tbd in Frameworks */,
@@ -758,7 +763,6 @@
 				5816834F1E83AD52003F669F /* CoreGraphics.framework in Frameworks */,
 				5816834D1E83AD45003F669F /* CoreMedia.framework in Frameworks */,
 				5816834B1E83AD38003F669F /* AVFoundation.framework in Frameworks */,
-				581D07981E891F3600CB537E /* VideoCore.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -869,6 +873,7 @@
 		581683451E83AD22003F669F /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				58E926AF1F53FF8100C67BDA /* libstdc++.6.0.9.tbd */,
 				58C5113C1F3061B20088F178 /* CoreImage.framework */,
 				58C5113A1F3061A20088F178 /* OpenGLES.framework */,
 				58CD5E7E1F0B3EA80068866C /* libsqlite3.tbd */,
@@ -889,25 +894,6 @@
 				581683461E83AD22003F669F /* libresolv.tbd */,
 			);
 			name = Frameworks;
-			sourceTree = "<group>";
-		};
-		581D07961E891F3600CB537E /* BaiduDevelop */ = {
-			isa = PBXGroup;
-			children = (
-				581D07971E891F3600CB537E /* VideoCore.framework */,
-			);
-			path = BaiduDevelop;
-			sourceTree = "<group>";
-		};
-		581D07BB1E89272900CB537E /* Baidu */ = {
-			isa = PBXGroup;
-			children = (
-				581D07BC1E89272900CB537E /* Defines.h */,
-				581D07BD1E89272900CB537E /* Defines.m */,
-				581D07CC1E89272900CB537E /* StreamingViewModel.h */,
-				581D07CD1E89272900CB537E /* StreamingViewModel.m */,
-			);
-			path = Baidu;
 			sourceTree = "<group>";
 		};
 		581FA27A1F1F55D100505924 /* RecordedVD */ = {
@@ -1000,7 +986,6 @@
 		585EF45A1E816EF600EC879F /* WeiZhiBo */ = {
 			isa = PBXGroup;
 			children = (
-				581D07BB1E89272900CB537E /* Baidu */,
 				585EF45E1E816EF600EC879F /* AppDelegate.h */,
 				585EF45F1E816EF600EC879F /* AppDelegate.m */,
 				585EF4611E816EF600EC879F /* ViewController.h */,
@@ -1074,6 +1059,7 @@
 		5868511C1E83901B00115227 /* ThirdFrame */ = {
 			isa = PBXGroup;
 			children = (
+				58E926A61F53FF5500C67BDA /* AoKanSDK */,
 				5805EA811F46E27700F8029B /* circleProgress */,
 				58C901F91F1F529700800A7E /* WCLRecordVideo */,
 				58CD5E791F0B3DDC0068866C /* UMAnalysis */,
@@ -1084,7 +1070,6 @@
 				589C58301E9B3471007D0EBB /* AvoidKeyBoard */,
 				5895851A1E85210900E4FAB7 /* V8HorizontalPickerView */,
 				589584F61E84CE1F00E4FAB7 /* ColorExtension */,
-				581D07961E891F3600CB537E /* BaiduDevelop */,
 				5816833B1E83A144003F669F /* ProgressHUD */,
 				5868511D1E83903400115227 /* Net */,
 			);
@@ -1675,6 +1660,27 @@
 			path = VideoUplaoder;
 			sourceTree = "<group>";
 		};
+		58E926A61F53FF5500C67BDA /* AoKanSDK */ = {
+			isa = PBXGroup;
+			children = (
+				58E926B11F54039300C67BDA /* AOKANLiveManager.h */,
+				58E926B21F54039300C67BDA /* AOKANLiveManager.m */,
+				58E926A71F53FF5500C67BDA /* lib */,
+			);
+			path = AoKanSDK;
+			sourceTree = "<group>";
+		};
+		58E926A71F53FF5500C67BDA /* lib */ = {
+			isa = PBXGroup;
+			children = (
+				58E926A81F53FF5500C67BDA /* __anyLive.h */,
+				58E926A91F53FF5500C67BDA /* c++.mm */,
+				58E926AA1F53FF5500C67BDA /* libanylive.a */,
+				58E926AB1F53FF5500C67BDA /* libfaac.a */,
+			);
+			path = lib;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -2006,6 +2012,7 @@
 				586851651E83903400115227 /* KTMWebService.m in Sources */,
 				5874A56D1EB1F8C40006824D /* LocalConnection.m in Sources */,
 				58C902051F1F529700800A7E /* WCLRecordProgressView.m in Sources */,
+				58E926B31F54039300C67BDA /* AOKANLiveManager.m in Sources */,
 				5895851E1E85210900E4FAB7 /* V8HorizontalPickerView.m in Sources */,
 				5874A5781EB1F8C40006824D /* RealReachability.m in Sources */,
 				589585091E84D07A00E4FAB7 /* NSDictionary+Extension.m in Sources */,
@@ -2016,11 +2023,9 @@
 				58CDBCE01EA4631800C9FE30 /* SRURLUtilities.m in Sources */,
 				589585081E84D07A00E4FAB7 /* NSArray+Extension.m in Sources */,
 				58CDBCDF1EA4631800C9FE30 /* SRRandom.m in Sources */,
-				581D07D61E89272900CB537E /* StreamingViewModel.m in Sources */,
 				5874A5701EB1F8C40006824D /* ReachState.m in Sources */,
 				581683361E83A079003F669F /* UIButton+AFNetworking.m in Sources */,
 				5816832E1E83A079003F669F /* AFSecurityPolicy.m in Sources */,
-				581D07CE1E89272900CB537E /* Defines.m in Sources */,
 				58CDBCD81EA4631800C9FE30 /* SRProxyConnect.m in Sources */,
 				58C901F31F1F522600800A7E /* HistoryRecoderViewController.m in Sources */,
 				585EF4601E816EF600EC879F /* AppDelegate.m in Sources */,
@@ -2028,6 +2033,7 @@
 				589C58381E9B3471007D0EBB /* TPKeyboardAvoidingTableView.m in Sources */,
 				583544991EC93EDA00AEC08B /* TRDAnimationIndicator.m in Sources */,
 				5874A5721EB1F8C40006824D /* ReachStateUnloaded.m in Sources */,
+				58E926AC1F53FF5500C67BDA /* c++.mm in Sources */,
 				58367BDE1E9BD492004CF4F1 /* ContentView.m in Sources */,
 				581683351E83A079003F669F /* UIActivityIndicatorView+AFNetworking.m in Sources */,
 				58CDBD451EA4D10C00C9FE30 /* CommentMessageView.m in Sources */,
@@ -2248,13 +2254,16 @@
 				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
-					"$(PROJECT_DIR)/WeiZhiBo/ThirdFrame/BaiduDevelop",
 					"$(PROJECT_DIR)/WeiZhiBo/ThirdFrame/UMAnalysis",
 				);
 				GCC_PREFIX_HEADER = "$(SRCROOT)/WeiZhiBo/PrefixHeader.pch";
 				INFOPLIST_FILE = WeiZhiBo/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/WeiZhiBo/ThirdFrame/AoKanSDK/lib",
+				);
 				ONLY_ACTIVE_ARCH = NO;
 				OTHER_LIBTOOLFLAGS = " -ObjC XCTest -framework";
 				PRODUCT_BUNDLE_IDENTIFIER = com.supadata.WeiZhiBo;
@@ -2262,7 +2271,7 @@
 				PROVISIONING_PROFILE = "";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				TARGETED_DEVICE_FAMILY = 1;
-				VALID_ARCHS = "arm64 armv7";
+				VALID_ARCHS = arm64;
 			};
 			name = Debug;
 		};
@@ -2277,13 +2286,16 @@
 				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
-					"$(PROJECT_DIR)/WeiZhiBo/ThirdFrame/BaiduDevelop",
 					"$(PROJECT_DIR)/WeiZhiBo/ThirdFrame/UMAnalysis",
 				);
 				GCC_PREFIX_HEADER = "$(SRCROOT)/WeiZhiBo/PrefixHeader.pch";
 				INFOPLIST_FILE = WeiZhiBo/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/WeiZhiBo/ThirdFrame/AoKanSDK/lib",
+				);
 				ONLY_ACTIVE_ARCH = NO;
 				OTHER_LIBTOOLFLAGS = " -ObjC XCTest -framework";
 				PRODUCT_BUNDLE_IDENTIFIER = com.supadata.WeiZhiBo;
@@ -2291,7 +2303,7 @@
 				PROVISIONING_PROFILE = "";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				TARGETED_DEVICE_FAMILY = 1;
-				VALID_ARCHS = "arm64 armv7";
+				VALID_ARCHS = arm64;
 			};
 			name = Release;
 		};

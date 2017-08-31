@@ -31,6 +31,9 @@ typedef NS_ENUM(NSInteger, MessageSocketType) {
 #import <UIKit/UIKit.h>
 #import <Foundation/Foundation.h>
 #import <AVFoundation/AVFoundation.h>
+
+#import "AOKANLiveManager.h"
+
 @class StreamingViewModel;
 
 @interface ViewController : UIViewController
@@ -46,8 +49,8 @@ typedef NS_ENUM(NSInteger, MessageSocketType) {
 @property (nonatomic, strong) NSString *cameraDataId;
 @property (nonatomic, strong) NSString *pushUrl;
 
+@property (nonatomic, strong) AOKANLiveManager *liveManager;
 
-@property (nonatomic, strong) StreamingViewModel* model;
 
 @end
 

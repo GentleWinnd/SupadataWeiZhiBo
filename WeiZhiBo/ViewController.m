@@ -14,15 +14,12 @@
 #import "SchoolNameView.h"
 #import "NSString+Extension.h"
 #import "ContentView.h"
-
 #import "AppLogMgr.h"
 
 #import <sys/types.h>
 #import <sys/sysctl.h>
 #import <UIKit/UIKit.h>
 #import <mach/mach.h>
-#import "StreamingViewModel.h"
-#import <VideoCore/VideoCore.h>
 #import <CoreMotion/CoreMotion.h>
 #import "UserData.h"
 #import "SocketRocket.h"
@@ -33,7 +30,7 @@
 #import "ClassNameView.h"
 
 
-@interface ViewController ()<VCSessionDelegate, SRWebSocketDelegate, InputViewDelegate>
+@interface ViewController ()<SRWebSocketDelegate, InputViewDelegate>
 //手势
 @property (strong, nonatomic) IBOutlet UIPinchGestureRecognizer *pinchGesture;//缩放手势
 @property (strong, nonatomic) IBOutlet UITapGestureRecognizer *tapGesture;//点击手势
@@ -70,7 +67,6 @@
 
 /********end******/
 
-@property (strong, nonatomic) UIActivityIndicatorView *iniIndicator;
 @property (assign, nonatomic) BOOL publish_switch;
 
 @end
@@ -100,17 +96,32 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view, typically from a nib.
-    //创建camera加载菊花
-    _iniIndicator = [[UIActivityIndicatorView alloc] initWithFrame:CGRectMake(0, 0, 66, 66)];
-    _iniIndicator.center = CGPointMake(SCREEN_WIDTH/2, SCREEN_HEIGHT/2);
-    _iniIndicator.activityIndicatorViewStyle = UIActivityIndicatorViewStyleWhiteLarge;
-    //    [self.view addSubview:_iniIndicator];
-    [_iniIndicator startAnimating];
-    
     //旋转背景容器view
     self.backView.transform = CGAffineTransformMakeRotation(- M_PI_2);
-    //设置百度直播SDK
-    [self setBaiDuSDK];
+
+}
+
+- (void)viewWillAppear:(BOOL)animated {
+    [super viewWillAppear:animated];
+    [self readyCameraCapture];
+}
+
+- (void)readyCameraCapture {
+
+    if (self.liveManager) {
+        [self.liveManager previewLayer].frame = self.backView.bounds;
+        [self.backView.layer insertSublayer:[self.liveManager previewLayer] atIndex:0];
+    }
+    [self.liveManager startUp];
+}
+
+- (AOKANLiveManager *)liveManager {
+
+    if (!_liveManager) {
+        _liveManager = [[AOKANLiveManager alloc] initWithURL:self.pushUrl];
+        
+    }
+    return _liveManager;
 }
 
 
@@ -131,8 +142,6 @@
 
 - (void)setShowItem {
     
-    [self.iniIndicator stopAnimating];
-    self.iniIndicator.hidden = YES;
     self.sendCommentBtn.transform = CGAffineTransformMakeRotation(M_PI_2);
     self.playCommentBtn.transform = CGAffineTransformMakeRotation( M_PI_2);
     self.playBtn.transform = CGAffineTransformMakeRotation(M_PI_2);
@@ -155,7 +164,6 @@
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(changeContentViewPoint:) name:UIKeyboardDidChangeFrameNotification object:nil];
     //监听当键将要退出时
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillHide:) name:UIKeyboardWillHideNotification object:nil];
-    [self performSelector:@selector(startRtmp) withObject:nil afterDelay:1.0];
     
 }
 
@@ -186,15 +194,6 @@
     [self.view addSubview:self.maskingBtn];
 }
 
-/*************************set baidu sdk**********************/
-
-- (void)setBaiDuSDK {
-    [self.model setupSession:AVCaptureVideoOrientationLandscapeRight delegate:self];
-    [self.model preview:_cameraView];
-    [self.model updateFrame:_cameraView];
-    
-}
-
 
 #pragma mark - comment
 - (IBAction)playCommenAction:(UIButton *)sender {
@@ -218,7 +217,7 @@
 
 - (IBAction)onToggleFlash:(UIButton *)sender {
     if (sender.tag == 11) {//闪光灯
-        BOOL toggle = [self.model toggleTorch];
+        BOOL toggle = YES;
         if (toggle) {
             [self.torchButton setBackgroundImage:[UIImage imageNamed:@"flash_on"] forState:UIControlStateNormal];
         } else {
@@ -248,179 +247,37 @@
         }
         
     } else if (sender.tag == 2){//翻转摄像头
-        [self.model switchCamera];
         sender.selected = !sender.selected;
-        
+        [self.liveManager changeCameraInputDeviceisFront:sender.selected];
     }
-    
 }
 
 
 - (IBAction)onPinch:(id)sender {//缩放手势
-    [self.model pinch:self.pinchGesture.scale state:self.pinchGesture.state];
+//    [self.model pinch:self.pinchGesture.scale state:self.pinchGesture.state];
 }
 
 - (IBAction)onTap:(id)sender {//单击手势
     CGPoint point = [self.tapGesture locationInView:self.view];
     point.x /= self.view.frame.size.width;
     point.y /= self.view.frame.size.height;
-    [self.model setInterestPoint:point];
+    [self.liveManager focusAtPoint:point];
 }
 
 - (IBAction)onDoubleTap:(id)sender {//双击手势
-    [self.model zoomIn];
+//    [self.model zoomIn];
 }
 
 #pragma mark - change beauty value
 - (IBAction)changeSlider:(UISlider *)sender {//设置美颜
-    [self.model.session setBeatyEffect:sender.value withSmooth:sender.value withPink:sender.value];
+//    [self.model.session setBeatyEffect:sender.value withSmooth:sender.value withPink:sender.value];
     
 }
 
-#pragma mark - VCSessionDelegate
-
-- (void) connectionStatusChanged: (VCSessionState) sessionState {
-    
-    switch(sessionState) {
-        case VCSessionStatePreviewStarted:{// 开始出现预览画面，收到此状态回调后方可设置美颜参数
-            [self.model.session setBeatyEffect:0.5 withSmooth:0.3 withPink:0.3];
-            NSLog(@"*************开始出现预览画面，收到此状态回调后方可设置美颜参数^^^^^^^^\n");
-            
-            break;}
-        case VCSessionStateStarting:{// 正在连接服务器或创建码流传输通道
-            NSLog(@"Current state is VCSessionStateStarting\n");
-            NSLog(@"*************正在连接服务器或创建码流传输通道^^^^^^^^\n");
-            
-            break;}
-        case VCSessionStateStarted:{// 已经建立连接，并已经开始推流
-            NSLog(@"Current state is VCSessionStateStarted\n");
-                       
-            break;}
-        case VCSessionStateError:{// 推流sdk运行过程中出错
-            NSLog(@"*************Current state is VCSessionStateError^^^^^^^^\n");
-            
-            break;}
-        case VCSessionStateEnded:{// 推流已经结束
-            NSLog(@"**************Current state is VCSessionStateEnded^^^^^^^^\n");
-            
-            break;}
-        default:
-            break;
-    }
-}
-
-- (void)sendPlayState {
-    [self uploadZhiBoState:NO];
-}
-
-
-// 当推流sdk创建CameraSource（即相机被占用）以后，该接口会被调用，参数session为VCSimpleSession的对象
-- (void) didAddCameraSource:(VCSimpleSession*)session {
-    
-}
-// 当错误发生时会被调用。
-- (void) onError:(VCErrorCode)error {
-    
-    switch (error) {
-        case VCErrorCodePrepareSessionFailed:{//准备session的过程出错
-            NSLog(@"****************%@^^^^^^^^^^^^^^^^^",@"准备session的过程出错");
-            
-            break;
-        }
-        case VCErrorCodeConnectToServerFailed:{//startRtmpSession过程中连接服务器出错
-            NSLog(@"****************%@^^^^^^^^^^^^^^^^^",@"startRtmpSession过程中连接服务器出错");
-            
-            break;
-        }
-        case VCErrorCodeDisconnectFromServerFailed:{//endRtmpSession过程中出错
-            NSLog(@"****************%@^^^^^^^^^^^^^^^^^",@"endRtmpSession过程中出错");
-            
-            break;
-        }
-        case VCErrorCodeOpenMicFailed:{//打开MIC设备出错
-            NSLog(@"****************%@^^^^^^^^^^^^^^^^^",@"打开MIC设备出错");
-            
-            break;
-        }
-        case VCErrorCodeOpenCameraFailed:{//打开相机设备出错
-            NSLog(@"****************%@^^^^^^^^^^^^^^^^^",@"打开相机设备出错");
-            
-            break;
-        }
-        case VCErrorCodeUnknownStreamingError:{//推流过程中，遇到未知错误导致推流失败
-            
-            break;
-        }
-        case VCErrorCodeWeakConnection:{
-            /*
-             * 推流过程中，遇到弱网情况导致推流失败
-             * 收到此错误后，建议提示用户当前网络不稳定，
-             * 如果反复收到此错误码，建议调用endRtmpSession停止推流
-             */
-            NSLog(@"****************%@^^^^^^^^^^^^^^^^^",@"当前网络不稳定001，");
-            
-            break;
-        }
-        case VCErrorCodeServerNetworkError:{
-            /**
-             * 推流过程中，遇到服务器网络错误导致推流失败
-             * 收到此错误后，建议调用endRtmpSession立即停止推流，并在服务恢复后再重新推流
-             */
-            NSLog(@"****************%@^^^^^^^^^^^^^^^^^",@"当前网络不稳定001，");
-            
-            break;
-        }
-        case VCErrorCodeLocalNetworkError:{
-            /**
-             * 推流过程中，遇到设备断网导致推流失败，
-             * 收到此错误后，建议提示用户检查网络连接，然后调用endRtmpSession立即停止推流
-             */
-            NSLog(@"****************%@^^^^^^^^^^^^^^^^^",@"当前网络不稳定003");
-            
-            break;
-        }
-            
-        default:
-            break;
-    }
-    
-    if (timer) {
-        [self toastTip:@"信息异常，直播断开，请稍后重试！"];
-        [self stopRtmp];
-    }
-    
-}
-
-#pragma mark - start push
--(BOOL)startRtmp {
-    if (!([_pushUrl hasPrefix:@"rtmp://"] )) {
-        [Progress progressShowcontent:@"发生意外错误了" currView:self.view];
-        return NO;
-    }
-    NSString *rtmpUrl = _pushUrl;
-    rtmpUrl = @"rtmp://apk.139jy.cn:8005/live/32010020170717170143457107myp4ec";
-    //是否有摄像头权限
-    AVAuthorizationStatus statusVideo = [AVCaptureDevice authorizationStatusForMediaType:AVMediaTypeVideo];
-    if (statusVideo == AVAuthorizationStatusDenied) {
-        [Progress progressShowcontent:@"获取摄像头权限失败，请前往隐私-相机设置里面打开应用权限" currView:self.view];
-        return NO;
-    }
-    
-    //是否有麦克风权限
-    AVAuthorizationStatus statusAudio = [AVCaptureDevice authorizationStatusForMediaType:AVMediaTypeAudio];
-    if (statusAudio == AVAuthorizationStatusDenied) {
-        [Progress progressShowcontent:@"获取麦克风权限失败，请前往隐私-麦克风设置里面打开应用权限" currView:self.view];
-        return NO;
-    }
-    [self.model.session startRtmpSessionWithURL:rtmpUrl];
-    
-    return YES;
-}
 
 #pragma mark - show play items
 
 - (void)ShowItemWhileStartPlay {
-    [[UIApplication sharedApplication] setIdleTimerDisabled:YES];
     
     [self createTimer];
     
@@ -433,8 +290,8 @@
     [self showCommentMessageView:YES showMessage:NO];
 }
 
-- (BOOL)stopRtmp {
-    BOOL result = [self.model back];
+- (void)stopRtmp {
+    [self.liveManager stopLive];
     
     [self stopTimer];
     [self closeWebSocket];//关闭socket
@@ -449,8 +306,6 @@
     [_commentView reloadMessageTable];
     [messageArr removeAllObjects];
     
-    [[UIApplication sharedApplication] setIdleTimerDisabled:NO];
-    return result;
 }
 
 
@@ -471,11 +326,9 @@
     int second = seconds%60;
     
     self.CView.shotingTimeLable.text = [NSString stringWithFormat:@"%02d:%02d:%02d",hourse,minutes,second];
-    double bandwidth = [self.model.session getCurrentUploadBandwidthKbps];
-    bandwidth = bandwidth < 0.0?0.0:bandwidth;
-    self.CView.rateLabel.textColor = bandwidth >50?[UIColor whiteColor]:[UIColor redColor];
+    self.CView.rateLabel.textColor = [self.liveManager getDelayState]?[UIColor whiteColor]:[UIColor redColor];
     
-    self.CView.rateLabel.text = [NSString stringWithFormat:@"%.lf %@",bandwidth,@"kbps"];
+    self.CView.rateLabel.text = [self.liveManager getUploadRate];
     if (seconds/90 && seconds%90==0 && !uploadFinished) {
         [self uploadZhiBoState:NO];
     }
@@ -486,9 +339,9 @@
         [_webSocket sendPing:nil error:nil];
     }
     
-    if (bandwidth == 0) {
-        noDataCount++;
-    }
+//    if (bandwidth == 0) {
+//        noDataCount++;
+//    }
     
     if (seconds%20==0) {
         noDataCount = 0;
@@ -795,7 +648,7 @@
 
 /*******************create class name pickerview*****************/
 
-#pragma mark 0- 创建classInfoVIew
+#pragma mark 0- 创建classInfoVIew#
 
 - (void)createCLassNamePickerView {
     _classView = [[NSBundle mainBundle] loadNibNamed:@"ClassNameView" owner:self options:nil].lastObject;
@@ -820,8 +673,8 @@
                 
                 [selfWeak showClassInfoTable:NO];
                 
-                if (self.model.session.rtmpSessionState != VCSessionStateStarted) {
-                    [selfWeak startRtmp];
+                if (selfWeak.liveManager.StartLiving) {
+
                 }
                 
                 if (_classViewWeak.sendMessageBtn.selected) {
@@ -1036,11 +889,10 @@
             [self stopRtmp];
         } else {
             
-            if (self.model.session.rtmpSessionState == VCSessionStateStarted ||
-                self.model.session.rtmpSessionState == VCSessionStateStarting) {
+            if (self.liveManager.StartLiving) {
                 [self stopRtmp];
             }
-            self.model = nil;
+            self.liveManager = nil;
 
             [_classView removeFromSuperview];
             
@@ -1112,7 +964,6 @@
 }
 
 -(UIInterfaceOrientationMask)supportedInterfaceOrientations {
-    _iniIndicator.center = CGPointMake(WIDTH/2, HEIGHT/2);
     return UIInterfaceOrientationMaskLandscapeRight;
 }
 

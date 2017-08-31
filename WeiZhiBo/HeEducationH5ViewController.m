@@ -18,7 +18,6 @@
 #import "AppDelegate.h"
 #import "TRDAnimationIndicator.h"
 #import <CoreMotion/CoreMotion.h>
-#import "StreamingViewModel.h"
 #import "RecorderViewController.h"
 
 @interface HeEducationH5ViewController ()<WKNavigationDelegate,WKUIDelegate,WKScriptMessageHandler, UINavigationControllerDelegate, UIScrollViewDelegate, TRDAnimationIndicatorDelegate>
@@ -696,11 +695,10 @@
 - (void)gotoCameraVC:(NSString *)cameraID withPushURL:(NSString *)pushUrl {
     noCurrentVC = YES;
     UIStoryboard *board = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
-    StreamingViewModel* vmodel = [[StreamingViewModel alloc] initWithPushUrl:pushUrl];
     
     AppDelegate *app = (AppDelegate *)[UIApplication sharedApplication].delegate;
     app.direction = SuportDirectionRight;
-    
+     
     ViewController *VC = [board instantiateViewControllerWithIdentifier:@"ViewController"];
     VC.userClassInfo = classesArray;
     VC.userId = self.userId;
@@ -709,7 +707,6 @@
     VC.openId = self.openId;
     VC.schoolId = CSchoolId;
     VC.schoolName = CSchoolName;
-    VC.model = vmodel;
     VC.pushUrl = pushUrl;
     
     if (CSchoolId.length == 0) {

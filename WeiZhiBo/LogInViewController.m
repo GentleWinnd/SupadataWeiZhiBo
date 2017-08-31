@@ -7,7 +7,6 @@
 //
 #import "HeEducationH5ViewController.h"
 #import "LogInViewController.h"
-#import "StreamingViewModel.h"
 #import "ViewController.h"
 #import "AppDelegate.h"
 #import "UserData.h"
@@ -241,7 +240,6 @@
 - (void)gotoCameraVC:(NSString *)cameraID withPushURL:(NSString *)pushUrl userId:(NSString *)userId schoolId:(NSString *)schoolId schoolName:(NSString *)schoolName classes:(NSArray *)classArr {
     
     UIStoryboard *board = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
-    StreamingViewModel* vmodel = [[StreamingViewModel alloc] initWithPushUrl:pushUrl];
     
     AppDelegate *app = (AppDelegate *)[UIApplication sharedApplication].delegate;
     app.direction = SuportDirectionRight;
@@ -253,7 +251,6 @@
     VC.openId = self.openId;
     VC.schoolId = schoolId;
     VC.schoolName = schoolName;
-    VC.model = vmodel;
     VC.pushUrl = pushUrl;
     
     if (schoolId.length == 0) {
