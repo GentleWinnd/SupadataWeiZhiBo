@@ -21,7 +21,7 @@
     // 时区
     notification.timeZone = [NSTimeZone defaultTimeZone];
     // 设置重复的间隔
-    notification.repeatInterval = kCFCalendarUnitSecond;
+//    notification.repeatInterval = kCFCalendarUnitSecond;
     
     // 通知内容
     notification.alertBody = alertStr;
@@ -38,11 +38,11 @@
         UIUserNotificationSettings *settings = [UIUserNotificationSettings settingsForTypes:type
                                                                                  categories:nil];
         [[UIApplication sharedApplication] registerUserNotificationSettings:settings];
-        // 通知重复提示的单位，可以是天、周、月
-        notification.repeatInterval = NSCalendarUnitDay;
+//        // 通知重复提示的单位，可以是天、周、月
+//        notification.repeatInterval = NSCalendarUnitDay;
     } else {
         // 通知重复提示的单位，可以是天、周、月
-        notification.repeatInterval = NSDayCalendarUnit;
+//        notification.repeatInterval = NSCalendarUnitDay;
     }
     
     // 执行通知注册
@@ -67,6 +67,18 @@
             }
         }
     }
+}
+
++ (void)setIconEdgeNumber {
+    
+    NSInteger iconBadgeNUM = [UIApplication sharedApplication].applicationIconBadgeNumber;
+    if (iconBadgeNUM<=0) {
+        return;
+    }
+    iconBadgeNUM --;
+    [UIApplication sharedApplication].applicationIconBadgeNumber = iconBadgeNUM;
+
+
 }
 
 

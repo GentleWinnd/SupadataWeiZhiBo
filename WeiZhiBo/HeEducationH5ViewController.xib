@@ -153,7 +153,7 @@
                     <rect key="frame" x="256" y="64" width="107" height="156"/>
                 </imageView>
                 <button hidden="YES" opaque="NO" tag="2" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="X2u-e2-sBe">
-                    <rect key="frame" x="256" y="94" width="107" height="26"/>
+                    <rect key="frame" x="256" y="72" width="107" height="72"/>
                     <inset key="titleEdgeInsets" minX="15" minY="0.0" maxX="0.0" maxY="0.0"/>
                     <inset key="imageEdgeInsets" minX="-15" minY="0.0" maxX="0.0" maxY="0.0"/>
                     <state key="normal" title="直播" image="right-live.png"/>
@@ -162,7 +162,7 @@
                     </connections>
                 </button>
                 <button hidden="YES" opaque="NO" tag="3" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="4Vm-ld-5Yi">
-                    <rect key="frame" x="256" y="169" width="107" height="27"/>
+                    <rect key="frame" x="256" y="145" width="107" height="72"/>
                     <inset key="titleEdgeInsets" minX="15" minY="0.0" maxX="0.0" maxY="0.0"/>
                     <inset key="imageEdgeInsets" minX="-15" minY="0.0" maxX="0.0" maxY="0.0"/>
                     <state key="normal" title="录播" image="right-record.png"/>
@@ -179,12 +179,13 @@
                 <constraint firstItem="xtZ-lK-RIa" firstAttribute="top" secondItem="i5M-Pr-FkT" secondAttribute="top" id="4x0-Xm-Ijk"/>
                 <constraint firstAttribute="bottom" secondItem="xtZ-lK-RIa" secondAttribute="bottom" id="6fM-PZ-wqX"/>
                 <constraint firstItem="X2u-e2-sBe" firstAttribute="leading" secondItem="HW3-my-FQL" secondAttribute="leading" id="AiP-Oz-Npk"/>
-                <constraint firstItem="4Vm-ld-5Yi" firstAttribute="bottom" secondItem="HW3-my-FQL" secondAttribute="bottom" constant="-24" id="CvA-NY-Ek9"/>
+                <constraint firstItem="4Vm-ld-5Yi" firstAttribute="bottom" secondItem="HW3-my-FQL" secondAttribute="bottom" constant="-3" id="CvA-NY-Ek9"/>
                 <constraint firstAttribute="trailing" secondItem="Uaj-Vh-nLS" secondAttribute="trailing" id="Cxc-eD-9UR"/>
-                <constraint firstItem="X2u-e2-sBe" firstAttribute="top" secondItem="HW3-my-FQL" secondAttribute="top" constant="30" id="KNK-ME-BPN"/>
+                <constraint firstItem="X2u-e2-sBe" firstAttribute="top" secondItem="HW3-my-FQL" secondAttribute="top" constant="8" id="KNK-ME-BPN"/>
                 <constraint firstItem="xtZ-lK-RIa" firstAttribute="leading" secondItem="i5M-Pr-FkT" secondAttribute="leading" id="PTr-pz-swg"/>
                 <constraint firstAttribute="trailing" secondItem="xtZ-lK-RIa" secondAttribute="trailing" id="R2F-ef-5oW"/>
                 <constraint firstAttribute="trailing" secondItem="RSq-Dn-gpQ" secondAttribute="trailing" id="R2w-JJ-yeX"/>
+                <constraint firstItem="4Vm-ld-5Yi" firstAttribute="top" secondItem="X2u-e2-sBe" secondAttribute="bottom" constant="1" id="UzL-R3-ygt"/>
                 <constraint firstItem="X2u-e2-sBe" firstAttribute="trailing" secondItem="HW3-my-FQL" secondAttribute="trailing" id="ZZv-4S-voL"/>
                 <constraint firstItem="Uaj-Vh-nLS" firstAttribute="leading" secondItem="i5M-Pr-FkT" secondAttribute="leading" id="a0U-SZ-1WC"/>
                 <constraint firstItem="3xU-VU-KMK" firstAttribute="trailing" secondItem="HW3-my-FQL" secondAttribute="trailing" id="dCy-PT-nSL"/>
@@ -192,6 +193,7 @@
                 <constraint firstItem="Uaj-Vh-nLS" firstAttribute="top" secondItem="RSq-Dn-gpQ" secondAttribute="bottom" id="iT9-QG-U2m"/>
                 <constraint firstItem="4Vm-ld-5Yi" firstAttribute="leading" secondItem="HW3-my-FQL" secondAttribute="leading" id="n5A-B6-ejG"/>
                 <constraint firstItem="HW3-my-FQL" firstAttribute="top" secondItem="RSq-Dn-gpQ" secondAttribute="bottom" id="poa-ay-xNc"/>
+                <constraint firstItem="4Vm-ld-5Yi" firstAttribute="height" secondItem="X2u-e2-sBe" secondAttribute="height" id="tTd-Md-qnv"/>
             </constraints>
             <point key="canvasLocation" x="34.5" y="53.5"/>
         </view>

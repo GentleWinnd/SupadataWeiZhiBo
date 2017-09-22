@@ -66,19 +66,6 @@
                                             <action selector="onToggleFlash:" destination="BYZ-38-t0r" eventType="touchUpInside" id="RiE-j6-f54"/>
                                         </connections>
                                     </button>
-                                    <button hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="N5O-VC-ecw">
-                                        <rect key="frame" x="42" y="607" width="45" height="45"/>
-                                        <fontDescription key="fontDescription" type="system" pointSize="16"/>
-                                        <state key="normal" image="class.png">
-                                            <color key="titleColor" red="0.0" green="0.47843137250000001" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                        </state>
-                                        <state key="selected" image="class_s.png">
-                                            <color key="titleColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
-                                        </state>
-                                        <connections>
-                                            <action selector="btnClickAction:" destination="BYZ-38-t0r" eventType="touchUpInside" id="qTp-ug-qlL"/>
-                                        </connections>
-                                    </button>
                                     <button hidden="YES" opaque="NO" tag="1" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="hMH-KT-L3A">
                                         <rect key="frame" x="117" y="607" width="45" height="45"/>
                                         <state key="normal" image="play_n.png"/>
@@ -138,17 +125,14 @@
                                     <constraint firstAttribute="bottom" secondItem="Q5g-Ru-jSB" secondAttribute="bottom" id="57b-bX-oXJ"/>
                                     <constraint firstItem="kOD-Ga-LKx" firstAttribute="leading" secondItem="NOS-vB-xRS" secondAttribute="leading" constant="14" id="5i6-0u-eeB"/>
                                     <constraint firstAttribute="bottom" secondItem="hMH-KT-L3A" secondAttribute="bottom" constant="15" id="AnU-ez-io7"/>
-                                    <constraint firstItem="hMH-KT-L3A" firstAttribute="leading" secondItem="N5O-VC-ecw" secondAttribute="trailing" constant="30" id="Dk6-MD-7Cb"/>
                                     <constraint firstAttribute="trailing" secondItem="R7U-c3-4Td" secondAttribute="trailing" id="E3h-fY-usE"/>
                                     <constraint firstItem="7gY-Jg-qmU" firstAttribute="top" secondItem="NOS-vB-xRS" secondAttribute="top" id="Fmx-Dt-fPh"/>
                                     <constraint firstAttribute="bottom" secondItem="R7U-c3-4Td" secondAttribute="bottom" id="Fvb-Jz-9cU"/>
                                     <constraint firstItem="hMH-KT-L3A" firstAttribute="centerX" secondItem="NOS-vB-xRS" secondAttribute="centerX" constant="-48" id="Ih9-Hg-urU"/>
                                     <constraint firstItem="TqS-Mv-MFZ" firstAttribute="top" secondItem="kOD-Ga-LKx" secondAttribute="top" id="JPs-Nz-BSR"/>
                                     <constraint firstAttribute="bottom" secondItem="FUD-BL-yhT" secondAttribute="bottom" id="KJ0-lr-agP"/>
-                                    <constraint firstItem="Tc8-WL-3bp" firstAttribute="centerY" secondItem="N5O-VC-ecw" secondAttribute="centerY" id="N0S-Oy-3B2"/>
                                     <constraint firstItem="R7U-c3-4Td" firstAttribute="top" secondItem="NOS-vB-xRS" secondAttribute="top" id="TvW-Rm-X0z"/>
                                     <constraint firstAttribute="bottom" secondItem="F1L-Uj-XXy" secondAttribute="bottom" constant="100" id="U7g-T2-iZk"/>
-                                    <constraint firstItem="hMH-KT-L3A" firstAttribute="centerY" secondItem="N5O-VC-ecw" secondAttribute="centerY" id="V1x-no-xa3"/>
                                     <constraint firstItem="TqS-Mv-MFZ" firstAttribute="centerY" secondItem="kOD-Ga-LKx" secondAttribute="centerY" id="WBk-vT-zik"/>
                                     <constraint firstAttribute="trailing" secondItem="F1L-Uj-XXy" secondAttribute="trailing" constant="18" id="Wch-38-w4v"/>
                                     <constraint firstAttribute="bottom" secondItem="7gY-Jg-qmU" secondAttribute="bottom" id="XfP-v2-7Qe"/>
@@ -166,6 +150,7 @@
                                     <constraint firstItem="Q5g-Ru-jSB" firstAttribute="top" secondItem="NOS-vB-xRS" secondAttribute="top" id="lUP-cd-SNF"/>
                                     <constraint firstItem="TqS-Mv-MFZ" firstAttribute="width" secondItem="TqS-Mv-MFZ" secondAttribute="height" multiplier="1:1" id="r9R-9b-Vqu"/>
                                     <constraint firstAttribute="trailing" secondItem="FUD-BL-yhT" secondAttribute="trailing" id="t9c-aj-Jrr"/>
+                                    <constraint firstItem="Tc8-WL-3bp" firstAttribute="centerY" secondItem="hMH-KT-L3A" secondAttribute="centerY" id="tW9-kq-fb1"/>
                                     <constraint firstAttribute="height" constant="667" id="v7Q-ug-4o2"/>
                                     <constraint firstItem="Tc8-WL-3bp" firstAttribute="leading" secondItem="hMH-KT-L3A" secondAttribute="trailing" constant="54" id="vMF-Ux-Vor"/>
                                 </constraints>
@@ -196,7 +181,6 @@
                         <outlet property="backViewWidth" destination="fsr-L6-RH0" id="9fp-nu-7uV"/>
                         <outlet property="beautyBtn" destination="TqS-Mv-MFZ" id="o7v-5g-7b9"/>
                         <outlet property="cameraView" destination="MNx-Pk-r1m" id="jLY-HF-kQs"/>
-                        <outlet property="classBtn" destination="N5O-VC-ecw" id="0tO-2X-6AX"/>
                         <outlet property="doubleTapGesture" destination="gn4-0n-nIV" id="Sch-I1-8Ji"/>
                         <outlet property="pinchGesture" destination="UGR-PS-JnI" id="mCb-CX-SFE"/>
                         <outlet property="playBtn" destination="hMH-KT-L3A" id="30a-ed-zg2"/>
@@ -1735,8 +1719,6 @@ AAAAAAAAAAAArgs
         </image>
         <image name="camera_back.png" width="45" height="45"/>
         <image name="camera_front.png" width="45" height="45"/>
-        <image name="class.png" width="45" height="45"/>
-        <image name="class_s.png" width="30" height="51"/>
         <image name="close_play.png" width="28" height="28"/>
         <image name="comment_n.png" width="45" height="20"/>
         <image name="comment_s.png" width="45" height="20"/>

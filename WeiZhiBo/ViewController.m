@@ -28,7 +28,6 @@
 #import "SocketRocket.h"
 #import "CommentMessageView.h"
 #import "InputView.h"
-#import "DeviceDetailManager.h"
 #import "AppDelegate.h"
 #import "ClassNameView.h"
 
@@ -70,7 +69,6 @@
 
 /********end******/
 
-@property (strong, nonatomic) UIActivityIndicatorView *iniIndicator;
 @property (assign, nonatomic) BOOL publish_switch;
 
 @end
@@ -100,15 +98,9 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view, typically from a nib.
-    //创建camera加载菊花
-    _iniIndicator = [[UIActivityIndicatorView alloc] initWithFrame:CGRectMake(0, 0, 66, 66)];
-    _iniIndicator.center = CGPointMake(SCREEN_WIDTH/2, SCREEN_HEIGHT/2);
-    _iniIndicator.activityIndicatorViewStyle = UIActivityIndicatorViewStyleWhiteLarge;
-    //    [self.view addSubview:_iniIndicator];
-    [_iniIndicator startAnimating];
-    
     //旋转背景容器view
     self.backView.transform = CGAffineTransformMakeRotation(- M_PI_2);
+    
     //设置百度直播SDK
     [self setBaiDuSDK];
 }
@@ -131,21 +123,16 @@
 
 - (void)setShowItem {
     
-    [self.iniIndicator stopAnimating];
-    self.iniIndicator.hidden = YES;
     self.sendCommentBtn.transform = CGAffineTransformMakeRotation(M_PI_2);
     self.playCommentBtn.transform = CGAffineTransformMakeRotation( M_PI_2);
     self.playBtn.transform = CGAffineTransformMakeRotation(M_PI_2);
     self.traformCameraBtn.transform = CGAffineTransformMakeRotation( M_PI_2);
-    //    _beautySlider.transform = CGAffineTransformMakeRotation(M_PI_2);
     
     self.backViewWidth.constant = HEIGHT;
     self.backViewHeight.constant = WIDTH;
     self.tapGesture.numberOfTapsRequired = 1;
     self.doubleTapGesture.numberOfTapsRequired = 2;
-    //    self.tapGesture.enabled = YES;
     
-    //    self.classBtn.hidden = NO;
     self.playBtn.hidden = NO;
     self.traformCameraBtn.hidden = NO;
     self.backBtn.hidden = NO;
@@ -208,7 +195,6 @@
             [Progress progressShowcontent:@"打开评论才可以发表评论" currView:self.view];
         }
     } else {//显示蒙版
-        //        [self showClassInfoTable:NO];
         [self.view resignFirstResponder];
     }
 }
@@ -250,7 +236,6 @@
     } else if (sender.tag == 2){//翻转摄像头
         [self.model switchCamera];
         sender.selected = !sender.selected;
-        
     }
     
 }
@@ -308,11 +293,6 @@
             break;
     }
 }
-
-- (void)sendPlayState {
-    [self uploadZhiBoState:NO];
-}
-
 
 // 当推流sdk创建CameraSource（即相机被占用）以后，该接口会被调用，参数session为VCSimpleSession的对象
 - (void) didAddCameraSource:(VCSimpleSession*)session {
@@ -398,7 +378,7 @@
         return NO;
     }
     NSString *rtmpUrl = _pushUrl;
-    rtmpUrl = @"rtmp://apk.139jy.cn:8005/live/32010020170717170143457107myp4ec";
+//    rtmpUrl = @"rtmp://apk.139jy.cn:8005/live/32010020170717170143457107myp4ec";
     //是否有摄像头权限
     AVAuthorizationStatus statusVideo = [AVCaptureDevice authorizationStatusForMediaType:AVMediaTypeVideo];
     if (statusVideo == AVAuthorizationStatusDenied) {
@@ -739,6 +719,9 @@
 - (void)webSocket:(SRWebSocket *)webSocket didCloseWithCode:(NSInteger)code reason:(NSString *)reason wasClean:(BOOL)wasClean {
     NSLog(@"WebSocket closed");
     _webSocket = nil;
+    self.CView.watchLabel.text = [NSString stringWithFormat:@"0 人"];
+    self.CView.thumbsUpLabel.text = [NSString stringWithFormat:@"0 赞"];
+
 }
 
 - (void)webSocket:(SRWebSocket *)webSocket didReceivePong:(NSData *)pongPayload {//每次发送一次心跳包时，服务器返回的消息
@@ -907,10 +890,6 @@
     NSValue *value = [userInfo objectForKey:UIKeyboardFrameEndUserInfoKey];
     CGFloat keyBoardEndX = value.CGRectValue.size.height;
     
-    NSString *device = [DeviceDetailManager getSystemDeviceModel];
-    if ([device isEqualToString:@"iPad"]) {
-        //        [self changeOration];
-    }
     
     CGRect frame = CGRectMake(0,SCREEN_HEIGHT-keyBoardEndX-textMessgeHeight, SCREEN_WIDTH, textMessgeHeight);
     _inputView.frame = frame;
@@ -1112,7 +1091,7 @@
 }
 
 -(UIInterfaceOrientationMask)supportedInterfaceOrientations {
-    _iniIndicator.center = CGPointMake(WIDTH/2, HEIGHT/2);
+    
     return UIInterfaceOrientationMaskLandscapeRight;
 }
 

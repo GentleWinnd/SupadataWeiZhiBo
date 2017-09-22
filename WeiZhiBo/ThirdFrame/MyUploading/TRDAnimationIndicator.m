@@ -54,6 +54,8 @@
                                           [UIImage imageNamed:@"13"],
 
                                           nil ];
+        
+        
         self.Infolabel = [[UILabel alloc] init];
         self.Infolabel.frame = CGRectMake(0, 0,100, 20);
         self.Infolabel.center = CGPointMake(width/2, height/2+CGRectGetHeight(self.imageView.frame)/2+20-30);
@@ -71,9 +73,12 @@
 - (void)startAnimation {
     CGFloat width = proframe.size.width;
     CGFloat height = proframe.size.height;
+    
     UIImage *image = [UIImage imageNamed:@"1"];
     CGRect frame =  self.imageView.frame;
     self.imageView.frame = CGRectMake(frame.origin.x, frame.origin.y, image.size.width, image.size.height);
+    self.imageView.center = CGPointMake(width/2, height/2-30);
+
     self.Infolabel.center = CGPointMake(width/2, height/2+CGRectGetHeight(self.imageView.frame)/2+20-30);
 
     [self doAnimation];
@@ -110,9 +115,11 @@
         }];
     } else {
         UIImage *image = [UIImage imageNamed:@"jaizaishibai"];
-        CGRect frame =  self.imageView.frame;
-        self.imageView.frame = CGRectMake(frame.origin.x, frame.origin.y, image.size.width, image.size.height);
-        self.Infolabel.center = CGPointMake(image.size.width/2, image.size.height/2+60+20-30);
+        CGFloat AW = (20+10)/2;
+        
+        self.imageView.frame = CGRectMake(0, 0, image.size.width, image.size.height);
+        self.imageView.center = CGPointMake(proframe.size.width/2, proframe.size.height/2-AW);
+        self.Infolabel.center = CGPointMake(self.imageView.center.x, self.imageView.frame.origin.y+image.size.height+20);
         
         [self.imageView stopAnimating];
         [self.imageView setImage:image];
