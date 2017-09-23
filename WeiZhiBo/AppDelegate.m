@@ -9,7 +9,10 @@
 #import "AppDelegate.h"
 #import "LogInViewController.h"
 #import "AppLogMgr.h"
-#include "AFNetworkReachabilityManager.h"
+#import "HeEducationH5ViewController.h"
+#import "RealReachability.h"
+#import "NotificationManager.h"
+
 
 @interface AppDelegate ()
 
@@ -20,14 +23,79 @@
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     // Override point for customization after application launch.
+
     self.window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
     LogInViewController *logView = [[LogInViewController alloc] init];
     _MainVC = logView;
     self.window.rootViewController = _MainVC;
     [self.window makeKeyAndVisible];
-    
-    [[AFNetworkReachabilityManager sharedManager] startMonitoring];
+    [NotificationManager setIconEdgeNumber];//设置icon角标
+    [self setUMAnalysisTrace];//友盟统计
+
+    [GLobalRealReachability startNotifier];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(networkChanged:)
+                                                 name:kRealReachabilityChangedNotification
+                                               object:nil];
+
     return YES;
+}
+
+#pragma mark - 友盟统计
+
+- (void)setUMAnalysisTrace {
+
+    UMConfigInstance.appKey = @"595b03228630f56a600002d0";
+
+    [MobClick startWithConfigure:UMConfigInstance];//配置以上参数后调用此方法初始化SDK！
+}
+
+- (void)networkChanged:(NSNotification *)notification {
+    
+    if (self.startNteNotice == NO) {
+        return;
+    }
+    
+    RealReachability *reachability = (RealReachability *)notification.object;
+    ReachabilityStatus status = [reachability currentReachabilityStatus];
+    ReachabilityStatus previousStatus = [reachability previousReachabilityStatus];
+    NSLog(@"networkChanged, currentStatus:%@, previousStatus:%@", @(status), @(previousStatus));
+    
+    if (status == RealStatusNotReachable) {
+        [Progress progressShowcontent:@"当前网络不可用" ];
+    }
+    
+    if (status == RealStatusViaWiFi) {
+        [Progress progressShowcontent:@"当前WIFI环境"];
+    }
+    
+    if (status == RealStatusViaWWAN) {
+//        [Progress progressShowcontent:@"主人😲😲😲，您正在使用流量" currView:self.window];
+
+    }
+    
+    WWANAccessType accessType = [GLobalRealReachability currentWWANtype];
+    
+    if (status == RealStatusViaWWAN)
+    {
+        if (accessType == WWANType2G)
+        {
+            [Progress progressShowcontent:@"当前2G网络"];
+        }
+        else if (accessType == WWANType3G)
+        {
+            [Progress progressShowcontent:@"当前3G网络"];
+        }
+        else if (accessType == WWANType4G)
+        {
+            [Progress progressShowcontent:@"当前4G网络"];
+        }
+        else
+        {
+            [Progress progressShowcontent:@"未知移动数据网络"];
+
+        }
+    }
 }
 
 
@@ -40,16 +108,79 @@
 - (void)applicationDidEnterBackground:(UIApplication *)application {
     // Use this method to release shared resources, save user data, invalidate timers, and store enough application state information to restore your application to its current state in case it is terminated later.
     // If your application supports background execution, this method is called instead of applicationWillTerminate: when the user quits.
+    
+    [[NSNotificationCenter defaultCenter] postNotificationName:@"enterBack" object:nil];
+
 }
 
 
 - (void)applicationWillEnterForeground:(UIApplication *)application {
     // Called as part of the transition from the background to the active state; here you can undo many of the changes made on entering the background.
+    [NotificationManager setIconEdgeNumber];//设置icon角标、
+    
 }
 
 
 - (void)applicationDidBecomeActive:(UIApplication *)application {
     // Restart any tasks that were paused (or not yet started) while the application was inactive. If the application was previously in the background, optionally refresh the user interface.
+    
+    
+}
+
+- (BOOL)application:(UIApplication *)app openURL:(NSURL *)url options:(NSDictionary<UIApplicationOpenURLOptionsKey,id> *)options {
+    NSString *urlStr = [url absoluteString];
+    /*
+     URL Schemes?appToken=&userType=
+     */
+    if ([urlStr hasPrefix:@"jsLinkageHebaobei002://"]) {
+        
+        NSArray *paramArray = [urlStr componentsSeparatedByString:@"appToken="];
+        //        NSLog(@"=====%@",paramArray);
+        NSString *cateStr = [NSString safeString:paramArray.lastObject];
+        NSArray *contentsArr = [cateStr componentsSeparatedByString:@"&userType="];
+        _apptoken = contentsArr.firstObject;
+        
+        HeEducationH5ViewController *h5View = [[HeEducationH5ViewController alloc] init];
+        h5View.appToken = _apptoken;
+        h5View.userRole = [[NSString safeString:contentsArr.lastObject] integerValue] == 0 ?1:[[NSString safeString:contentsArr.lastObject] integerValue];
+        _MainVC = h5View;
+        self.window.rootViewController = _MainVC;
+        [self.window makeKeyAndVisible];
+        
+    }
+
+
+    return NO;
+}
+
+- (BOOL)application:(UIApplication *)application openURL:(NSURL *)url sourceApplication:(NSString *)sourceApplication annotation:(id)annotation {
+    NSString *urlStr = [url absoluteString];
+    /*
+     URL Schemes?appToken=&userType=
+     */
+    if ([urlStr hasPrefix:@"jsLinkageHebaobei002://"]) {
+
+        NSArray *paramArray = [urlStr componentsSeparatedByString:@"appToken="];
+//        NSLog(@"=====%@",paramArray);
+        NSString *cateStr = [NSString safeString:paramArray.lastObject];
+        NSArray *contentsArr = [cateStr componentsSeparatedByString:@"&userType="];
+        _apptoken = contentsArr.firstObject;
+        
+        HeEducationH5ViewController *h5View = [[HeEducationH5ViewController alloc] init];
+        h5View.appToken = _apptoken;
+        h5View.userRole = [[NSString safeString:contentsArr.lastObject] integerValue] == 0 ?1:[[NSString safeString:contentsArr.lastObject] integerValue];
+        _MainVC = h5View;
+
+        self.window.rootViewController = _MainVC;
+        [self.window makeKeyAndVisible];
+        
+    }
+    return NO;
+}
+
+- (void)application:(UIApplication *)application didReceiveLocalNotification:(UILocalNotification *)notification {
+
+    [NotificationManager setIconEdgeNumber];//设置icon角标
 }
 
 
@@ -57,6 +188,10 @@
     // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
     // Saves changes in the application's managed object context before the application terminates.
     [self saveContext];
+}
+
+- (BOOL)application:(UIApplication *)application shouldAllowExtensionPointIdentifier:(NSString *)extensionPointIdentifier {
+    return NO;
 }
 
 
@@ -104,5 +239,20 @@
         abort();
     }
 }
+
+
+- (UIInterfaceOrientationMask)application:(UIApplication *)application supportedInterfaceOrientationsForWindow:(UIWindow *)window {
+    
+    if (self.direction == SuportDirectionRight) {
+        return UIInterfaceOrientationMaskLandscapeRight;
+    } else if (self.direction == SuportDirectionPortrait){
+        return UIInterfaceOrientationMaskPortrait;
+    } else {
+        return UIInterfaceOrientationMaskAll;
+    }
+    
+    
+}
+
 
 @end

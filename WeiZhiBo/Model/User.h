@@ -32,6 +32,9 @@
 @property (nonatomic, copy) NSString *period;//用户课程级数
 @property (nonatomic, copy) NSString *CourseType;//课程类型
 
+@property (nonatomic, copy) NSString *openId;
+@property (nonatomic, copy) NSString *openToken;
+
 
 
 @property (nonatomic, retain) NSString *accessToken; // access token

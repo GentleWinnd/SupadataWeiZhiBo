@@ -2,7 +2,7 @@
 //  ClassNameTableViewCell.m
 //  WeiZhiBo
 //
-//  Created by YH on 2017/3/24.
+//  Created by SUPADATA on 2017/4/17.
 //  Copyright © 2017年 YH. All rights reserved.
 //
 
@@ -13,7 +13,18 @@
 - (void)awakeFromNib {
     [super awakeFromNib];
     // Initialization code
+    self.backgroundColor = [UIColor clearColor];
+
 }
+
+- (IBAction)selectedBtnAction:(UIButton *)sender {
+    
+    if (self.setSelected) {
+        self.setSelected(sender.selected);
+    }
+    
+}
+
 
 - (void)setSelected:(BOOL)selected animated:(BOOL)animated {
     [super setSelected:selected animated:animated];

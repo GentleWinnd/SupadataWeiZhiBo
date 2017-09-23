@@ -22,14 +22,14 @@
     if ( self ) {
         
         self.schoolView = [[UILabel alloc] initWithFrame:self.bounds];
-        self.schoolView.textColor = MainTextColor_Black;
+        self.schoolView.textColor = MAIN_BLACK_TEXT;
         self.schoolView.font = [UIFont systemFontOfSize:12];
         self.schoolView.textAlignment = NSTextAlignmentLeft;
         self.schoolView.center = CGPointMake(CGRectGetWidth(self.frame)/2, CGRectGetHeight(self.frame)/2);
-        self.schoolView.backgroundColor = MainThemeColor_LightBlue;
+        self.schoolView.backgroundColor = MAIN_LIGHTBLUE_SELECTEDVIEW;
         
         UIView *line = [[UIView alloc] initWithFrame:CGRectMake(0, CGRectGetHeight(self.frame)-1, CGRectGetWidth(self.frame), 1)];
-        line.backgroundColor = RulesLineColor_LightGray;
+        line.backgroundColor = MAIN_LIGHTGRAY_LINE;
         
         [self addSubview:self.schoolView];
         [self addSubview:line];

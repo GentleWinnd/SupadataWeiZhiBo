@@ -212,7 +212,10 @@
     }
 
     __block NSURLSessionDataTask *task = [self uploadTaskWithStreamedRequest:request progress:uploadProgress completionHandler:^(NSURLResponse * __unused response, id responseObject, NSError *error) {
-        if (error) {
+        
+        NSInteger coder = ((NSHTTPURLResponse *)response).statusCode;
+        
+        if (error && coder != 200) {
             if (failure) {
                 failure(task, error);
             }

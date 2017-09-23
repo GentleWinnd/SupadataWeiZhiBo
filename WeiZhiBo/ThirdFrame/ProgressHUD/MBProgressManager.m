@@ -84,9 +84,7 @@
     
     dispatch_async(dispatch_get_global_queue(QOS_CLASS_USER_INITIATED, 0), ^{
         [self doSomeWork];
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [_MBHUd hideAnimated:YES];
-        });
+       
     });
 }
 

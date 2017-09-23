@@ -26,7 +26,6 @@
         _automaticResume = NO;
         _zoomMax = 0.f;
         _scale = 1.0f;
-        
     }
     
     return self;
@@ -45,14 +44,19 @@
     configuration.cameraOrientation = orientation;
     configuration.videoSize = [self size];
     configuration.bitrate = [self bitrate];
+    configuration.fps = 22;
     configuration.cameraDevice = VCCameraStateBack;
-    configuration.continuousAutofocus = NO;
+    configuration.continuousAutofocus = YES;
     configuration.continuousExposure = YES;
+    configuration.profile = VCH264ProfileBaseline;
+//    configuration.audioBitrate = VCAudioBitrate128000;
+    configuration.gopLength = 8;
     
     self.session = [[VCSimpleSession alloc] initWithConfiguration:configuration];
     self.session.aspectMode = VCAspectModeFill;
     self.session.beautyLevel = VCBeautyLevelWhiten;
     self.session.delegate = delegate;
+
 }
 
 - (void)onNotification:(NSNotification*)notification {
