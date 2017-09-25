@@ -200,6 +200,9 @@
 		58A82FB41F78958C009AE61A /* VideoCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 58A82FB31F78958C009AE61A /* VideoCore.framework */; };
 		58A82FBA1F7895CF009AE61A /* ControlScreen.m in Sources */ = {isa = PBXBuildFile; fileRef = 58A82FB71F7895CF009AE61A /* ControlScreen.m */; };
 		58A82FBB1F7895CF009AE61A /* ScreenBtnControl.m in Sources */ = {isa = PBXBuildFile; fileRef = 58A82FB91F7895CF009AE61A /* ScreenBtnControl.m */; };
+		58A82FBC1F789BB9009AE61A /* VideoCore.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 58A82FB31F78958C009AE61A /* VideoCore.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		58A82FC21F78AF11009AE61A /* Defines.m in Sources */ = {isa = PBXBuildFile; fileRef = 58A82FBF1F78AF11009AE61A /* Defines.m */; };
+		58A82FC31F78AF11009AE61A /* StreamingViewModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 58A82FC11F78AF11009AE61A /* StreamingViewModel.m */; };
 		58AC12051F160D9F00C1CDE1 /* masking_re_top@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 58AC12031F160D9F00C1CDE1 /* masking_re_top@2x.png */; };
 		58AC12061F160D9F00C1CDE1 /* masking_re_top@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 58AC12041F160D9F00C1CDE1 /* masking_re_top@3x.png */; };
 		58B61E4B1F4EC07300582F79 /* VideoUploader.m in Sources */ = {isa = PBXBuildFile; fileRef = 58B61E4A1F4EC07300582F79 /* VideoUploader.m */; };
@@ -323,6 +326,7 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
+				58A82FBC1F789BB9009AE61A /* VideoCore.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -615,6 +619,10 @@
 		58A82FB71F7895CF009AE61A /* ControlScreen.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ControlScreen.m; sourceTree = "<group>"; };
 		58A82FB81F7895CF009AE61A /* ScreenBtnControl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ScreenBtnControl.h; sourceTree = "<group>"; };
 		58A82FB91F7895CF009AE61A /* ScreenBtnControl.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ScreenBtnControl.m; sourceTree = "<group>"; };
+		58A82FBE1F78AF11009AE61A /* Defines.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Defines.h; sourceTree = "<group>"; };
+		58A82FBF1F78AF11009AE61A /* Defines.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Defines.m; sourceTree = "<group>"; };
+		58A82FC01F78AF11009AE61A /* StreamingViewModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StreamingViewModel.h; sourceTree = "<group>"; };
+		58A82FC11F78AF11009AE61A /* StreamingViewModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = StreamingViewModel.m; sourceTree = "<group>"; };
 		58AC12031F160D9F00C1CDE1 /* masking_re_top@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "masking_re_top@2x.png"; sourceTree = "<group>"; };
 		58AC12041F160D9F00C1CDE1 /* masking_re_top@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "masking_re_top@3x.png"; sourceTree = "<group>"; };
 		58B61E491F4EC07300582F79 /* VideoUploader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VideoUploader.h; sourceTree = "<group>"; };
@@ -1401,6 +1409,7 @@
 		58A82FB21F78958C009AE61A /* BaiduDevelop */ = {
 			isa = PBXGroup;
 			children = (
+				58A82FBD1F78AF11009AE61A /* Baidu */,
 				58A82FB31F78958C009AE61A /* VideoCore.framework */,
 			);
 			path = BaiduDevelop;
@@ -1415,6 +1424,17 @@
 				58A82FB91F7895CF009AE61A /* ScreenBtnControl.m */,
 			);
 			path = ControlScreen;
+			sourceTree = "<group>";
+		};
+		58A82FBD1F78AF11009AE61A /* Baidu */ = {
+			isa = PBXGroup;
+			children = (
+				58A82FBE1F78AF11009AE61A /* Defines.h */,
+				58A82FBF1F78AF11009AE61A /* Defines.m */,
+				58A82FC01F78AF11009AE61A /* StreamingViewModel.h */,
+				58A82FC11F78AF11009AE61A /* StreamingViewModel.m */,
+			);
+			path = Baidu;
 			sourceTree = "<group>";
 		};
 		58C7C45F1F316FA800FE1E08 /* liveIcon */ = {
@@ -2068,6 +2088,7 @@
 				5874A56F1EB1F8C40006824D /* FSMStateUtil.m in Sources */,
 				5874A5741EB1F8C40006824D /* ReachStateWIFI.m in Sources */,
 				58A82FBB1F7895CF009AE61A /* ScreenBtnControl.m in Sources */,
+				58A82FC31F78AF11009AE61A /* StreamingViewModel.m in Sources */,
 				585EF4631E816EF600EC879F /* ViewController.m in Sources */,
 				58CDBCE01EA4631800C9FE30 /* SRURLUtilities.m in Sources */,
 				589585081E84D07A00E4FAB7 /* NSArray+Extension.m in Sources */,
@@ -2093,6 +2114,7 @@
 				58CDBCD51EA4631800C9FE30 /* SRDelegateController.m in Sources */,
 				588F8FDB1EA5B992003486AE /* ParentsTableViewCell.m in Sources */,
 				588F8FD61EA5B457003486AE /* MessageTableViewCell.m in Sources */,
+				58A82FC21F78AF11009AE61A /* Defines.m in Sources */,
 				581683321E83A079003F669F /* AFAutoPurgingImageCache.m in Sources */,
 				58C902041F1F529700800A7E /* WCLRecordEngine.m in Sources */,
 				58CDBCDC1EA4631800C9FE30 /* SRHash.m in Sources */,

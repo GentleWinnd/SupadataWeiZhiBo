@@ -18,7 +18,7 @@
 #import "AppDelegate.h"
 #import "TRDAnimationIndicator.h"
 //#import <CoreMotion/CoreMotion.h>
-//#import "StreamingViewModel.h"
+#import "StreamingViewModel.h"
 #import "RecorderViewController.h"
 
 @interface HeEducationH5ViewController ()<WKNavigationDelegate,WKUIDelegate,WKScriptMessageHandler, UINavigationControllerDelegate, UIScrollViewDelegate, TRDAnimationIndicatorDelegate>
@@ -698,10 +698,12 @@
         if ([reponseObject[@"status"] intValue] == 1) {
             [loadingProgress hiddenProgress];
 
-            NSString *pushUrl = [NSString safeString:reponseObject[@"data"][@"cameraPushUrl"]];
+//            NSString *pushUrl = [self dealHttpStr:[NSString safeString:reponseObject[@"data"][@"cameraPushUrl"]]];
             //            _logPlayId.text = [NSString safeString:reponseObject[@"data"][@"cameraPlayUrl"]];
+            NSString *pushUrl = [NSString safeString:reponseObject[@"data"][@"cameraPushUrl"]];
             NSString *cameraDataId = [NSString stringWithFormat:@"%@",reponseObject[@"data"][@"id"]];
-            [self gotoCameraVC:cameraDataId withPushURL:pushUrl withProgress:loadingProgress];
+            NSString *onlyPushId = [NSString stringWithFormat:@"%@",reponseObject[@"data"][@"contentId"]];
+            [self gotoCameraVC:cameraDataId withPushURL:pushUrl withOnlyId:onlyPushId];
         } else {
             [Progress progressShowcontent:reponseObject[@"message"] currView:self.view];
         }
@@ -713,7 +715,16 @@
     
 }
 
-- (void)gotoCameraVC:(NSString *)cameraID withPushURL:(NSString *)pushUrl withProgress:(MBProgressManager *)progress {
+- (NSString *)dealHttpStr:(NSString *)str {
+    NSString *rtmpStr = str;
+   
+    if ([str hasPrefix:@"http://"] && str) {
+        rtmpStr = [str componentsSeparatedByString:@"://"].lastObject;
+    }
+    return rtmpStr;
+}
+
+- (void)gotoCameraVC:(NSString *)cameraID withPushURL:(NSString *)pushUrl withOnlyId:(NSString *)onlyId {
     noCurrentVC = YES;
     UIStoryboard *board = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
     
@@ -730,12 +741,23 @@
     VC.schoolName = CSchoolName;
     VC.pushUrl = pushUrl;
     VC.cameraDataId = cameraID;
+    VC.onlyId = onlyId;
     
     if (CSchoolId.length == 0) {
         [Progress progressShowcontent:@"请选择学校" currView:self.view];
         return;
     }
 
+    if (cameraID.length == 0 || pushUrl.length == 0) {
+        [Progress progressShowcontent:@"数据请求失败，请稍后重试！" currView:self.view];
+        return;
+    }
+
+    if ([pushUrl hasPrefix:@"rtmp://"]) {
+        StreamingViewModel* vmodel = [[StreamingViewModel alloc] initWithPushUrl:pushUrl];
+        VC.model = vmodel;
+    }
+    
     UINavigationController * nav = [[UINavigationController alloc] initWithRootViewController:VC];
     nav.navigationBarHidden = YES;
     [self presentViewController:nav animated:NO completion:^{

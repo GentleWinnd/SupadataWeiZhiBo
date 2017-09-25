@@ -48,8 +48,10 @@ typedef NS_ENUM(NSInteger, MessageSocketType) {
 @property (nonatomic, strong) NSString *schoolName;
 @property (nonatomic, strong) NSString *cameraDataId;
 @property (nonatomic, strong) NSString *pushUrl;
+@property (nonatomic, strong) NSString *onlyId;
 
 @property (nonatomic, strong) AOKANLiveManager *liveManager;
+@property (nonatomic, strong) StreamingViewModel* model;
 
 
 @end

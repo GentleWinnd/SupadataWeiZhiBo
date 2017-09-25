@@ -56,25 +56,25 @@ static NSString * tracesvr_ = nil;//日志地址
 - (NSString *)spliceUploadURL:(NSString *) httpUtl {
 //http://live2.139jy.cn:1554/live/11d7950729ab4230bdc71b2989a84066?ps=push2
 
-    NSArray *items = [httpUtl componentsSeparatedByString:@":"];
+    NSArray *items = [httpUtl componentsSeparatedByString:@"://"];
     NSString *lastStr = items.lastObject;
-    uploadPort = [lastStr componentsSeparatedByString:@"/"].firstObject;
+    NSString *subStr = [lastStr componentsSeparatedByString:@"/"].firstObject;
     
-    NSString *uploadPath = [httpUtl componentsSeparatedByString:@"//"].lastObject;
-    uploadUrl_ = [[uploadPath stringByAppendingString:@":"] stringByAppendingString:uploadPort];
+    uploadPort = [subStr componentsSeparatedByString:@":"].lastObject;
+    uploadUrl_ = [[lastStr stringByAppendingString:@":"] stringByAppendingString:uploadPort];
     
     return uploadUrl_;
 }
 
-- (instancetype)initWithURL:(NSString *) httpUrl {
+- (instancetype)initWithURL:(NSString *) httpUrl withOnlyId:(NSString *)onlyId {
     
     self = [super init];
     if (self) {
         
-        myuuid_ = @"11e326d051f349f2b2817d8fd4bb1c7d";
+        myuuid_ = onlyId;
 
         //拼接推流地址
-        [self spliceUploadURL:@"http://live4.139jy.cn:1554/live/11e326d051f349f2b2817d8fd4bb1c7d?ps=push4:1554"];
+        [self spliceUploadURL:httpUrl];
         
         //设置日志地址
         if(tracesvr_ && [tracesvr_ length] > 0) {
@@ -105,6 +105,7 @@ static NSString * tracesvr_ = nil;//日志地址
     
     if (_recordSession) {
         [_recordSession stopRunning];
+        [self stopLive];
     }
 }
 
@@ -139,6 +140,8 @@ static NSString * tracesvr_ = nil;//日志地址
         _venc = NULL;
         _aenc = NULL;
         _upld = NULL;
+        AEncoding = NO;
+        VEncoding = NO;
         
     }
 }
@@ -148,6 +151,7 @@ static NSString * tracesvr_ = nil;//日志地址
     
     struct upload_info_ex info;
     uploader_info_ex(_upld, &info);
+    NSLog(@"_____uploader info speed = %d  ,,,, buffer == %d",info.s.speed, info.buffer);
     
     return  [NSString stringWithFormat:@" %dkbps/%d",info.s.speed/1024,info.buffer];
 }
@@ -445,7 +449,7 @@ static NSString * tracesvr_ = nil;//日志地址
 
     if (_StartLiving) {
         if (connection == self.audioConnection) {
-            ///printTrace(@"audio sample");
+//            printTrace(@"audio sample");
             if (!AEncoding) {
                 AEncoding = YES;
                 AudioStreamBasicDescription inAudioStreamBasicDescription = *CMAudioFormatDescriptionGetStreamBasicDescription((CMAudioFormatDescriptionRef)CMSampleBufferGetFormatDescription(sampleBuffer));
@@ -461,7 +465,7 @@ static NSString * tracesvr_ = nil;//日志地址
             
             audio_encode(_aenc, sampleBuffer);
         } else if (connection == _videoConnection) {
-            ///printTrace(@"video sample");
+//            printTrace(@"video sample");
             
             if (!VEncoding) {
                 VEncoding = YES;

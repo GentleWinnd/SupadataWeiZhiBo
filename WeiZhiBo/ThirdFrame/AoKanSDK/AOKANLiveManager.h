@@ -36,7 +36,7 @@
 @property (assign, nonatomic) BOOL StartLiving;
 
 
-- (instancetype)initWithURL:(NSString *) httpUrl;
+- (instancetype)initWithURL:(NSString *) httpUrl withOnlyId:(NSString *)onlyId;
 
 //捕获到的视频呈现的layer
 - (AVCaptureVideoPreviewLayer *)previewLayer;

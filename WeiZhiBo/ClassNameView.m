@@ -177,7 +177,7 @@ static NSString *CellIdOfClass = @"cellIdOfClass";
 }
 
 - (IBAction)maskBtnAction:(UIButton *)sender {
-    [self hiddenClassNameTableView:YES];
+//    [self hiddenClassNameTableView:YES];
 }
 
 - (IBAction)unfoldClassTable:(UIButton *)sender {
@@ -217,6 +217,7 @@ static NSString *CellIdOfClass = @"cellIdOfClass";
 
 
 - (IBAction)selectedCLassBtnAction:(UIButton *)sender {
+    
     if (sender.tag == 118) {//全选
         sender.selected = !sender.selected;
         [self.selectedArray removeAllObjects];
