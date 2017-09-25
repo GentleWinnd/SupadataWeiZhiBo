@@ -11,6 +11,7 @@
 #import "AppLogMgr.h"
 #import "HeEducationH5ViewController.h"
 #import "RealReachability.h"
+#import "NotificationManager.h"
 
 
 @interface AppDelegate ()
@@ -28,7 +29,7 @@
     _MainVC = logView;
     self.window.rootViewController = _MainVC;
     [self.window makeKeyAndVisible];
-
+    [NotificationManager setIconEdgeNumber];//设置icon角标
     [self setUMAnalysisTrace];//友盟统计
 
     [GLobalRealReachability startNotifier];
@@ -115,7 +116,7 @@
 
 - (void)applicationWillEnterForeground:(UIApplication *)application {
     // Called as part of the transition from the background to the active state; here you can undo many of the changes made on entering the background.
-    [[NSNotificationCenter defaultCenter] postNotificationName:@"activeFromBack" object:nil];
+    [NotificationManager setIconEdgeNumber];//设置icon角标、
     
 }
 
@@ -126,11 +127,31 @@
     
 }
 
-//- (BOOL)application:(UIApplication *)app openURL:(NSURL *)url options:(NSDictionary<UIApplicationOpenURLOptionsKey,id> *)options {
-//
-//
-//    return NO;
-//}
+- (BOOL)application:(UIApplication *)app openURL:(NSURL *)url options:(NSDictionary<UIApplicationOpenURLOptionsKey,id> *)options {
+    NSString *urlStr = [url absoluteString];
+    /*
+     URL Schemes?appToken=&userType=
+     */
+    if ([urlStr hasPrefix:@"jsLinkageHebaobei002://"]) {
+        
+        NSArray *paramArray = [urlStr componentsSeparatedByString:@"appToken="];
+        //        NSLog(@"=====%@",paramArray);
+        NSString *cateStr = [NSString safeString:paramArray.lastObject];
+        NSArray *contentsArr = [cateStr componentsSeparatedByString:@"&userType="];
+        _apptoken = contentsArr.firstObject;
+        
+        HeEducationH5ViewController *h5View = [[HeEducationH5ViewController alloc] init];
+        h5View.appToken = _apptoken;
+        h5View.userRole = [[NSString safeString:contentsArr.lastObject] integerValue] == 0 ?1:[[NSString safeString:contentsArr.lastObject] integerValue];
+        _MainVC = h5View;
+        self.window.rootViewController = _MainVC;
+        [self.window makeKeyAndVisible];
+        
+    }
+
+
+    return NO;
+}
 
 - (BOOL)application:(UIApplication *)application openURL:(NSURL *)url sourceApplication:(NSString *)sourceApplication annotation:(id)annotation {
     NSString *urlStr = [url absoluteString];
@@ -148,12 +169,18 @@
         HeEducationH5ViewController *h5View = [[HeEducationH5ViewController alloc] init];
         h5View.appToken = _apptoken;
         h5View.userRole = [[NSString safeString:contentsArr.lastObject] integerValue] == 0 ?1:[[NSString safeString:contentsArr.lastObject] integerValue];
+        _MainVC = h5View;
 
         self.window.rootViewController = _MainVC;
         [self.window makeKeyAndVisible];
         
     }
     return NO;
+}
+
+- (void)application:(UIApplication *)application didReceiveLocalNotification:(UILocalNotification *)notification {
+
+    [NotificationManager setIconEdgeNumber];//设置icon角标
 }
 
 

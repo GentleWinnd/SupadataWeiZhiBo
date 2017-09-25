@@ -191,7 +191,7 @@
     [UserData storeUserData:user];
 
     BOOL isOnline = [NSString safeNumber:responseObject[@"data"][@"isonline"]].boolValue;
-    if (isOnline) {
+//    if (isOnline) {
         AppDelegate *app = (AppDelegate *)[UIApplication sharedApplication].delegate;
         app.direction = SuportDirectionAll;
 
@@ -206,34 +206,34 @@
         
        [self restoreRootViewController:heView];
 
-    } else {
-        NSDictionary *schoolInfo = [NSArray  safeArray:responseObject[@"data"][@"school"]].firstObject;
-        NSString *userID = responseObject[@"data"][@"user"][@"uId"];
-        NSString *schoolId = [NSString stringWithFormat:@"%@",schoolInfo[@"schoolId"]];
-        NSString *schoolName = schoolInfo[@"schoolName"];
-        
-        NSDictionary *parameter = @{@"userId":userID,@"device":@"2",
-                                    @"school_id":schoolId,@"push_type":@"2",
-                                    @"liveName":@"IOS",
-                                    @"schoolName":schoolName,
-                                    @"schoolIp":@"",@"cameraId":@"",
-                                    @"schoolAdminName":@"",@"schoolAdminPhone":@"",
-                                    @"adminClassName":@"",@"cameraClassLocation":@""};
-        
-        [WZBNetServiceAPI getRegisterPhoneMicroLiveWithParameters:parameter success:^(id reponseObject) {
-            if ([reponseObject[@"status"] intValue] == 1) {
-                
-                NSString *pushUrl = [NSString safeString:reponseObject[@"data"][@"cameraPushUrl"]];
-                //            _logPlayId.text = [NSString safeString:reponseObject[@"data"][@"cameraPlayUrl"]];
-                NSString *cameraDataId = [NSString stringWithFormat:@"%@",reponseObject[@"data"][@"id"]];
-                [self gotoCameraVC:cameraDataId withPushURL:pushUrl userId:userID schoolId:schoolId schoolName:schoolName classes:schoolInfo[@"classes"]];
-            } else {
-                [Progress progressShowcontent:reponseObject[@"message"] currView:self.view];
-            }
-        } failure:^(NSError *error) {
-            [KTMErrorHint showNetError:error inView:self.view];
-        }];
-    }
+//    } else {
+//        NSDictionary *schoolInfo = [NSArray  safeArray:responseObject[@"data"][@"school"]].firstObject;
+//        NSString *userID = responseObject[@"data"][@"user"][@"uId"];
+//        NSString *schoolId = [NSString stringWithFormat:@"%@",schoolInfo[@"schoolId"]];
+//        NSString *schoolName = schoolInfo[@"schoolName"];
+//        
+//        NSDictionary *parameter = @{@"userId":userID,@"device":@"2",
+//                                    @"school_id":schoolId,@"push_type":@"2",
+//                                    @"liveName":@"IOS",
+//                                    @"schoolName":schoolName,
+//                                    @"schoolIp":@"",@"cameraId":@"",
+//                                    @"schoolAdminName":@"",@"schoolAdminPhone":@"",
+//                                    @"adminClassName":@"",@"cameraClassLocation":@""};
+//        
+//        [WZBNetServiceAPI getRegisterPhoneMicroLiveWithParameters:parameter success:^(id reponseObject) {
+//            if ([reponseObject[@"status"] intValue] == 1) {
+//                
+//                NSString *pushUrl = [NSString safeString:reponseObject[@"data"][@"cameraPushUrl"]];
+//                //            _logPlayId.text = [NSString safeString:reponseObject[@"data"][@"cameraPlayUrl"]];
+//                NSString *cameraDataId = [NSString stringWithFormat:@"%@",reponseObject[@"data"][@"id"]];
+//                [self gotoCameraVC:cameraDataId withPushURL:pushUrl userId:userID schoolId:schoolId schoolName:schoolName classes:schoolInfo[@"classes"]];
+//            } else {
+//                [Progress progressShowcontent:reponseObject[@"message"] currView:self.view];
+//            }
+//        } failure:^(NSError *error) {
+//            [KTMErrorHint showNetError:error inView:self.view];
+//        }];
+//    }
 }
 
 
@@ -252,6 +252,7 @@
     VC.schoolId = schoolId;
     VC.schoolName = schoolName;
     VC.pushUrl = pushUrl;
+    VC.cameraDataId = cameraID;
     
     if (schoolId.length == 0) {
         [Progress progressShowcontent:@"请选择学校" currView:self.view];
@@ -263,9 +264,7 @@
     [self presentViewController:nav animated:NO completion:^{
     }];
     
-    
 }
-
 
 
 // 登陆后淡入淡出更换rootViewController

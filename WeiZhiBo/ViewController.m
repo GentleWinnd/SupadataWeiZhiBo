@@ -25,7 +25,6 @@
 #import "SocketRocket.h"
 #import "CommentMessageView.h"
 #import "InputView.h"
-#import "DeviceDetailManager.h"
 #import "AppDelegate.h"
 #import "ClassNameView.h"
 
@@ -121,6 +120,9 @@
         _liveManager = [[AOKANLiveManager alloc] initWithURL:self.pushUrl];
     }
     return _liveManager;
+    
+    //设置百度直播SDK
+//    [self setBaiDuSDK];
 }
 
 
@@ -145,15 +147,12 @@
     self.playCommentBtn.transform = CGAffineTransformMakeRotation( M_PI_2);
     self.playBtn.transform = CGAffineTransformMakeRotation(M_PI_2);
     self.traformCameraBtn.transform = CGAffineTransformMakeRotation( M_PI_2);
-    //    _beautySlider.transform = CGAffineTransformMakeRotation(M_PI_2);
     
     self.backViewWidth.constant = HEIGHT;
     self.backViewHeight.constant = WIDTH;
     self.tapGesture.numberOfTapsRequired = 1;
     self.doubleTapGesture.numberOfTapsRequired = 2;
-    //    self.tapGesture.enabled = YES;
     
-    //    self.classBtn.hidden = NO;
     self.playBtn.hidden = NO;
     self.traformCameraBtn.hidden = NO;
     self.backBtn.hidden = NO;
@@ -206,7 +205,6 @@
             [Progress progressShowcontent:@"打开评论才可以发表评论" currView:self.view];
         }
     } else {//显示蒙版
-        //        [self showClassInfoTable:NO];
         [self.view resignFirstResponder];
     }
 }
@@ -247,6 +245,7 @@
         
     } else if (sender.tag == 2){//翻转摄像头
         sender.selected = !sender.selected;
+        
         [self.liveManager changeCameraInputDeviceisFront:sender.selected];
     }
 }
@@ -273,6 +272,140 @@
     
 }
 
+#pragma mark - VCSessionDelegate
+
+//- (void) connectionStatusChanged: (VCSessionState) sessionState {
+//    
+//    switch(sessionState) {
+//        case VCSessionStatePreviewStarted:{// 开始出现预览画面，收到此状态回调后方可设置美颜参数
+//            [self.model.session setBeatyEffect:0.5 withSmooth:0.3 withPink:0.3];
+//            NSLog(@"*************开始出现预览画面，收到此状态回调后方可设置美颜参数^^^^^^^^\n");
+//            
+//            break;}
+//        case VCSessionStateStarting:{// 正在连接服务器或创建码流传输通道
+//            NSLog(@"Current state is VCSessionStateStarting\n");
+//            NSLog(@"*************正在连接服务器或创建码流传输通道^^^^^^^^\n");
+//            
+//            break;}
+//        case VCSessionStateStarted:{// 已经建立连接，并已经开始推流
+//            NSLog(@"Current state is VCSessionStateStarted\n");
+//                       
+//            break;}
+//        case VCSessionStateError:{// 推流sdk运行过程中出错
+//            NSLog(@"*************Current state is VCSessionStateError^^^^^^^^\n");
+//            
+//            break;}
+//        case VCSessionStateEnded:{// 推流已经结束
+//            NSLog(@"**************Current state is VCSessionStateEnded^^^^^^^^\n");
+//            
+//            break;}
+//        default:
+//            break;
+//    }
+//}
+//
+//// 当推流sdk创建CameraSource（即相机被占用）以后，该接口会被调用，参数session为VCSimpleSession的对象
+//- (void) didAddCameraSource:(VCSimpleSession*)session {
+//    
+//}
+//// 当错误发生时会被调用。
+//- (void) onError:(VCErrorCode)error {
+//    
+//    switch (error) {
+//        case VCErrorCodePrepareSessionFailed:{//准备session的过程出错
+//            NSLog(@"****************%@^^^^^^^^^^^^^^^^^",@"准备session的过程出错");
+//            
+//            break;
+//        }
+//        case VCErrorCodeConnectToServerFailed:{//startRtmpSession过程中连接服务器出错
+//            NSLog(@"****************%@^^^^^^^^^^^^^^^^^",@"startRtmpSession过程中连接服务器出错");
+//            
+//            break;
+//        }
+//        case VCErrorCodeDisconnectFromServerFailed:{//endRtmpSession过程中出错
+//            NSLog(@"****************%@^^^^^^^^^^^^^^^^^",@"endRtmpSession过程中出错");
+//            
+//            break;
+//        }
+//        case VCErrorCodeOpenMicFailed:{//打开MIC设备出错
+//            NSLog(@"****************%@^^^^^^^^^^^^^^^^^",@"打开MIC设备出错");
+//            
+//            break;
+//        }
+//        case VCErrorCodeOpenCameraFailed:{//打开相机设备出错
+//            NSLog(@"****************%@^^^^^^^^^^^^^^^^^",@"打开相机设备出错");
+//            
+//            break;
+//        }
+//        case VCErrorCodeUnknownStreamingError:{//推流过程中，遇到未知错误导致推流失败
+//            
+//            break;
+//        }
+//        case VCErrorCodeWeakConnection:{
+//            /*
+//             * 推流过程中，遇到弱网情况导致推流失败
+//             * 收到此错误后，建议提示用户当前网络不稳定，
+//             * 如果反复收到此错误码，建议调用endRtmpSession停止推流
+//             */
+//            NSLog(@"****************%@^^^^^^^^^^^^^^^^^",@"当前网络不稳定001，");
+//            
+//            break;
+//        }
+//        case VCErrorCodeServerNetworkError:{
+//            /**
+//             * 推流过程中，遇到服务器网络错误导致推流失败
+//             * 收到此错误后，建议调用endRtmpSession立即停止推流，并在服务恢复后再重新推流
+//             */
+//            NSLog(@"****************%@^^^^^^^^^^^^^^^^^",@"当前网络不稳定001，");
+//            
+//            break;
+//        }
+//        case VCErrorCodeLocalNetworkError:{
+//            /**
+//             * 推流过程中，遇到设备断网导致推流失败，
+//             * 收到此错误后，建议提示用户检查网络连接，然后调用endRtmpSession立即停止推流
+//             */
+//            NSLog(@"****************%@^^^^^^^^^^^^^^^^^",@"当前网络不稳定003");
+//            
+//            break;
+//        }
+//            
+//        default:
+//            break;
+//    }
+//    
+//    if (timer) {
+//        [self toastTip:@"信息异常，直播断开，请稍后重试！"];
+//        [self stopRtmp];
+//    }
+//    
+//}
+
+#pragma mark - start push
+-(BOOL)startRtmp {
+    if (!([_pushUrl hasPrefix:@"rtmp://"] )) {
+        [Progress progressShowcontent:@"发生意外错误了" currView:self.view];
+        return NO;
+    }
+    NSString *rtmpUrl = _pushUrl;
+//    rtmpUrl = @"rtmp://apk.139jy.cn:8005/live/32010020170717170143457107myp4ec";
+    //是否有摄像头权限
+    AVAuthorizationStatus statusVideo = [AVCaptureDevice authorizationStatusForMediaType:AVMediaTypeVideo];
+    if (statusVideo == AVAuthorizationStatusDenied) {
+        [Progress progressShowcontent:@"获取摄像头权限失败，请前往隐私-相机设置里面打开应用权限" currView:self.view];
+        return NO;
+    }
+    
+    //是否有麦克风权限
+    AVAuthorizationStatus statusAudio = [AVCaptureDevice authorizationStatusForMediaType:AVMediaTypeAudio];
+    if (statusAudio == AVAuthorizationStatusDenied) {
+        [Progress progressShowcontent:@"获取麦克风权限失败，请前往隐私-麦克风设置里面打开应用权限" currView:self.view];
+        return NO;
+    }
+//    [self.model.session startRtmpSessionWithURL:rtmpUrl];
+    
+    return YES;
+}
 
 #pragma mark - show play items
 
@@ -591,6 +724,9 @@
 - (void)webSocket:(SRWebSocket *)webSocket didCloseWithCode:(NSInteger)code reason:(NSString *)reason wasClean:(BOOL)wasClean {
     NSLog(@"WebSocket closed");
     _webSocket = nil;
+    self.CView.watchLabel.text = [NSString stringWithFormat:@"0 人"];
+    self.CView.thumbsUpLabel.text = [NSString stringWithFormat:@"0 赞"];
+
 }
 
 - (void)webSocket:(SRWebSocket *)webSocket didReceivePong:(NSData *)pongPayload {//每次发送一次心跳包时，服务器返回的消息
@@ -759,10 +895,6 @@
     NSValue *value = [userInfo objectForKey:UIKeyboardFrameEndUserInfoKey];
     CGFloat keyBoardEndX = value.CGRectValue.size.height;
     
-    NSString *device = [DeviceDetailManager getSystemDeviceModel];
-    if ([device isEqualToString:@"iPad"]) {
-        //        [self changeOration];
-    }
     
     CGRect frame = CGRectMake(0,SCREEN_HEIGHT-keyBoardEndX-textMessgeHeight, SCREEN_WIDTH, textMessgeHeight);
     _inputView.frame = frame;

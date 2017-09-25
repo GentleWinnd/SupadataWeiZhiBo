@@ -15,12 +15,15 @@
 #import "RecordClassNameView.h"
 #import "RecordingEndView.h"
 #import "UploadingView.h"
+//#import "ControlScreen.h"
 #import "FileUploader.h"
 #import "AppDelegate.h"
 #import "UserData.h"
 
 #import "VideoUploader.h"
 #import "NotificationManager.h"
+#import "DeviceInfoManager.h"
+
 
 #import "NSString+Extension.h"
 #import "SaveDataManager.h"
@@ -39,7 +42,7 @@ typedef NS_ENUM(NSUInteger, UploadVieoStyle) {
     VideoLocation,
 };
 
-@interface RecorderViewController ()<FileUploaderDelegate>
+@interface RecorderViewController ()<FileUploaderDelegate, UIGestureRecognizerDelegate>
 //手势
 @property (strong, nonatomic) IBOutlet UIPinchGestureRecognizer *pinchGesture;//缩放手势
 @property (strong, nonatomic) IBOutlet UITapGestureRecognizer *tapGesture;//点击手势
@@ -96,9 +99,9 @@ static NSString *cellID = @"cellId";
     
     NSMutableArray *selClassArr;
     NSString *playTitle;
+    CGPoint _currentPoint;
     
     NSTimer *timer;
-    NSString *videoId;
     int seconds;
     BOOL uploading;
 }
@@ -109,7 +112,6 @@ static NSString *cellID = @"cellId";
   
     //旋转背景容器view
     self.cameraView.transform = CGAffineTransformMakeRotation(- M_PI_2);
-    [self begainFullScreen];
     [self initNeedData];
     [self setShowItem];
     
@@ -121,6 +123,7 @@ static NSString *cellID = @"cellId";
 - (void)appEnterBack {//app进入后台通知
     if (uploading) {
         [NotificationManager registerLocalNotificationAlertBody:@"您有短视频正在后台上传" description:@""];
+        
     }
 }
 
@@ -142,7 +145,12 @@ static NSString *cellID = @"cellId";
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
     [self readyRecorder];
+  
+    UIPanGestureRecognizer *pan = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(panAction:)];
+    pan.delegate = self;
+    [self.backView addGestureRecognizer:pan];
 }
+
 
 - (void)readyRecorder {
     if (_recordEngine == nil) {
@@ -266,8 +274,8 @@ static NSString *cellID = @"cellId";
 - (IBAction)onTap:(id)sender {//单击手势
     CGPoint point = [sender locationInView:self.backView];
     CGSize size = self.view.frame.size;
-    point.x /= self.view.frame.size.width;
-    point.y /= self.view.frame.size.height;
+    point.x /= size.width;
+    point.y /= size.height;
 //    CGPoint point = CGPointMake( point.y /size.height ,1-point.x/size.width );
 
 //    NSLog(@"-----====point:%@",NSStringFromCGPoint(point));
@@ -298,8 +306,8 @@ static NSString *cellID = @"cellId";
     [self createTimer];
 
     [[UIApplication sharedApplication] setIdleTimerDisabled:YES];
-
 }
+
 
 #pragma mark - 停止录制视频
 
@@ -468,7 +476,7 @@ static NSString *cellID = @"cellId";
         NSString *videoTag = [self getVideoIdWithVideoPath:videoPath];
         [[SaveDataManager shareSaveRecoder] saveRecoderVodeoClass:selClassArr withVideoId:videoTag];
         [[SaveDataManager shareSaveRecoder] saveRecoderTitle:playTitle withVideoId:videoTag];
-        [[SaveDataManager shareSaveRecoder] saveRecoderTimeDate:[NSString stringFromCurrentDate] withVideoId:videoTag];
+        [[SaveDataManager shareSaveRecoder] saveRecoderTimeDate:[NSString stringFromCompleteDate:[NSDate date]] withVideoId:videoTag];
         [[SaveDataManager shareSaveRecoder] saveRecoderTimeLength:[NSNumber numberWithInteger:seconds] withVideoId:videoTag];
     
     } else {
@@ -522,14 +530,14 @@ static NSString *cellID = @"cellId";
                 _uploadingView.ratelabel.text = @"100%";
                 _uploadingView.uploadStateLabel.text = @"上传成功";
                 [self fileUploadingState:YES fileName:videoPath];
-                [self uploadVideoUploadState];
+                [self uploadVideoUploadState:videoInfo[VIDEO_ID]];
                 
-                if (_uploadingView) {
+                if (!_uploadingView) {
                     [Progress progressShowcontent:@"上传成功"];
                 }
             } else {
                 _uploadingView.uploadStateLabel.text = @"上传失败";
-                if (_uploadingView) {
+                if (!_uploadingView) {
                     [Progress progressShowcontent:@"上传失败,请稍后在历史列表重新上传"];
                 }
                 
@@ -541,7 +549,7 @@ static NSString *cellID = @"cellId";
     };
 }
 
-- (void)uploadVideoUploadState {//上传视频上传的状态
+- (void)uploadVideoUploadState:(NSString *)videoId {//上传视频上传的状态
 
     NSDictionary *parameter = @{@"userId":[UserData getUser].userID,
                                 @"vodId":videoId};
@@ -555,7 +563,6 @@ static NSString *cellID = @"cellId";
         }
     } failure:^(NSError *error) {
         [KTMErrorHint showNetError:error inView:self.view];
-        
     }];
 
 }
@@ -620,7 +627,6 @@ static NSString *cellID = @"cellId";
         if (success) {
             if (selClassesArr.count>0) {
                 playTitle = titleStr;
-                selfWeak.recorderTitle.text = titleStr;
                 for (NSDictionary *classDic in selClassesArr) {
                     NSDictionary *classInfo = @{@"title":titleStr,
                                                 @"classId":classDic[@"classId"],
@@ -628,7 +634,13 @@ static NSString *cellID = @"cellId";
                     [selClassArrWeak addObject:classInfo];
                 }
                 
-                [selfWeak startRecoder];
+                if ([selfWeak checkoutDeviceStore]) {
+                    selfWeak.recorderTitle.text = titleStr;
+                    [selfWeak startRecoder];
+                } else {
+                    [selfWeak showClassInfoTable:NO];
+                }
+                
 
             } else {
                 [Progress progressShowcontent:@"请选择视频录制班级" currView:selfWeak.view];
@@ -689,6 +701,23 @@ static NSString *cellID = @"cellId";
     NSString *videoName = [videoPath componentsSeparatedByString:@"/"].lastObject;
     NSString *videoTag = [videoName componentsSeparatedByString:@"."].firstObject;
     return videoTag;
+}
+
+#pragma mark - 监测手机的内存空间
+
+- (BOOL)checkoutDeviceStore {
+    BOOL satisfy = YES;
+    
+    NSString *sizeStr = [DeviceInfoManager freeDiskSpaceInMBS];
+    CGFloat size = [[sizeStr componentsSeparatedByString:@" "].firstObject floatValue];
+    
+    if (size<100) {
+        satisfy = NO;
+        [Progress progressShowcontent:@"您的手机内存不够啦，赶紧去清理手机内存吧！" currView:self.view];
+
+    }
+    NSLog(@"----------------size == %@---------------",sizeStr);
+    return satisfy;
 }
 
 
@@ -760,30 +789,122 @@ static NSString *cellID = @"cellId";
 }
 
 
-#pragma - mark  进入全屏
--(void)begainFullScreen {
+#pragma mark - 改变屏幕亮度
+
+-(void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event{
     
-    
-    AppDelegate *appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
-    appDelegate.direction = SuportDirectionRight;
-    
-    [[UIDevice currentDevice] setValue:@"UIInterfaceOrientationLandscapeRight" forKey:@"orientation"];
-    
-    NSInteger count = [UIApplication sharedApplication].windows.count;
-    NSLog(@"%@", [UIApplication sharedApplication].windows.lastObject.subviews.firstObject);
-    NSLog(@"key=%@",[UIApplication sharedApplication].windows);
-    //强制zhuan'p：
-    if ([[UIDevice currentDevice] respondsToSelector:@selector(setOrientation:)] && count==4) {
-        SEL selector = NSSelectorFromString(@"setOrientation:");
-        NSInvocation *invocation = [NSInvocation invocationWithMethodSignature:[UIDevice instanceMethodSignatureForSelector:selector]];
-        [invocation setSelector:selector];
-        [invocation setTarget:[UIDevice currentDevice]];
-        int val = UIInterfaceOrientationLandscapeRight;
-        [invocation setArgument:&val atIndex:2];
-        [invocation invoke];
-    }
+    _currentPoint = [[touches anyObject] locationInView:self.backView];
 }
 
+- (void)panAction:(UIPanGestureRecognizer *)sender {
+    CGPoint point= [sender locationInView:self.backView];
+    // 上下控制点
+//    CGPoint tranPoint=[sender translationInView:self.backView];
+    //播放进度
+    typedef NS_ENUM(NSUInteger, UIPanGestureRecognizerDirection) {
+        UIPanGestureRecognizerDirectionUndefined,
+        UIPanGestureRecognizerDirectionUp,
+        UIPanGestureRecognizerDirectionDown,
+        UIPanGestureRecognizerDirectionLeft,
+        UIPanGestureRecognizerDirectionRight
+    };
+    
+//    NSLog(@"point---------=====%@/transpoint*********===%@",NSStringFromCGPoint(point), NSStringFromCGPoint(tranPoint));
+    
+    static UIPanGestureRecognizerDirection direction = UIPanGestureRecognizerDirectionUndefined;
+    
+    switch (sender.state) {
+        case UIGestureRecognizerStateBegan: {
+            // 记录开始滑动位置
+            if (direction == UIPanGestureRecognizerDirectionUndefined) {
+                CGPoint velocity = [sender velocityInView:self.backView];
+                BOOL isVerticalGesture = fabs(velocity.y) > fabs(velocity.x);
+                if (isVerticalGesture) {
+                    if (velocity.y > 0) {
+                        direction = UIPanGestureRecognizerDirectionDown;
+                    } else {
+                        direction = UIPanGestureRecognizerDirectionUp;
+                    }
+                } else {
+                    if (velocity.x > 0) {
+                        direction = UIPanGestureRecognizerDirectionRight;
+                    } else {
+                        direction = UIPanGestureRecognizerDirectionLeft;
+                    }
+                }
+            } break;
+        }
+        case UIGestureRecognizerStateChanged: {
+            switch (direction) {
+                case UIPanGestureRecognizerDirectionUp: {
+                    float dy = point.y - _currentPoint.y;
+                    int index = (int)dy;
+                    if (index >0) {
+                        [UIScreen mainScreen].brightness -= 0.01;
+                    } else {
+                        [UIScreen mainScreen].brightness += 0.01;
+                    }
+                    
+                    break;
+                }
+                case UIPanGestureRecognizerDirectionDown: {
+                    float dy = point.y - _currentPoint.y;
+                    int index = (int)dy;
+                    if (index >0) {
+                        [UIScreen mainScreen].brightness -= 0.01;
+                    } else {
+                        [UIScreen mainScreen].brightness += 0.01;
+                    }
+                    break;
+                }
+                case UIPanGestureRecognizerDirectionLeft: {
+                    //                    if(_isGes ==NO){
+                    //                        NSLog(@"Left");
+                    //                        _isGes =YES;
+                    //                        self.progressDragging = YES;
+                    //                    }
+                    //                    // 手势滑动控制 快进进度
+                    //                    if(tranPoint.x/SCREEN_HEIGHT +_origional <=0){
+                    //                        videoSlider.value=0.0f;
+                    //                    }else {
+                    //                        videoSlider.value=tranPoint.x/SCREEN_HEIGHT+_origional;
+                    //                    }
+                    //                    currentTimeLabel.text =[NSString stringWithFormat:@"%@/",[self timeToHumanString:(long)(videoSlider.value * mDuration)]];
+                    break;
+                }
+                case UIPanGestureRecognizerDirectionRight: {
+                    //                    if(_isGes ==NO){
+                    //                        NSLog(@"Right");
+                    //                        _isGes = YES;
+                    //                        self.progressDragging = YES;
+                    //                    }
+                    //                    if(tranPoint.x/SCREEN_HEIGHT +_origional <=0){
+                    //                        videoSlider.value=0.0f;
+                    //                    }else {
+                    //                        videoSlider.value=tranPoint.x/SCREEN_HEIGHT+_origional;
+                    //                    }
+                    //                    currentTimeLabel.text =[NSString stringWithFormat:@"%@/",[self timeToHumanString:(long)(videoSlider.value * mDuration)]];
+                    break;
+                }
+                default: {
+                    break;
+                }
+            }
+            break;
+        }
+        case UIGestureRecognizerStateEnded: {
+         
+            // 记录结束滑动位置
+            direction = UIPanGestureRecognizerDirectionUndefined;
+            //            [UIView animateWithDuration:0.5f animations:^{
+            //                blightView.alpha =0.0f;
+            //                voiceView.alpha=0.0f;
+            //            }];
+            break;
+        } default:
+            break;
+    }
+}
 
 - (void)dealloc {
     _recordEngine = nil;
@@ -791,23 +912,23 @@ static NSString *cellID = @"cellId";
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
-//- (BOOL) shouldAutorotate {
-//    return YES;
-//}
-//
-//-(UIInterfaceOrientationMask)supportedInterfaceOrientations {
-//
-//    return UIInterfaceOrientationMaskLandscapeRight;
-//}
-//
-//- (BOOL)prefersStatusBarHidden {
-//    return YES;
-//}
-//
-//- (UIInterfaceOrientation)preferredInterfaceOrientationForPresentation {
-//    
-//    return UIInterfaceOrientationLandscapeLeft;
-//}
+- (BOOL) shouldAutorotate {
+    return YES;
+}
+
+-(UIInterfaceOrientationMask)supportedInterfaceOrientations {
+
+    return UIInterfaceOrientationMaskLandscapeRight;
+}
+
+- (BOOL)prefersStatusBarHidden {
+    return YES;
+}
+
+- (UIInterfaceOrientation)preferredInterfaceOrientationForPresentation {
+    
+    return UIInterfaceOrientationLandscapeLeft;
+}
 
 
 - (void)didReceiveMemoryWarning {

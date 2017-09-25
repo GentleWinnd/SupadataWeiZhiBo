@@ -17,7 +17,8 @@
 #import <WebKit/WebKit.h>
 #import "AppDelegate.h"
 #import "TRDAnimationIndicator.h"
-#import <CoreMotion/CoreMotion.h>
+//#import <CoreMotion/CoreMotion.h>
+//#import "StreamingViewModel.h"
 #import "RecorderViewController.h"
 
 @interface HeEducationH5ViewController ()<WKNavigationDelegate,WKUIDelegate,WKScriptMessageHandler, UINavigationControllerDelegate, UIScrollViewDelegate, TRDAnimationIndicatorDelegate>
@@ -28,7 +29,6 @@
     NSArray *classesArray;
     NSURLConnection *theConnection;
     TRDAnimationIndicator *loadIndicator;
-    CMMotionManager *motionManager;
     UIDeviceOrientation _deviceOrientation;
     UIButton *playBtn;
     
@@ -69,6 +69,8 @@
             int currentVersion = [version stringByReplacingOccurrencesOfString:@"." withString:@""].intValue;
             if (currentVersion > proVersion) {
                 [self alertViewMessage:description];
+            } else {
+                [self loadHTMLData];
             }
         }
     } failure:^(NSError *error) {
@@ -86,12 +88,12 @@
             [[UIApplication sharedApplication] openURL:[NSURL URLWithString:@"itms-apps://itunes.apple.com/app/id1221856921"]];
             [self deleteWebCache];
         } else {
-            [Progress progressShowcontent:@"更新出现错误" currView:self.view];
+            [Progress progressShowcontent:@"更新出现错误,请前往App Store更新" currView:self.view];
         }
     }];
     
     UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:@"否" style:UIAlertActionStyleCancel handler:^(UIAlertAction *action) {
-        
+        [self loadHTMLData];
     }];
     
     // 添加按钮
@@ -105,50 +107,69 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+
     // Do any additional setup after loading the view from its nib.
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(chanegsBackBtnActive) name:@"activeFromBack" object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didOrientation:) name:@"UIApplicationDidChangeStatusBarOrientationNotification" object:nil];
-//    AppDelegate *appDe = (AppDelegate *)[UIApplication sharedApplication].delegate;
-//    appDe.shouldChangeOrientation = YES;
+    [self performSelector:@selector(startNetNotice) withObject:nil afterDelay:12.0f];
+    
     self.view.backgroundColor = [UIColor whiteColor];
     self.navigationController.delegate = self;
     self.title = @"微直播";
+    [self testAPPVersion];
 
-    [self performSelector:@selector(startNetNotice) withObject:nil afterDelay:12.0f];
+}
 
+- (void)loadHTMLData {// 加载H5数据
+    
     [self initWKWebView];
     [self createLoadIndicator];
     
     if (self.appToken) {
         self.backBtn.hidden = YES;
         self.backImage.hidden = YES;
-
+        
         [self getAppTokenByThirdApp];
     } else {
         [loadIndicator startAnimation];
         [self startLoadWebView];
     }
-    
-    [self testAPPVersion];
-    
-//    [self initDeviceOrientation];
+
 }
 
+#pragma mark - 监听状态栏旋转方法
+
 - (void)didOrientation:(NSNotification *)notice {
-    NSInteger key = [notice.userInfo[@"UIApplicationStatusBarOrientationUserInfoKey"] integerValue];
+    UIInterfaceOrientation orientation = [[UIApplication sharedApplication] statusBarOrientation];
+    
+    
+    if (orientation == UIInterfaceOrientationLandscapeRight || orientation == UIInterfaceOrientationLandscapeLeft) {
+        [self layoutSubViewWithState:YES];
+    }
+    
+    if (orientation == UIInterfaceOrientationPortrait || orientation == UIInterfaceOrientationPortraitUpsideDown){
+        [self layoutSubViewWithState:NO];
+    }
+      
+//    NSInteger key = [notice.userInfo[@"UIApplicationStatusBarOrientationUserInfoKey"] integerValue];
+//    [self layoutSubViewWithKey:key];
+}
+
+- (void)layoutSubViewWithKey:(NSInteger) key {
     CGFloat SWidth = SCREEN_WIDTH;
     CGFloat SHight = SCREEN_HEIGHT - 64;
     CGFloat YH = 64;
     
-    if (key == 1) {
+    if (key == 1 || SCREEN_WIDTH>SCREEN_HEIGHT) {
         SWidth = SCREEN_WIDTH;
         SHight = SCREEN_HEIGHT-44;
         YH = 44;
     }
+    NSLog(@"++++++++++++++key =%tu+++++++++++++++++",key);
     
     if (!noCurrentVC) {
         WWebView.frame = CGRectMake(0, YH, SWidth, SHight);
-        if (key == 1) {
+        if (key == 1 || SCREEN_WIDTH>SCREEN_HEIGHT) {
             self.topViewHeight.constant = 44;
             self.topCenterSpace.constant = 0;
         } else {
@@ -156,10 +177,32 @@
             self.topCenterSpace.constant = 10;
         }
     }
-    
 }
 
-- (void)chanegsBackBtnActive {
+- (void)layoutSubViewWithState:(BOOL) horizon {
+    CGFloat SWidth = SCREEN_WIDTH;
+    CGFloat SHight = SCREEN_HEIGHT - 64;
+    CGFloat YH = 64;
+    
+    if (horizon) {
+        SWidth = SCREEN_WIDTH;
+        SHight = SCREEN_HEIGHT-44;
+        YH = 44;
+    }
+    
+    if (!noCurrentVC) {
+        WWebView.frame = CGRectMake(0, YH, SWidth, SHight);
+        if (horizon) {
+            self.topViewHeight.constant = 44;
+            self.topCenterSpace.constant = 0;
+        } else {
+            self.topViewHeight.constant = 64;
+            self.topCenterSpace.constant = 10;
+        }
+    }
+}
+
+- (void)chanegsBackBtnActive {//修改返回按钮状态
     self.fromBack = YES;
     self.backBtn.hidden = NO;
     self.backImage.hidden = NO;
@@ -168,7 +211,6 @@
 #pragma mark - 开始网络监听
 
 - (void)startNetNotice {
-    
     AppDelegate *appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
     appDelegate.startNteNotice = YES;
 }
@@ -191,6 +233,7 @@
     }
 }
 
+/************************************************************/
 
 #pragma mark - 通过APPtoken获取登录验证码
 - (void)getAppTokenByThirdApp {
@@ -238,7 +281,7 @@
     [UserData storeUserData:user];
 }
 
-
+/************************************************************/
 #pragma mark - 初始化webview
 
 - (void)initWKWebView {
@@ -291,6 +334,7 @@
     [WWebView loadRequest: request];
     // 通过JS与webview内容交互
     WKUserContentController *userCC = WWebView.configuration.userContentController;
+   
     // 注入JS对象名称AppModel，当JS通过AppModel来调用时，
     // 我们可以在WKScriptMessageHandler代理中接收到
     //可以注入多个APPmodel
@@ -387,13 +431,10 @@
             if ([lastStr isEqualToString:@""]) {
                 self.backBtn.hidden = YES;
                 self.backImage.hidden = YES;
-                
             }
         }
-       
     }
     
-  
     //live/camera/square/playback/selected
     //允许跳转
     decisionHandler(WKNavigationActionPolicyAllow);
@@ -437,13 +478,13 @@
         NSSet *websiteDataTypes
         = [NSSet setWithArray:@[
                                 WKWebsiteDataTypeDiskCache,
-                                //WKWebsiteDataTypeOfflineWebApplicationCache,
+                                WKWebsiteDataTypeOfflineWebApplicationCache,
                                 WKWebsiteDataTypeMemoryCache,
-                                //WKWebsiteDataTypeLocalStorage,
-                                //WKWebsiteDataTypeCookies,
-                                //WKWebsiteDataTypeSessionStorage,
-                                //WKWebsiteDataTypeIndexedDBDatabases,
-                                //WKWebsiteDataTypeWebSQLDatabases
+                                WKWebsiteDataTypeLocalStorage,
+                                WKWebsiteDataTypeCookies,
+                                WKWebsiteDataTypeSessionStorage,
+                                WKWebsiteDataTypeIndexedDBDatabases,
+                                WKWebsiteDataTypeWebSQLDatabases
                                 ]];
         //// All kinds of data
         //NSSet *websiteDataTypes = [WKWebsiteDataStore allWebsiteDataTypes];
@@ -456,6 +497,18 @@
         
     } else {
         
+        NSString *libraryDir = NSSearchPathForDirectoriesInDomains(NSLibraryDirectory,
+                                                                   NSUserDomainMask, YES)[0];
+        
+        NSString *bundleId  =  [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleIdentifier"];
+        NSString *webkitFolderInLib = [NSString stringWithFormat:@"%@/WebKit",libraryDir];
+        NSString *webKitFolderInCaches = [NSString stringWithFormat:@"%@/Caches/%@/WebKit",libraryDir,bundleId];
+        
+        NSError *error;
+        /* iOS8.0 WebView Cache的存放路径 */
+        [[NSFileManager defaultManager] removeItemAtPath:webKitFolderInCaches error:&error];
+        [[NSFileManager defaultManager] removeItemAtPath:webkitFolderInLib error:nil];
+     
         NSString *libraryPath = [NSSearchPathForDirectoriesInDomains(NSLibraryDirectory, NSUserDomainMask, YES) objectAtIndex:0];
         NSString *cookiesFolderPath = [libraryPath stringByAppendingString:@"/Cookies"];
         NSError *errors;
@@ -465,46 +518,6 @@
     
 }
 
-
-// 计算wkWebView进度条
-- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context {
-    //    if (object == self.wkWebView && [keyPath isEqualToString:@"estimatedProgress"]) {
-    //        CGFloat newprogress = [[change objectForKey:NSKeyValueChangeNewKey] doubleValue];
-    //        if (newprogress == 1) {
-    //            self.progressView.hidden = YES;
-    //            [self.progressView setProgress:0 animated:NO];
-    //        }else {
-    //            self.progressView.hidden = NO;
-    //            [self.progressView setProgress:newprogress animated:YES];
-    //        }
-    //    }
-}
-
-// 记得取消监听
-- (void)dealloc {
-    if (IOS8x) {
-        [WWebView removeObserver:self forKeyPath:@"estimatedProgress"];
-    }
-}
-
-#pragma mark - webView代理
-
-// 计算webView进度条
-- (void)setLoadCount:(NSUInteger)loadCount {
-    //    _loadCount = loadCount;
-    //    if (loadCount == 0) {
-    //        self.progressView.hidden = YES;
-    //        [self.progressView setProgress:0 animated:NO];
-    //    }else {
-    //        self.progressView.hidden = NO;
-    //        CGFloat oldP = self.progressView.progress;
-    //        CGFloat newP = (1.0 - oldP) / (loadCount + 1) + oldP;
-    //        if (newP > 0.95) {
-    //            newP = 0.95;
-    //        }
-    //        [self.progressView setProgress:newP animated:YES];
-    //    }
-}
 
 #pragma mark - WKScriptMessageHandler
 - (void)userContentController:(WKUserContentController *)userContentController
@@ -618,8 +631,8 @@
         [self liveBtnAction];
         [self hiddenVedioBtnView:YES];
     } else if (sender.tag == 3) {//录播按钮
-        [self hiddenVedioBtnView:YES];
         [self recorderView];
+        [self hiddenVedioBtnView:YES];
     }
     
 }
@@ -649,6 +662,8 @@
     UINavigationController * nav = [[UINavigationController alloc] initWithRootViewController:recoderView];
     nav.navigationBarHidden = YES;
     [self presentViewController:nav animated:NO completion:^{
+        noCurrentVC = NO;
+        [self layoutSubViewWithKey:1];
     }];
     
 }
@@ -668,6 +683,9 @@
 
 - (void)getPushInfo {
     
+    MBProgressManager *loadingProgress = [[MBProgressManager alloc] init];
+    loadingProgress.showView = self.view;
+    [loadingProgress showProgress];
     NSDictionary *parameter = @{@"userId":self.userId,@"device":@"2",
                                 @"school_id":CSchoolId,@"push_type":@"2",
                                 @"liveName":@"IOS",
@@ -678,21 +696,24 @@
     
     [WZBNetServiceAPI getRegisterPhoneMicroLiveWithParameters:parameter success:^(id reponseObject) {
         if ([reponseObject[@"status"] intValue] == 1) {
-            
+            [loadingProgress hiddenProgress];
+
             NSString *pushUrl = [NSString safeString:reponseObject[@"data"][@"cameraPushUrl"]];
             //            _logPlayId.text = [NSString safeString:reponseObject[@"data"][@"cameraPlayUrl"]];
             NSString *cameraDataId = [NSString stringWithFormat:@"%@",reponseObject[@"data"][@"id"]];
-            [self gotoCameraVC:cameraDataId withPushURL:pushUrl];
+            [self gotoCameraVC:cameraDataId withPushURL:pushUrl withProgress:loadingProgress];
         } else {
             [Progress progressShowcontent:reponseObject[@"message"] currView:self.view];
         }
+        
     } failure:^(NSError *error) {
+        [loadingProgress hiddenProgress];
         [KTMErrorHint showNetError:error inView:self.view];
     }];
     
 }
 
-- (void)gotoCameraVC:(NSString *)cameraID withPushURL:(NSString *)pushUrl {
+- (void)gotoCameraVC:(NSString *)cameraID withPushURL:(NSString *)pushUrl withProgress:(MBProgressManager *)progress {
     noCurrentVC = YES;
     UIStoryboard *board = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
     
@@ -708,49 +729,20 @@
     VC.schoolId = CSchoolId;
     VC.schoolName = CSchoolName;
     VC.pushUrl = pushUrl;
+    VC.cameraDataId = cameraID;
     
     if (CSchoolId.length == 0) {
         [Progress progressShowcontent:@"请选择学校" currView:self.view];
         return;
     }
-    
+
     UINavigationController * nav = [[UINavigationController alloc] initWithRootViewController:VC];
     nav.navigationBarHidden = YES;
     [self presentViewController:nav animated:NO completion:^{
+        noCurrentVC = NO;
     }];
 }
 
-
-#pragma mark - pangesturehandle
-
-- (void) doHandlePanAction:(UIPanGestureRecognizer *)paramSender{
-    
-    CGPoint point = [paramSender translationInView:self.view];
-    //    NSLog(@"X:%f;Y:%f",point.x,point.y);
-    paramSender.view.center = [self playSizeupPanBoundary:CGPointMake(paramSender.view.center.x + point.x, paramSender.view.center.y + point.y)];
-    [paramSender setTranslation:CGPointMake(0, 0) inView:self.view];
-}
-
-#pragma mark- 判断按钮是否画出边界
-
-- (CGPoint) playSizeupPanBoundary:(CGPoint)point {
-    CGFloat Width = point.x;
-    CGFloat Height = point.y;
-    CGFloat X = Width;
-    CGFloat Y = Height;
-    if (Width< 50) {
-        X = 50;
-    } else if (Width>SCREEN_WIDTH-50){
-        X = SCREEN_WIDTH -50;
-    }
-    if (Height<18+64) {
-        Y = 18+64;
-    } if (Height>SCREEN_HEIGHT-68) {
-        Y = SCREEN_HEIGHT-68;
-    }
-    
-    return CGPointMake(X, Y);
-}
 
 // 登陆后淡入淡出更换rootViewController
 - (void)restoreRootViewController:(UIViewController *)rootViewController {
@@ -815,6 +807,7 @@
     }
 }
 
+
 - (void)exitApplication {
     UIButton *playBtn = [self.view viewWithTag:110];
     playBtn.hidden = YES;
@@ -829,111 +822,11 @@
 }
 
 
-#pragma mark - 初始化设备旋转监听管理
-
-- (void)initDeviceOrientation {
-    //----- SETUP DEVICE ORIENTATION CHANGE NOTIFICATION -----1
-    //    UIDevice *device = [UIDevice currentDevice]; //Get the device object
-    //    [device beginGeneratingDeviceOrientationNotifications]; //Tell it to start monitoring the accelerometer for orientation
-    //    NSNotificationCenter *notificatioCenter = [NSNotificationCenter defaultCenter]; //Get the notification centre for the app
-    //    [notificatioCenter addObserver:self selector:@selector(orientationChanged:) name:UIDeviceOrientationDidChangeNotification  object:device];
-    motionManager = [[CMMotionManager alloc] init];
-    if (motionManager.deviceMotionAvailable) {
-        motionManager.deviceMotionUpdateInterval = 1;
-        [motionManager startDeviceMotionUpdatesToQueue:[NSOperationQueue mainQueue]
-                                           withHandler:^(CMDeviceMotion *data, NSError *error) {
-                                               double rotation = atan2(data.gravity.x,data.gravity.y)*180/M_PI;
-                                               if (rotation>135 || rotation<-135) {
-                                                   [self orientationChangedWithDeviceOrientation:UIDeviceOrientationPortrait];
-                                               } else if (rotation>-135 && rotation<-45) {
-                                                   [self orientationChangedWithDeviceOrientation:UIDeviceOrientationLandscapeLeft];
-                                               } else if (rotation>-45 && rotation<45) {
-                                                   [self orientationChangedWithDeviceOrientation:UIDeviceOrientationPortraitUpsideDown];
-                                               } else {
-                                                   [self orientationChangedWithDeviceOrientation:UIDeviceOrientationLandscapeRight];
-                                               }
-                                           }];
-    }
-    
-}
-
-#pragma mark - 更具设备旋转方向设置旋转角度  uiioiu
-- (void)orientationChangedWithDeviceOrientation:(UIDeviceOrientation ) orientation {
-    //UIDeviceOrientation orientation = [[UIDevice currentDevice] orientation];
-    if (orientation == _deviceOrientation) {
-        return;
-    }
-    _deviceOrientation = orientation;
-    switch (orientation) {
-        case UIDeviceOrientationPortrait:            // Device oriented vertically, home button on the bottom
-//            [self endFullScreen];
-            
-            break;
-        case UIDeviceOrientationPortraitUpsideDown:  // Device oriented vertically, home button on the top
-            
-            break;
-        case UIDeviceOrientationLandscapeLeft:      // Device oriented horizontally, home button on the right
-            [[UIApplication sharedApplication] setStatusBarOrientation:UIInterfaceOrientationLandscapeRight animated:YES];
-//            [self begainFullScreen];
-            break;
-        case UIDeviceOrientationLandscapeRight:      // Device oriented horizontally, home button on the left
-            [[UIApplication sharedApplication] setStatusBarOrientation:UIInterfaceOrientationLandscapeLeft animated:YES];
-//            [self begainFullScreen];
-
-            break;
-        default:
-            break;
-    }
-}
-
-#pragma - mark  进入全屏
--(void)begainFullScreen {
-    AppDelegate *appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
-    appDelegate.direction = SuportDirectionAll;
-    
-    [[UIDevice currentDevice] setValue:@"UIInterfaceOrientationLandscapeLeft" forKey:@"orientation"];
-    
-    int count = [UIApplication sharedApplication].windows.count;
-    NSLog(@"%@", [UIApplication sharedApplication].windows.lastObject.subviews.firstObject);
-    NSLog(@"key=%@",[UIApplication sharedApplication].windows);
-    //强制zhuan'p：
-    if ([[UIDevice currentDevice] respondsToSelector:@selector(setOrientation:)] && count==4) {
-        SEL selector = NSSelectorFromString(@"setOrientation:");
-        NSInvocation *invocation = [NSInvocation invocationWithMethodSignature:[UIDevice instanceMethodSignatureForSelector:selector]];
-        [invocation setSelector:selector];
-        [invocation setTarget:[UIDevice currentDevice]];
-        int val = UIInterfaceOrientationLandscapeLeft;
-        [invocation setArgument:&val atIndex:2];
-        [invocation invoke];
-    }
-}
-
-
-#pragma - mark 退出全屏
--(void)endFullScreen {
-    
-    AppDelegate *appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
-    appDelegate.direction = SuportDirectionAll;
-    
-    //强制归正：
-    if ([[UIDevice currentDevice] respondsToSelector:@selector(setOrientation:)]) {
-        SEL selector = NSSelectorFromString(@"setOrientation:");
-        NSInvocation *invocation = [NSInvocation invocationWithMethodSignature:[UIDevice instanceMethodSignatureForSelector:selector]];
-        [invocation setSelector:selector];
-        [invocation setTarget:[UIDevice currentDevice]];
-        int val =UIInterfaceOrientationPortrait;
-        [invocation setArgument:&val atIndex:2];
-        [invocation invoke];
-    }
-}
-
-
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
     self.navigationController.navigationBarHidden = NO;
     //    [WWebView.scrollView setContentOffset:CGPointMake(0, -32)];
     [MobClick beginLogPageView:@"H5View"];
-    noCurrentVC = NO;
 }
 
 - (void)viewDidDisappear:(BOOL)animated {
@@ -944,6 +837,47 @@
 
 -(BOOL)shouldAutorotate {
     return YES;
+}
+
+
+// 计算wkWebView进度条
+- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context {
+    //    if (object == self.wkWebView && [keyPath isEqualToString:@"estimatedProgress"]) {
+    //        CGFloat newprogress = [[change objectForKey:NSKeyValueChangeNewKey] doubleValue];
+    //        if (newprogress == 1) {
+    //            self.progressView.hidden = YES;
+    //            [self.progressView setProgress:0 animated:NO];
+    //        }else {
+    //            self.progressView.hidden = NO;
+    //            [self.progressView setProgress:newprogress animated:YES];
+    //        }
+    //    }
+}
+
+// 记得取消监听
+- (void)dealloc {
+    if (IOS8x) {
+        [WWebView removeObserver:self forKeyPath:@"estimatedProgress"];
+    }
+}
+
+#pragma mark - webView代理
+
+// 计算webView进度条
+- (void)setLoadCount:(NSUInteger)loadCount {
+    //    _loadCount = loadCount;
+    //    if (loadCount == 0) {
+    //        self.progressView.hidden = YES;
+    //        [self.progressView setProgress:0 animated:NO];
+    //    }else {
+    //        self.progressView.hidden = NO;
+    //        CGFloat oldP = self.progressView.progress;
+    //        CGFloat newP = (1.0 - oldP) / (loadCount + 1) + oldP;
+    //        if (newP > 0.95) {
+    //            newP = 0.95;
+    //        }
+    //        [self.progressView setProgress:newP animated:YES];
+    //    }
 }
 
 

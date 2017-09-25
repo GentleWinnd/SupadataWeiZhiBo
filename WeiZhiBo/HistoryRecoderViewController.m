@@ -27,7 +27,6 @@
 
 @property (strong, nonatomic) MPMoviePlayerViewController *playerVC;
 @property (strong, nonatomic) FileUploader *uploader;
-@property (strong, nonatomic) dispatch_queue_t queue;
 
 @property (strong, nonatomic) NSMutableArray *uploadingArr;
 
@@ -48,16 +47,13 @@ static NSString *cellId = @"cellIdentifiler";
 
 - (void)appEnterBack {//app进入后台通知
     if (uploading) {
-        NSString *alerStr = [NSString stringWithFormat:@"您有%ld短视频正在后台上传",_uploadingArr.count];
+        NSString *alerStr = [NSString stringWithFormat:@"您有短视频正在后台上传"];
         [NotificationManager registerLocalNotificationAlertBody:alerStr description:@""];
     }
 }
 
 
 - (void)initData {
-   
-    _queue = dispatch_queue_create("com.lysongzi.concurrent", DISPATCH_QUEUE_CONCURRENT);
-    _uploadingArr = [NSMutableArray arrayWithCapacity:5];
     
     if (_historyRecoderArr.count>0) {
         self.noDataView.hidden = YES;
@@ -68,7 +64,6 @@ static NSString *cellId = @"cellIdentifiler";
 }
 
 - (void)setHistoryRecoderArr:(NSMutableArray *)historyRecoderArr {
-
     if (historyRecoderArr) {
         _historyRecoderArr = historyRecoderArr;
     }
@@ -105,7 +100,7 @@ static NSString *cellId = @"cellIdentifiler";
     cell.dotBtn.selected = uploadState;
     cell.uploadBtn.selected = uploadState;
     cell.titleLabel.text = titleStr;
-    cell.classLabel.attributedText = [self getVideoClassesWithVideoId:videoId withLabelWidth:CGRectGetWidth(cell.classLabel.frame)];
+    cell.classLabel.attributedText = [self getVideoClassesWithVideoId:videoId withLabelWidth:CGRectGetWidth(cell.frame)];
     [self getUploadShortVideoUrlWithClasses:selClassArr videoPath:videoPath playTitle:titleStr inCell:cell];
 
     @WeakObj(cell)
@@ -174,6 +169,9 @@ static NSString *cellId = @"cellIdentifiler";
             cell.uploadBtn.selected = YES;
             cell.dotBtn.selected = YES;
             [self fileUploadingState:result fileName:videopath];
+            if (result) {
+                [self uploadVideoUploadState:videoInfo[VIDEO_ID]];
+            }
         };
     }
 }
@@ -227,6 +225,9 @@ static NSString *cellId = @"cellIdentifiler";
             cell.uploadBtn.selected = result;
             cell.dotBtn.selected = result;
             [self fileUploadingState:result fileName:videopath];
+            if (result) {
+                [self uploadVideoUploadState:videoInfo[VIDEO_ID]];
+            }
         };
     }
 }
@@ -273,13 +274,13 @@ static NSString *cellId = @"cellIdentifiler";
     
     NSMutableAttributedString *attributeString = [[NSMutableAttributedString alloc] initWithString:titleStr];
     
-    if ([self calculateRowWidth:titleStr]<width) {
+    if ([self calculateRowWidth:titleStr]>width-66) {
         NSMutableParagraphStyle *paragraphStyle = [[NSMutableParagraphStyle alloc] init];
         paragraphStyle.lineSpacing = lineSpace;
         [attributeString addAttribute:NSParagraphStyleAttributeName value:paragraphStyle range:NSMakeRange(0, titleStr.length)];
         [attributeString addAttribute:NSFontAttributeName value:[UIFont systemFontOfSize:11] range:NSMakeRange(0, titleStr.length)];
+
     }
-    
     return attributeString;
     
 }
