@@ -119,7 +119,6 @@
 
     if (!_liveManager) {
         _liveManager = [[AOKANLiveManager alloc] initWithURL:self.pushUrl];
-        
     }
     return _liveManager;
 }
